@@ -1345,6 +1345,10 @@ def render_login(username="", password=""):
     next_url = request.args.get('next', default=url_for("web.index"), type=str)
     if url_for("web.logout") == next_url:
         next_url = url_for("web.index")
+    login_button = "generic oauth2 provider"
+    if 3 in oauth_check:
+        from .oauth_bb import oauthblueprints
+        login_button = oauthblueprints[2].get('login_button') or login_button
     return render_title_template('login.html',
                                  title=_("Login"),
                                  next_url=next_url,
@@ -1352,6 +1356,7 @@ def render_login(username="", password=""):
                                  username=username,
                                  password=password,
                                  oauth_check=oauth_check,
+                                 login_button=login_button,
                                  mail=config.get_mail_server_configured(), page="login")
 
 
