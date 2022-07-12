@@ -338,7 +338,7 @@ if ub.oauth_support:
             log.error("Failed to log in with generic OAuth2 provider")
             return False
         
-        resp = blueprint.session.get(blueprint.base_url + oauth_ids[2].get('oauth_userinfo_url'))
+        resp = blueprint.session.get(blueprint.base_url + oauthblueprints[2].get('oauth_userinfo_url'))
         if not resp.ok:
             flash(_(u"Failed to fetch user info from generic OAuth2 provider."), category="error")
             log.error("Failed to fetch user info from generic OAuth2 provider")
@@ -348,8 +348,8 @@ if ub.oauth_support:
         email_mapper = oauthblueprints[2].get('email_mapper') or 'email'
 
         generic_info = resp.json()
-        generic_user_email = str(generic_info[email_mapper])
-        generic_user_username = str(generic_info[username_mapper])
+        generic_user_email = str(generic_info[email_mapper]).lower()
+        generic_user_username = str(generic_info[username_mapper]).lower()
 
         user = (
             ub.session.query(ub.User)
@@ -365,10 +365,10 @@ if ub.oauth_support:
             ub.session.add(user)
             ub.session_commit()
 
-        result = oauth_update_token(str(oauthblueprints[2]['id']), token, user.id)
+        result = oauth_update_token(str(oauthblueprints[2].get('id')), token, user.id)
 
         query = ub.session.query(ub.OAuth).filter_by(
-            provider=str(oauthblueprints[2]['id']),
+            provider=str(oauthblueprints[2].get('id')),
             provider_user_id=user.id,
         )
         oauth_entry = query.first()
@@ -476,15 +476,15 @@ def generic_login():
     if not generic.session.authorized:
         return redirect(url_for("generic.login"))
     try:
-        resp = generic.session.get(generic.base_url + oauth_ids[2].get('oauth_userinfo_url'))
+        resp = generic.session.get(generic.base_url + oauthblueprints[2].get('oauth_userinfo_url'))
         if resp.ok:
             account_info_json = resp.json()
 
             username_mapper = oauthblueprints[2].get('username_mapper') or 'username'
             email_mapper = oauthblueprints[2].get('email_mapper') or 'email'
 
-            email = str(account_info_json[email_mapper])
-            username = str(account_info_json[username_mapper])
+            email = str(account_info_json[email_mapper]).lower()
+            username = str(account_info_json[username_mapper]).lower()
 
             user = (
                 ub.session.query(ub.User)
@@ -492,7 +492,7 @@ def generic_login():
                         func.lower(ub.User.email) == email))
             ).first()
 
-            return bind_oauth_or_register(oauthblueprints[2]['id'], user.id, 'generic.login', 'generic')
+            return bind_oauth_or_register(oauthblueprints[2].get('id'), user.id, 'generic.login', 'generic')
         flash(_(u"generic OAuth2 error, please retry later."), category="error")
         log.error("generic OAuth2 error, please retry later")
     except (InvalidGrantError, TokenExpiredError) as e:
@@ -503,4 +503,4 @@ def generic_login():
 @oauth.route('/unlink/generic', methods=["GET"])
 @login_required
 def generic_login_unlink():
-    return unlink_oauth(oauthblueprints[2]['id'])
+    return unlink_oauth(oauthblueprints[2].get('id'))
