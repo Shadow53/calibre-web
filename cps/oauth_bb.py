@@ -243,6 +243,7 @@ def generate_oauth_blueprints():
                 oauth_base_url=oauth_ids[2].oauth_base_url,
                 oauth_auth_url=oauth_ids[2].oauth_auth_url,
                 oauth_token_url=oauth_ids[2].oauth_token_url,
+                oauth_userinfo_url=oauth_ids[2].oauth_userinfo_url,
                 username_mapper=oauth_ids[2].username_mapper,
                 email_mapper=oauth_ids[2].email_mapper,
                 login_button=oauth_ids[2].login_button)
@@ -336,8 +337,8 @@ if ub.oauth_support:
             flash(_(u"Failed to log in with generic OAuth provider."), category="error")
             log.error("Failed to log in with generic OAuth2 provider")
             return False
-
-        resp = blueprint.session.get(blueprint.base_url + "/application/o/userinfo")
+        
+        resp = blueprint.session.get(blueprint.base_url + oauth_ids[2].get('oauth_userinfo_url'))
         if not resp.ok:
             flash(_(u"Failed to fetch user info from generic OAuth2 provider."), category="error")
             log.error("Failed to fetch user info from generic OAuth2 provider")
@@ -475,7 +476,7 @@ def generic_login():
     if not generic.session.authorized:
         return redirect(url_for("generic.login"))
     try:
-        resp = generic.session.get(generic.base_url + "/application/o/userinfo/")
+        resp = generic.session.get(generic.base_url + oauth_ids[2].get('oauth_userinfo_url'))
         if resp.ok:
             account_info_json = resp.json()
 
