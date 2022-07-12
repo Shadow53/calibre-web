@@ -475,7 +475,7 @@ def generic_login():
     if not generic.session.authorized:
         return redirect(url_for("generic.login"))
     try:
-        resp = generic.session.get(generic.base_url + "/protocol/openid-connect/userinfo")
+        resp = generic.session.get(generic.base_url + "/application/o/userinfo/")
         if resp.ok:
             account_info_json = resp.json()
 
