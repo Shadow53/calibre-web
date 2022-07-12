@@ -337,7 +337,7 @@ if ub.oauth_support:
             log.error("Failed to log in with generic OAuth2 provider")
             return False
 
-        resp = blueprint.session.get(blueprint.base_url + "/protocol/openid-connect/userinfo")
+        resp = blueprint.session.get(blueprint.base_url + "/application/o/userinfo")
         if not resp.ok:
             flash(_(u"Failed to fetch user info from generic OAuth2 provider."), category="error")
             log.error("Failed to fetch user info from generic OAuth2 provider")
