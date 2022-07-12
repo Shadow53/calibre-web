@@ -560,6 +560,12 @@ def add_missing_tables(engine, _session):
         ArchivedBook.__table__.create(bind=engine)
     if not engine.dialect.has_table(engine.connect(), "thumbnail"):
         Thumbnail.__table__.create(bind=engine)
+    if oauth_support:
+        if not engine.dialect.has_table(engine.connect(), "oauthProvider"):
+            OAuthProvider.__table__.create(bind=engine)
+        if not engine.dialect.has_table(engine.connect(), "flask_dance_oauthconsumermixin"):
+            OAuth.__table__.create(bind=engine)
+    
     if not engine.dialect.has_table(engine.connect(), "registration"):
         Registration.__table__.create(bind=engine)
         with engine.connect() as conn:
