@@ -1,0 +1,11 @@
+build_image:
+  image: docker
+  stage: build
+  services:
+    - docker:dind
+  script:
+    - echo $CI_REGISTRY_USER
+    - echo $CI_REGISTRY
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build --no-cache -t $CI_REGISTRY/jafner/calibre-web/calibre-web:$CI_COMMIT_SHA -t $CI_REGISTRY/jafner/calibre-web/calibre-web:latest .
+    - docker push $CI_REGISTRY/jafner/calibre-web/calibre-web --all-tags
