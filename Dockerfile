@@ -34,10 +34,10 @@ RUN \
     /usr/bin/kepubify -L \
     https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-64bit
 
+COPY . /app/calibre-web
+
 RUN \
   echo "**** install calibre-web (a worse way than LSIO's method) ****" && \
-  # this is my lazy alternative to lsio's pretty one:
-  git clone https://gitlab.jafner.net/Jafner/calibre-web.git /app/calibre-web && \
   cd /app/calibre-web && \
   pip3 install --no-cache-dir -U \
     pip && \
