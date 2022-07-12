@@ -1,5 +1,5 @@
 build_image:
-  retry: 5
+  retry: 2
   image: docker
   stage: build
   services:
