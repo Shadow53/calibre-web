@@ -563,7 +563,7 @@ def add_missing_tables(engine, _session):
     if oauth_support:
         if not engine.dialect.has_table(engine.connect(), "oauthProvider"):
             OAuthProvider.__table__.create(bind=engine)
-        if not engine.dialect.has_table(engine.connect(), "flask_dance_oauthconsumermixin"):
+        if not engine.dialect.has_table(engine.connect(), "flask_dance_oauth"):
             OAuth.__table__.create(bind=engine)
     
     if not engine.dialect.has_table(engine.connect(), "registration"):
