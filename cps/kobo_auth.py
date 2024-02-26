@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 shavitmichael, OzzieIsaacs
@@ -61,15 +60,15 @@ particular calls to non-Kobo specific endpoints such as the CalibreWeb book down
 
 from binascii import hexlify
 from datetime import datetime
-from os import urandom
 from functools import wraps
+from os import urandom
 
-from flask import g, Blueprint, abort, request
-from flask_login import login_user, current_user, login_required
+from flask import Blueprint, abort, g, request
 from flask_babel import gettext as _
 from flask_limiter import RateLimitExceeded
+from flask_login import current_user, login_required, login_user
 
-from . import logger, config, calibre_db, db, helper, ub, lm, limiter
+from . import calibre_db, config, db, helper, limiter, lm, logger, ub
 from .render_template import render_title_template
 
 log = logger.create()
@@ -81,13 +80,13 @@ kobo_auth = Blueprint("kobo_auth", __name__, url_prefix="/kobo_auth")
 @login_required
 def generate_auth_token(user_id):
     warning = False
-    host_list = request.host.rsplit(':')
+    host_list = request.host.rsplit(":")
     if len(host_list) == 1:
-        host = ':'.join(host_list)
+        host = ":".join(host_list)
     else:
-        host = ':'.join(host_list[0:-1])
-    if host.startswith('127.') or host.lower() == 'localhost' or host.startswith('[::ffff:7f') or host == "[::1]":
-        warning = _('Please access Calibre-Web from non localhost to get valid api_endpoint for kobo device')
+        host = ":".join(host_list[0:-1])
+    if host.startswith("127.") or host.lower() == "localhost" or host.startswith("[::ffff:7f") or host == "[::1]":
+        warning = _("Please access Calibre-Web from non localhost to get valid api_endpoint for kobo device")
 
     # Generate auth token if none is existing for this user
     auth_token = ub.session.query(ub.RemoteAuthToken).filter(
@@ -108,8 +107,8 @@ def generate_auth_token(user_id):
 
     for book in books:
         formats = [data.format for data in book.data]
-        if 'KEPUB' not in formats and config.config_kepubifypath and 'EPUB' in formats:
-            helper.convert_book_format(book.id, config.config_calibre_dir, 'EPUB', 'KEPUB', current_user.name)
+        if "KEPUB" not in formats and config.config_kepubifypath and "EPUB" in formats:
+            helper.convert_book_format(book.id, config.config_calibre_dir, "EPUB", "KEPUB", current_user.name)
 
     return render_title_template(
         "generate_kobo_auth_url.html",

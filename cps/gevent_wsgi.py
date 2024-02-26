@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2022 OzzieIsaacs
@@ -19,11 +18,12 @@
 
 from gevent.pywsgi import WSGIHandler
 
+
 class MyWSGIHandler(WSGIHandler):
     def get_environ(self):
         env = super().get_environ()
-        path, __ = self.path.split('?', 1) if '?' in self.path else (self.path, '')
-        env['RAW_URI'] = path
+        path, __ = self.path.split("?", 1) if "?" in self.path else (self.path, "")
+        env["RAW_URI"] = path
         return env
 
 

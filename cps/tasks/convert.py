@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2020 pwr
@@ -20,25 +19,22 @@ import os
 import re
 from glob import glob
 from shutil import copyfile, copyfileobj
-from markupsafe import escape
 from time import time
 from uuid import uuid4
 
-from sqlalchemy.exc import SQLAlchemyError
-from flask_babel import lazy_gettext as N_
-
-from cps.services.worker import CalibreTask
-from cps import db
-from cps import logger, config
-from cps.subproc_wrapper import process_open
 from flask_babel import gettext as _
-from cps.kobo_sync_status import remove_synced_book
-from cps.ub import init_db_thread
-from cps.file_helper import get_temp_dir
+from flask_babel import lazy_gettext as N_
+from markupsafe import escape
+from sqlalchemy.exc import SQLAlchemyError
 
-from cps.tasks.mail import TaskEmail
-from cps import gdriveutils, helper
+from cps import config, db, gdriveutils, helper, logger
 from cps.constants import SUPPORTED_CALIBRE_BINARIES
+from cps.file_helper import get_temp_dir
+from cps.kobo_sync_status import remove_synced_book
+from cps.services.worker import CalibreTask
+from cps.subproc_wrapper import process_open
+from cps.tasks.mail import TaskEmail
+from cps.ub import init_db_thread
 
 log = logger.create()
 
@@ -62,14 +58,14 @@ class TaskConvert(CalibreTask):
             worker_db = db.CalibreDB(expire_on_commit=False, init=True)
             cur_book = worker_db.get_book(self.book_id)
             self.title = cur_book.title
-            data = worker_db.get_book_format(self.book_id, self.settings['old_book_format'])
+            data = worker_db.get_book_format(self.book_id, self.settings["old_book_format"])
             df = gdriveutils.getFileFromEbooksFolder(cur_book.path,
-                                                     data.name + "." + self.settings['old_book_format'].lower())
+                                                     data.name + "." + self.settings["old_book_format"].lower())
             df_cover = gdriveutils.getFileFromEbooksFolder(cur_book.path, "cover.jpg")
             if df:
                 datafile = os.path.join(config.get_book_path(),
                                         cur_book.path,
-                                        data.name + "." + self.settings['old_book_format'].lower())
+                                        data.name + "." + self.settings["old_book_format"].lower())
                 if df_cover:
                     datafile_cover = os.path.join(config.get_book_path(),
                                             cur_book.path, "cover.jpg")
@@ -80,16 +76,16 @@ class TaskConvert(CalibreTask):
                     df_cover.GetContentFile(datafile_cover)
                 worker_db.session.close()
             else:
-                # ToDo Include cover in error handling
+                # TODO Include cover in error handling
                 error_message = _("%(format)s not found on Google Drive: %(fn)s",
-                                  format=self.settings['old_book_format'],
-                                  fn=data.name + "." + self.settings['old_book_format'].lower())
+                                  format=self.settings["old_book_format"],
+                                  fn=data.name + "." + self.settings["old_book_format"].lower())
                 worker_db.session.close()
                 return self._handleError(self, error_message)
 
         filename = self._convert_ebook_format()
         if config.config_use_google_drive:
-            os.remove(self.file_path + '.' + self.settings['old_book_format'].lower())
+            os.remove(self.file_path + "." + self.settings["old_book_format"].lower())
             if df_cover:
                 os.remove(os.path.join(config.config_calibre_dir, cur_book.path, "cover.jpg"))
 
@@ -100,16 +96,16 @@ class TaskConvert(CalibreTask):
                 self._handleSuccess()
             if self.ereader_mail:
                 # if we're sending to E-Reader after converting, create a one-off task and run it immediately
-                # todo: figure out how to incorporate this into the progress
+                # TODO: figure out how to incorporate this into the progress
                 try:
                     EmailText = N_("%(book)s send to E-Reader", book=escape(self.title))
-                    worker_thread.add(self.user, TaskEmail(self.settings['subject'],
+                    worker_thread.add(self.user, TaskEmail(self.settings["subject"],
                                                            self.results["path"],
                                                            filename,
                                                            self.settings,
                                                            self.ereader_mail,
                                                            EmailText,
-                                                           self.settings['body'],
+                                                           self.settings["body"],
                                                            internal=True)
                                       )
                 except Exception as ex:
@@ -120,24 +116,24 @@ class TaskConvert(CalibreTask):
         local_db = db.CalibreDB(expire_on_commit=False, init=True)
         file_path = self.file_path
         book_id = self.book_id
-        format_old_ext = '.' + self.settings['old_book_format'].lower()
-        format_new_ext = '.' + self.settings['new_book_format'].lower()
+        format_old_ext = "." + self.settings["old_book_format"].lower()
+        format_new_ext = "." + self.settings["new_book_format"].lower()
 
         # check to see if destination format already exists - or if book is in database
         # if it does - mark the conversion task as complete and return a success
         # this will allow to send to E-Reader workflow to continue to work
         if os.path.isfile(file_path + format_new_ext) or\
-                local_db.get_book_format(self.book_id, self.settings['new_book_format']):
+                local_db.get_book_format(self.book_id, self.settings["new_book_format"]):
             log.info("Book id %d already converted to %s", book_id, format_new_ext)
             cur_book = local_db.get_book(book_id)
             self.title = cur_book.title
-            self.results['path'] = cur_book.path
-            self.results['title'] = self.title
+            self.results["path"] = cur_book.path
+            self.results["title"] = self.title
             new_format = local_db.session.query(db.Data).filter(db.Data.book == book_id)\
-                .filter(db.Data.format == self.settings['new_book_format'].upper()).one_or_none()
+                .filter(db.Data.format == self.settings["new_book_format"].upper()).one_or_none()
             if not new_format:
                 new_format = db.Data(name=os.path.basename(file_path),
-                                     book_format=self.settings['new_book_format'].upper(),
+                                     book_format=self.settings["new_book_format"].upper(),
                                      book=book_id, uncompressed_size=os.path.getsize(file_path + format_new_ext))
                 try:
                     local_db.session.merge(new_format)
@@ -147,7 +143,7 @@ class TaskConvert(CalibreTask):
                     log.error("Database error: %s", e)
                     local_db.session.close()
                     self._handleError(N_("Oops! Database Error: %(error)s.", error=e))
-                    return
+                    return None
                 self._handleSuccess()
                 local_db.session.close()
                 return os.path.basename(file_path + format_new_ext)
@@ -156,7 +152,7 @@ class TaskConvert(CalibreTask):
                      book_id,
                      format_new_ext)
 
-        if config.config_kepubifypath and format_old_ext == '.epub' and format_new_ext == '.kepub':
+        if config.config_kepubifypath and format_old_ext == ".epub" and format_new_ext == ".kepub":
             check, error_message = self._convert_kepubify(file_path,
                                                           format_old_ext,
                                                           format_new_ext)
@@ -164,7 +160,7 @@ class TaskConvert(CalibreTask):
             # check if calibre converter-executable is existing
             if not os.path.exists(config.config_converterpath):
                 self._handleError(N_("Calibre ebook-convert %(tool)s not found", tool=config.config_converterpath))
-                return
+                return None
             has_cover = local_db.get_book(book_id).has_cover
             check, error_message = self._convert_calibre(file_path, format_old_ext, format_new_ext, has_cover)
 
@@ -172,15 +168,15 @@ class TaskConvert(CalibreTask):
             cur_book = local_db.get_book(book_id)
             if os.path.isfile(file_path + format_new_ext):
                 new_format = local_db.session.query(db.Data).filter(db.Data.book == book_id) \
-                    .filter(db.Data.format == self.settings['new_book_format'].upper()).one_or_none()
+                    .filter(db.Data.format == self.settings["new_book_format"].upper()).one_or_none()
                 if not new_format:
                     new_format = db.Data(name=cur_book.data[0].name,
-                                         book_format=self.settings['new_book_format'].upper(),
+                                         book_format=self.settings["new_book_format"].upper(),
                                          book=book_id, uncompressed_size=os.path.getsize(file_path + format_new_ext))
                     try:
                         local_db.session.merge(new_format)
                         local_db.session.commit()
-                        if self.settings['new_book_format'].upper() in ['KEPUB', 'EPUB', 'EPUB3']:
+                        if self.settings["new_book_format"].upper() in ["KEPUB", "EPUB", "EPUB3"]:
                             ub_session = init_db_thread()
                             remove_synced_book(book_id, True, ub_session)
                             ub_session.close()
@@ -189,23 +185,23 @@ class TaskConvert(CalibreTask):
                         log.error("Database error: %s", e)
                         local_db.session.close()
                         self._handleError(error_message)
-                        return
-                self.results['path'] = cur_book.path
+                        return None
+                self.results["path"] = cur_book.path
                 self.title = cur_book.title
-                self.results['title'] = self.title
+                self.results["title"] = self.title
                 if not config.config_use_google_drive:
                     self._handleSuccess()
                 return os.path.basename(file_path + format_new_ext)
             else:
-                error_message = N_('%(format)s format not found on disk', format=format_new_ext.upper())
+                error_message = N_("%(format)s format not found on disk", format=format_new_ext.upper())
         local_db.session.close()
         log.info("ebook converter failed with error while converting book")
         if not error_message:
-            error_message = N_('Ebook converter failed with unknown error')
+            error_message = N_("Ebook converter failed with unknown error")
         else:
             log.error(error_message)
         self._handleError(error_message)
-        return
+        return None
 
     def _convert_kepubify(self, file_path, format_old_ext, format_new_ext):
         if config.config_embed_metadata and config.config_binariesdir:
@@ -216,7 +212,7 @@ class TaskConvert(CalibreTask):
             filename = file_path + format_old_ext
             temp_file_path = os.path.dirname(file_path)
         quotes = [1, 3]
-        command = [config.config_kepubifypath, filename, '-o', temp_file_path, '-i']
+        command = [config.config_kepubifypath, filename, "-o", temp_file_path, "-i"]
         try:
             p = process_open(command, quotes)
         except OSError as e:
@@ -224,7 +220,7 @@ class TaskConvert(CalibreTask):
         self.progress = 0.01
         while True:
             nextline = p.stdout.readlines()
-            nextline = [x.strip('\n') for x in nextline if x != '\n']
+            nextline = [x.strip("\n") for x in nextline if x != "\n"]
             for line in nextline:
                 log.debug(line)
             if p.poll() is not None:
@@ -253,26 +249,26 @@ class TaskConvert(CalibreTask):
                 calibredb_binarypath = os.path.join(config.config_binariesdir, SUPPORTED_CALIBRE_BINARIES["calibredb"])
                 my_env = os.environ.copy()
                 if config.config_calibre_split:
-                    my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(config.config_calibre_dir, "metadata.db")
+                    my_env["CALIBRE_OVERRIDE_DATABASE_PATH"] = os.path.join(config.config_calibre_dir, "metadata.db")
                     library_path = config.config_calibre_split_dir
                 else:
                     library_path = config.config_calibre_dir
 
-                opf_command = [calibredb_binarypath, 'show_metadata', '--as-opf', str(self.book_id),
-                               '--with-library', library_path]
+                opf_command = [calibredb_binarypath, "show_metadata", "--as-opf", str(self.book_id),
+                               "--with-library", library_path]
                 p = process_open(opf_command, quotes, my_env)
                 p.wait()
                 path_tmp_opf = os.path.join(tmp_dir, "metadata_" + str(uuid4()) + ".opf")
-                with open(path_tmp_opf, 'w') as fd:
+                with open(path_tmp_opf, "w") as fd:
                     copyfileobj(p.stdout, fd)
 
             quotes = [1, 2, 4, 6]
             command = [config.config_converterpath, (file_path + format_old_ext),
                        (file_path + format_new_ext)]
             if config.config_embed_metadata:
-                command.extend(['--from-opf', path_tmp_opf])
+                command.extend(["--from-opf", path_tmp_opf])
             if has_cover:
-                command.extend(['--cover', os.path.join(os.path.dirname(file_path), 'cover.jpg')])
+                command.extend(["--cover", os.path.join(os.path.dirname(file_path), "cover.jpg")])
             quotes_index = 3
             if config.config_calibre:
                 parameters = config.config_calibre.split(" ")
@@ -288,7 +284,7 @@ class TaskConvert(CalibreTask):
         while p.poll() is None:
             nextline = p.stdout.readline()
             if isinstance(nextline, bytes):
-                nextline = nextline.decode('utf-8', errors="ignore").strip('\r\n')
+                nextline = nextline.decode("utf-8", errors="ignore").strip("\r\n")
             if nextline:
                 log.debug(nextline)
             # parse progress string from calibre-converter
@@ -303,9 +299,9 @@ class TaskConvert(CalibreTask):
         calibre_traceback = p.stderr.readlines()
         error_message = ""
         for ele in calibre_traceback:
-            ele = ele.decode('utf-8', errors="ignore").strip('\n')
+            ele = ele.decode("utf-8", errors="ignore").strip("\n")
             log.debug(ele)
-            if not ele.startswith('Traceback') and not ele.startswith('  File'):
+            if not ele.startswith("Traceback") and not ele.startswith("  File"):
                 error_message = N_("Calibre failed with error: %(error)s", error=ele)
         return check, error_message
 
@@ -315,9 +311,9 @@ class TaskConvert(CalibreTask):
 
     def __str__(self):
         if self.ereader_mail:
-            return "Convert {} {}".format(self.book_id, self.ereader_mail)
+            return f"Convert {self.book_id} {self.ereader_mail}"
         else:
-            return "Convert {}".format(self.book_id)
+            return f"Convert {self.book_id}"
 
     @property
     def is_cancellable(self):

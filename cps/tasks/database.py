@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2020 mmonkey
@@ -25,7 +24,7 @@ from cps.services.worker import CalibreTask
 
 
 class TaskReconnectDatabase(CalibreTask):
-    def __init__(self, task_message=N_('Reconnecting Calibre database')):
+    def __init__(self, task_message=N_("Reconnecting Calibre database")):
         super(TaskReconnectDatabase, self).__init__(task_message)
         self.log = logger.create()
         self.listen_address = config.get_config_ipaddress()
@@ -33,14 +32,14 @@ class TaskReconnectDatabase(CalibreTask):
 
 
     def run(self, worker_thread):
-        address = self.listen_address if self.listen_address else 'localhost'
+        address = self.listen_address if self.listen_address else "localhost"
         port = self.listen_port if self.listen_port else 8083
 
         try:
-            urlopen('http://' + address + ':' + str(port) + '/reconnect')
+            urlopen("http://" + address + ":" + str(port) + "/reconnect")
             self._handleSuccess()
         except Exception as ex:
-            self._handleError('Unable to reconnect Calibre database: ' + str(ex))
+            self._handleError("Unable to reconnect Calibre database: " + str(ex))
 
     @property
     def name(self):

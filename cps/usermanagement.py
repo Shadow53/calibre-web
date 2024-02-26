@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2020 OzzieIsaacs
@@ -18,12 +17,12 @@
 
 from functools import wraps
 
+from flask import Response, request
+from flask_login import login_required, login_user
 from sqlalchemy.sql.expression import func
 from werkzeug.security import check_password_hash
-from flask_login import login_required, login_user
-from flask import request, Response
 
-from . import lm, ub, config, constants, services, logger, limiter
+from . import config, constants, limiter, lm, logger, services, ub
 
 log = logger.create()
 
@@ -40,7 +39,7 @@ def requires_basic_auth_if_no_ano(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        if not auth or auth.type != 'basic':
+        if not auth or auth.type != "basic":
             if config.config_anonbrowse != 1:
                 user = load_user_from_reverse_proxy_header(request)
                 if user:
@@ -73,16 +72,16 @@ def _load_user_from_auth_header(username, password):
         login_user(user)
         return user
     else:
-        ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+        ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
         log.warning('OPDS Login failed for user "%s" IP-address: %s', username, ip_address)
         return None
 
 
 def _authenticate():
     return Response(
-        'Could not verify your access level for that URL.\n'
-        'You have to login with proper credentials', 401,
-        {'WWW-Authenticate': 'Basic realm="Login Required"'})
+        "Could not verify your access level for that URL.\n"
+        "You have to login with proper credentials", 401,
+        {"WWW-Authenticate": 'Basic realm="Login Required"'})
 
 
 def _fetch_user_by_name(username):

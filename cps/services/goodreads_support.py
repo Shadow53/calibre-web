@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs, pwr
@@ -29,7 +28,6 @@ except ImportError: Levenshtein = False
 
 from .. import logger
 
-
 log = logger.create()
 _client = None  # type: GoodreadsClient
 
@@ -56,7 +54,7 @@ def connect(key=None, secret=None, enabled=True):
 
 def get_author_info(author_name):
     now = time.time()
-    author_info = _AUTHORS_CACHE.get(author_name, None)
+    author_info = _AUTHORS_CACHE.get(author_name)
     if author_info:
         if now < author_info._timestamp + _CACHE_TIMEOUT:
             return author_info
@@ -65,14 +63,14 @@ def get_author_info(author_name):
 
     if not _client:
         log.warning("failed to get a Goodreads client")
-        return
+        return None
 
     try:
         author_info = _client.find_author(author_name=author_name)
     except Exception as ex:
         # Skip goodreads, if site is down/inaccessible
-        log.warning('Goodreads website is down/inaccessible? %s', ex.__str__())
-        return
+        log.warning("Goodreads website is down/inaccessible? %s", ex.__str__())
+        return None
 
     if author_info:
         author_info._timestamp = now
@@ -100,12 +98,11 @@ def get_other_books(author_info, library_books=None):
         if isinstance(book.gid, int):
             if book.gid in identifiers:
                 continue
-        else:
-            if book.gid["#text"] in identifiers:
-                continue
+        elif book.gid["#text"] in identifiers:
+            continue
 
         if Levenshtein and library_titles:
-            goodreads_title = book._book_dict['title_without_series']
+            goodreads_title = book._book_dict["title_without_series"]
             if any(Levenshtein.ratio(goodreads_title, title) > 0.7 for title in library_titles):
                 continue
 

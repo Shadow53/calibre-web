@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2018-2022 OzzieIsaacs
@@ -18,13 +17,13 @@
 
 import os
 
-from . import logger, isoLanguages, cover
+from . import cover, isoLanguages, logger
 from .constants import BookMeta
 
 try:
     from wand.image import Image
     use_IM = True
-except (ImportError, RuntimeError) as e:
+except (ImportError, RuntimeError):
     use_IM = False
 
 log = logger.create()
@@ -35,35 +34,35 @@ try:
     try:
         from comicapi import __version__ as comic_version
     except ImportError:
-        comic_version = ''
+        comic_version = ""
     try:
-        from comicapi.comicarchive import load_archive_plugins
         import comicapi.utils
+        from comicapi.comicarchive import load_archive_plugins
         comicapi.utils.add_rar_paths()
     except ImportError:
         load_archive_plugins = None
 except (ImportError, LookupError) as e:
-    log.debug('Cannot import comicapi, extracting comic metadata will not work: %s', e)
-    import zipfile
+    log.debug("Cannot import comicapi, extracting comic metadata will not work: %s", e)
     import tarfile
+    import zipfile
     try:
         import rarfile
         use_rarfile = True
     except (ImportError, SyntaxError) as e:
-        log.debug('Cannot import rarfile, extracting cover files from rar files will not work: %s', e)
+        log.debug("Cannot import rarfile, extracting cover files from rar files will not work: %s", e)
         use_rarfile = False
     try:
         import py7zr
         use_7zip = True
     except (ImportError, SyntaxError) as e:
-        log.debug('Cannot import py7zr, extracting cover files from CB7 files will not work: %s', e)
+        log.debug("Cannot import py7zr, extracting cover files from CB7 files will not work: %s", e)
         use_7zip = False
     use_comic_meta = False
 
 
 def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_executable):
     cover_data = extension = None
-    if original_file_extension.upper() == '.CBZ':
+    if original_file_extension.upper() == ".CBZ":
         cf = zipfile.ZipFile(tmp_file_name)
         for name in cf.namelist():
             ext = os.path.splitext(name)
@@ -72,7 +71,7 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
                 if extension in cover.COVER_EXTENSIONS:
                     cover_data = cf.read(name)
                     break
-    elif original_file_extension.upper() == '.CBT':
+    elif original_file_extension.upper() == ".CBT":
         cf = tarfile.TarFile(tmp_file_name)
         for name in cf.getnames():
             ext = os.path.splitext(name)
@@ -81,7 +80,7 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
                 if extension in cover.COVER_EXTENSIONS:
                     cover_data = cf.extractfile(name).read()
                     break
-    elif original_file_extension.upper() == '.CBR' and use_rarfile:
+    elif original_file_extension.upper() == ".CBR" and use_rarfile:
         try:
             rarfile.UNRAR_TOOL = rar_executable
             cf = rarfile.RarFile(tmp_file_name)
@@ -93,8 +92,8 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
                         cover_data = cf.read([name])
                         break
         except Exception as ex:
-            log.error('Rarfile failed with error: {}'.format(ex))
-    elif original_file_extension.upper() == '.CB7' and use_7zip:
+            log.error(f"Rarfile failed with error: {ex}")
+    elif original_file_extension.upper() == ".CB7" and use_7zip:
         cf = py7zr.SevenZipFile(tmp_file_name)
         for name in cf.getnames():
             ext = os.path.splitext(name)
@@ -104,7 +103,7 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
                     try:
                         cover_data = cf.read(name)[name].read()
                     except (py7zr.Bad7zFile, OSError) as ex:
-                        log.error('7Zip file failed with error: {}'.format(ex))
+                        log.error(f"7Zip file failed with error: {ex}")
                     break
     return cover_data, extension
 
@@ -161,7 +160,7 @@ def get_comic_info(tmp_file_path, original_file_name, original_file_extension, r
                 extension=original_file_extension,
                 title=loaded_metadata.title or original_file_name,
                 author=" & ".join([credit["person"]
-                                   for credit in loaded_metadata.credits if credit["role"] == "Writer"]) or 'Unknown',
+                                   for credit in loaded_metadata.credits if credit["role"] == "Writer"]) or "Unknown",
                 cover=_extract_cover(tmp_file_path, original_file_extension, rar_executable),
                 description=loaded_metadata.comments or "",
                 tags="",
@@ -176,7 +175,7 @@ def get_comic_info(tmp_file_path, original_file_name, original_file_extension, r
         file_path=tmp_file_path,
         extension=original_file_extension,
         title=original_file_name,
-        author='Unknown',
+        author="Unknown",
         cover=_extract_cover(tmp_file_path, original_file_extension, rar_executable),
         description="",
         tags="",

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2021 OzzieIsaacs
@@ -17,15 +16,14 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 # Google Books api document: https://developers.google.com/books/docs/v1/using
+from datetime import datetime
 from typing import Dict, List, Optional
 from urllib.parse import quote
-from datetime import datetime
 
 import requests
-
 from cps import logger
 from cps.isoLanguages import get_lang3, get_language_name
-from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
+from cps.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
 
 log = logger.create()
 
@@ -42,7 +40,7 @@ class Google(Metadata):
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"
     ) -> Optional[List[MetaRecord]]:
-        val = list()    
+        val = list()
         if self.active:
 
             title_tokens = list(self.get_title_tokens(query, strip_joiners=False))
@@ -108,13 +106,13 @@ class Google(Metadata):
     def _parse_cover(result: Dict, generic_cover: str) -> str:
         if result["volumeInfo"].get("imageLinks"):
             cover_url = result["volumeInfo"]["imageLinks"]["thumbnail"]
-            
+
             # strip curl in cover
             cover_url = cover_url.replace("&edge=curl", "")
-            
+
             # request 800x900 cover image (higher resolution)
             cover_url += "&fife=w800-h900"
-            
+
             return cover_url.replace("http://", "https://")
         return generic_cover
 

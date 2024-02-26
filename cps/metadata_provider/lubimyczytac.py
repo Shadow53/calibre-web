@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2021 OzzieIsaacs
 #
@@ -22,14 +21,13 @@ from typing import List, Optional, Tuple, Union
 from urllib.parse import quote
 
 import requests
+from cps import logger
+from cps.isoLanguages import get_language_name
+from cps.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
 from dateutil import parser
 from html2text import HTML2Text
 from lxml.html import HtmlElement, fromstring, tostring
 from markdown2 import Markdown
-
-from cps import logger
-from cps.isoLanguages import get_language_name
-from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
 
 log = logger.create()
 
@@ -135,7 +133,7 @@ class LubimyCzytac(Metadata):
 
     def _prepare_query(self, title: str) -> str:
         query = ""
-        characters_to_remove = "\?()\/"
+        characters_to_remove = r"\?()\/"
         pattern = "[" + characters_to_remove + "]"
         title = re.sub(pattern, "", title)
         title = title.replace("_", " ")
@@ -192,7 +190,7 @@ class LubimyCzytacParser:
                 continue
             matches.append(
                 MetaRecord(
-                    id=book_url.replace(f"/ksiazka/", "").split("/")[0],
+                    id=book_url.replace("/ksiazka/", "").split("/")[0],
                     title=title,
                     authors=[strip_accents(author) for author in authors],
                     url=LubimyCzytac.BASE_URL + book_url,

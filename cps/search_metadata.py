@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2021 OzzieIsaacs
@@ -24,13 +23,13 @@ import os
 import sys
 
 from flask import Blueprint, Response, request, url_for
-from flask_login import current_user
-from flask_login import login_required
 from flask_babel import get_locale
+from flask_login import current_user, login_required
 from sqlalchemy.exc import InvalidRequestError, OperationalError
 from sqlalchemy.orm.attributes import flag_modified
 
 from cps.services.Metadata import Metadata
+
 from . import constants, logger, ub, web_server
 
 # current_milli_time = lambda: int(round(time() * 1000))
@@ -57,9 +56,9 @@ for f in modules:
             importlib.import_module("cps.metadata_provider." + a)
             new_list.append(a)
         except (IndentationError, SyntaxError) as e:
-            log.error("Syntax error for metadata source: {} - {}".format(a, e))
+            log.error(f"Syntax error for metadata source: {a} - {e}")
         except ImportError as e:
-            log.debug("Import error for metadata source: {} - {}".format(a, e))
+            log.debug(f"Import error for metadata source: {a} - {e}")
 
 
 def list_classes(provider_list):
@@ -108,7 +107,7 @@ def metadata_change_active_provider(prov_name):
             pass
         ub.session.commit()
     except (InvalidRequestError, OperationalError):
-        log.error("Invalid request received: {}".format(request))
+        log.error(f"Invalid request received: {request}")
         return "Invalid request", 400
     if "initial" in new_state and prov_name:
         data = []

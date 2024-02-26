@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2020 pwr
@@ -16,17 +15,17 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import threading
 import abc
-import uuid
+import threading
 import time
+import uuid
 
 try:
     import queue
 except ImportError:
     import Queue as queue
-from datetime import datetime
 from collections import namedtuple
+from datetime import datetime
 
 from cps import logger
 
@@ -43,22 +42,20 @@ STAT_CANCELLED = 5
 # Only retain this many tasks in dequeued list
 TASK_CLEANUP_TRIGGER = 20
 
-QueuedTask = namedtuple('QueuedTask', 'num, user, added, task, hidden')
+QueuedTask = namedtuple("QueuedTask", "num, user, added, task, hidden")
 
 
 def _get_main_thread():
     for t in threading.enumerate():
-        if t.__class__.__name__ == '_MainThread':
+        if t.__class__.__name__ == "_MainThread":
             return t
     raise Exception("main thread not found?!")
 
 
 class ImprovedQueue(queue.Queue):
     def to_list(self):
+        """Returns a copy of all items in the queue without removing them.
         """
-        Returns a copy of all items in the queue without removing them.
-        """
-
         with self.mutex:
             return list(self.queue)
 
@@ -87,8 +84,8 @@ class WorkerThread(threading.Thread):
     def add(cls, user, task, hidden=False):
         ins = cls.get_instance()
         ins.num += 1
-        username = user if user is not None else 'System'
-        log.debug("Add Task for user: {} - {}".format(username, task))
+        username = user if user is not None else "System"
+        log.debug(f"Add Task for user: {username} - {task}")
         ins.queue.put(QueuedTask(
             num=ins.num,
             user=username,

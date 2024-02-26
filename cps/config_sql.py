@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2019 OzzieIsaacs, pwr
@@ -16,17 +15,17 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import json
 import os
 import sys
-import json
+from base64 import urlsafe_b64decode
 
-from sqlalchemy import Column, String, Integer, SmallInteger, Boolean, BLOB, JSON
+import cryptography.exceptions
+from cryptography.fernet import Fernet
+from sqlalchemy import BLOB, JSON, Boolean, Column, Integer, SmallInteger, String, exists
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql.expression import text
-from sqlalchemy import exists
-from cryptography.fernet import Fernet
-import cryptography.exceptions
-from base64 import urlsafe_b64decode
+
 try:
     # Compatibility with sqlalchemy 2.0
     from sqlalchemy.orm import declarative_base
@@ -36,13 +35,12 @@ except ImportError:
 from . import constants, logger
 from .subproc_wrapper import process_wait
 
-
 log = logger.create()
 _Base = declarative_base()
 
 
 class _Flask_Settings(_Base):
-    __tablename__ = 'flask_settings'
+    __tablename__ = "flask_settings"
 
     id = Column(Integer, primary_key=True)
     flask_session_key = Column(BLOB, default=b"")
@@ -54,16 +52,16 @@ class _Flask_Settings(_Base):
 # Baseclass for representing settings in app.db with email server settings and Calibre database settings
 # (application settings)
 class _Settings(_Base):
-    __tablename__ = 'settings'
+    __tablename__ = "settings"
 
     id = Column(Integer, primary_key=True)
     mail_server = Column(String, default=constants.DEFAULT_MAIL_SERVER)
     mail_port = Column(Integer, default=25)
     mail_use_ssl = Column(SmallInteger, default=0)
-    mail_login = Column(String, default='mail@example.com')
+    mail_login = Column(String, default="mail@example.com")
     mail_password_e = Column(String)
     mail_password = Column(String)
-    mail_from = Column(String, default='automailer <mail@example.com>')
+    mail_from = Column(String, default="automailer <mail@example.com>")
     mail_size = Column(Integer, default=25*1024*1024)
     mail_server_type = Column(SmallInteger, default=0)
     mail_gmail_token = Column(JSON, default={})
@@ -76,13 +74,13 @@ class _Settings(_Base):
     config_external_port = Column(Integer, default=constants.DEFAULT_PORT)
     config_certfile = Column(String)
     config_keyfile = Column(String)
-    config_trustedhosts = Column(String, default='')
-    config_calibre_web_title = Column(String, default='Calibre-Web')
+    config_trustedhosts = Column(String, default="")
+    config_calibre_web_title = Column(String, default="Calibre-Web")
     config_books_per_page = Column(Integer, default=60)
     config_random_books = Column(Integer, default=4)
     config_authors_max = Column(Integer, default=0)
     config_read_column = Column(Integer, default=0)
-    config_title_regex = Column(String, default=r'^(A|The|An|Der|Die|Das|Den|Ein|Eine|Einen|Dem|Des|Einem|Eines|Le|La|Les|L\'|Un|Une)\s+')    
+    config_title_regex = Column(String, default=r"^(A|The|An|Der|Die|Das|Den|Ein|Eine|Einen|Dem|Des|Einem|Eines|Le|La|Les|L\'|Un|Une)\s+")
     config_theme = Column(Integer, default=0)
 
     config_log_level = Column(SmallInteger, default=logger.DEFAULT_LOG_LEVEL)
@@ -121,30 +119,30 @@ class _Settings(_Base):
 
     config_kobo_proxy = Column(Boolean, default=False)
 
-    config_ldap_provider_url = Column(String, default='example.org')
+    config_ldap_provider_url = Column(String, default="example.org")
     config_ldap_port = Column(SmallInteger, default=389)
     config_ldap_authentication = Column(SmallInteger, default=constants.LDAP_AUTH_SIMPLE)
-    config_ldap_serv_username = Column(String, default='cn=admin,dc=example,dc=org')
+    config_ldap_serv_username = Column(String, default="cn=admin,dc=example,dc=org")
     config_ldap_serv_password_e = Column(String)
     config_ldap_serv_password = Column(String)
     config_ldap_encryption = Column(SmallInteger, default=0)
     config_ldap_cacert_path = Column(String, default="")
     config_ldap_cert_path = Column(String, default="")
     config_ldap_key_path = Column(String, default="")
-    config_ldap_dn = Column(String, default='dc=example,dc=org')
-    config_ldap_user_object = Column(String, default='uid=%s')
-    config_ldap_member_user_object = Column(String, default='')
+    config_ldap_dn = Column(String, default="dc=example,dc=org")
+    config_ldap_user_object = Column(String, default="uid=%s")
+    config_ldap_member_user_object = Column(String, default="")
     config_ldap_openldap = Column(Boolean, default=True)
-    config_ldap_group_object_filter = Column(String, default='(&(objectclass=posixGroup)(cn=%s))')
-    config_ldap_group_members_field = Column(String, default='memberUid')
-    config_ldap_group_name = Column(String, default='calibreweb')
+    config_ldap_group_object_filter = Column(String, default="(&(objectclass=posixGroup)(cn=%s))")
+    config_ldap_group_members_field = Column(String, default="memberUid")
+    config_ldap_group_name = Column(String, default="calibreweb")
 
     config_kepubifypath = Column(String, default=None)
     config_converterpath = Column(String, default=None)
     config_binariesdir = Column(String, default=None)
     config_calibre = Column(String)
     config_rarfile_location = Column(String, default=None)
-    config_upload_formats = Column(String, default=','.join(constants.EXTENSIONS_UPLOAD))
+    config_upload_formats = Column(String, default=",".join(constants.EXTENSIONS_UPLOAD))
     config_unicode_filename = Column(Boolean, default=False)
     config_embed_metadata = Column(Boolean, default=True)
 
@@ -174,7 +172,7 @@ class _Settings(_Base):
 
 
 # Class holds all application specific settings in calibre-web
-class ConfigSQL(object):
+class ConfigSQL:
     # pylint: disable=no-member
     def __init__(self):
         self.__dict__["dirty"] = list()
@@ -281,14 +279,14 @@ class ConfigSQL(object):
         return logger.get_level_name(self.config_log_level)
 
     def get_mail_settings(self):
-        return {k: v for k, v in self.__dict__.items() if k.startswith('mail_')}
+        return {k: v for k, v in self.__dict__.items() if k.startswith("mail_")}
 
     def get_mail_server_configured(self):
         return bool((self.mail_server != constants.DEFAULT_MAIL_SERVER and self.mail_server_type == 0)
                     or (self.mail_gmail_token != {} and self.mail_server_type == 1))
 
     def get_scheduled_task_settings(self):
-        return {k: v for k, v in self.__dict__.items() if k.startswith('schedule_')}
+        return {k: v for k, v in self.__dict__.items() if k.startswith("schedule_")}
 
     def set_from_dictionary(self, dictionary, field, convertor=None, default=None, encode=None):
         """Possibly updates a field of this object.
@@ -320,7 +318,7 @@ class ConfigSQL(object):
     def to_dict(self):
         storage = {}
         for k, v in self.__dict__.items():
-            if k[0] != '_' and not k.endswith("_e") and not k == "cli":
+            if k[0] != "_" and not k.endswith("_e") and k != "cli":
                 storage[k] = v
         return storage
 
@@ -328,7 +326,7 @@ class ConfigSQL(object):
         """Load all configuration values from the underlying storage."""
         s = self._read_from_storage()  # type: _Settings
         for k, v in s.__dict__.items():
-            if k[0] != '_':
+            if k[0] != "_":
                 if v is None:
                     # if the storage column has no value, apply the (possible) default
                     column = s.__class__.__dict__.get(k)
@@ -344,12 +342,12 @@ class ConfigSQL(object):
 
         have_metadata_db = bool(self.config_calibre_dir)
         if have_metadata_db:
-            db_file = os.path.join(self.config_calibre_dir, 'metadata.db')
+            db_file = os.path.join(self.config_calibre_dir, "metadata.db")
             have_metadata_db = os.path.isfile(db_file)
         self.db_configured = have_metadata_db
-        constants.EXTENSIONS_UPLOAD = [x.lstrip().rstrip().lower() for x in self.config_upload_formats.split(',')]
+        constants.EXTENSIONS_UPLOAD = [x.lstrip().rstrip().lower() for x in self.config_upload_formats.split(",")]
         from . import cli_param
-        if os.environ.get('FLASK_DEBUG'):
+        if os.environ.get("FLASK_DEBUG"):
             logfile = logger.setup(logger.LOG_TO_STDOUT, logger.logging.DEBUG)
         else:
             # pylint: disable=access-member-before-definition
@@ -363,7 +361,7 @@ class ConfigSQL(object):
             try:
                 self._session.commit()
             except OperationalError as e:
-                log.error('Database error: %s', e)
+                log.error("Database error: %s", e)
                 self._session.rollback()
         self.__dict__["dirty"] = list()
 
@@ -372,7 +370,7 @@ class ConfigSQL(object):
         s = self._read_from_storage()  # type: _Settings
 
         for k in self.dirty:
-            if k[0] == '_':
+            if k[0] == "_":
                 continue
             if hasattr(s, k):
                 if k.endswith("_e"):
@@ -385,7 +383,7 @@ class ConfigSQL(object):
         try:
             self._session.commit()
         except OperationalError as e:
-            log.error('Database error: %s', e)
+            log.error("Database error: %s", e)
             self._session.rollback()
         self.load()
 
@@ -445,18 +443,17 @@ def _migrate_table(session, orm_class, secret_key=None):
     changed = False
 
     for column_name, column in orm_class.__dict__.items():
-        if column_name[0] != '_':
+        if column_name[0] != "_":
             try:
                 session.query(column).first()
             except OperationalError as err:
                 log.debug("%s: %s", column_name, err.args[0])
                 if column.default is None:
                     column_default = ""
+                elif isinstance(column.default.arg, bool):
+                    column_default = f"DEFAULT {int(column.default.arg)}"
                 else:
-                    if isinstance(column.default.arg, bool):
-                        column_default = "DEFAULT {}".format(int(column.default.arg))
-                    else:
-                        column_default = "DEFAULT `{}`".format(column.default.arg)
+                    column_default = f"DEFAULT `{column.default.arg}`"
                 if isinstance(column.type, JSON):
                     column_type = "JSON"
                 else:
@@ -469,7 +466,7 @@ def _migrate_table(session, orm_class, secret_key=None):
                 session.execute(alter_table)
                 changed = True
             except json.decoder.JSONDecodeError as e:
-                log.error("Database corrupt column: {}".format(column_name))
+                log.error(f"Database corrupt column: {column_name}")
                 log.debug(e)
 
     if changed:
@@ -490,11 +487,11 @@ def autodetect_calibre_binaries():
     for element in calibre_path:
         supported_binary_paths = [os.path.join(element, binary) for binary in constants.SUPPORTED_CALIBRE_BINARIES.values()]
         if all(os.path.isfile(binary_path) and os.access(binary_path, os.X_OK) for binary_path in supported_binary_paths):
-            values = [process_wait([binary_path, "--version"], pattern='\(calibre (.*)\)') for binary_path in supported_binary_paths]
+            values = [process_wait([binary_path, "--version"], pattern=r"\(calibre (.*)\)") for binary_path in supported_binary_paths]
             if all(values):
                 version = values[0].group(1)
                 log.debug("calibre version %s", version)
-                return element 
+                return element
     return ""
 
 

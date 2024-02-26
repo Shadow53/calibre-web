@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2022 xlivevil
@@ -20,11 +19,10 @@ from concurrent import futures
 from typing import List, Optional
 
 import requests
-from html2text import HTML2Text
-from lxml import etree
-
 from cps import logger
 from cps.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
+from html2text import HTML2Text
+from lxml import etree
 
 log = logger.create()
 
@@ -64,8 +62,8 @@ class Douban(Metadata):
 
     session = requests.Session()
     session.headers = {
-        'user-agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.56',
+        "user-agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.56",
     }
 
     def search(self,
@@ -86,7 +84,7 @@ class Douban(Metadata):
                 return []
 
             with futures.ThreadPoolExecutor(
-                    max_workers=5, thread_name_prefix='douban') as executor:
+                    max_workers=5, thread_name_prefix="douban") as executor:
 
                 fut = [
                     executor.submit(self._parse_single_book, book_id,
@@ -207,7 +205,7 @@ class Douban(Metadata):
                 else:
                     match.publisher = element.getnext().text
             elif self.SUBTITLE_PATTERN.search(text):
-                match.title = f'{match.title}:{element.tail.strip()}'
+                match.title = f"{match.title}:{element.tail.strip()}"
             elif self.PUBLISHED_DATE_PATTERN.search(text):
                 match.publishedDate = self._clean_date(element.tail.strip())
             elif self.SERIES_PATTERN.search(text):
@@ -218,8 +216,7 @@ class Douban(Metadata):
         return match
 
     def _clean_date(self, date: str) -> str:
-        """
-        Clean up the date string to be in the format YYYY-MM-DD
+        """Clean up the date string to be in the format YYYY-MM-DD
 
         Examples of possible patterns:
             '2014-7-16', '1988年4月', '1995-04', '2021-8', '2020-12-1', '1996年',
@@ -253,7 +250,7 @@ class Douban(Metadata):
         tags = []
         if criteria := self.CRITERIA_PATTERN.search(text):
             tags.extend(
-                item.replace('7:', '') for item in criteria.group().split('|')
-                if item.startswith('7:'))
+                item.replace("7:", "") for item in criteria.group().split("|")
+                if item.startswith("7:"))
 
         return tags

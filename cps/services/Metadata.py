@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2021 OzzieIsaacs
@@ -38,7 +37,7 @@ class MetaRecord:
     authors: List[str]
     url: str
     source: MetaSourceInfo
-    cover: str = os.path.join(constants.STATIC_DIR, 'generic_cover.jpg')
+    cover: str = os.path.join(constants.STATIC_DIR, "generic_cover.jpg")
     description: Optional[str] = ""
     series: Optional[str] = None
     series_index: Optional[Union[int, float]] = 0
@@ -70,8 +69,7 @@ class Metadata:
     def get_title_tokens(
         title: str, strip_joiners: bool = True
     ) -> Generator[str, None, None]:
-        """
-        Taken from calibre source code
+        """Taken from calibre source code
         It's a simplified (cut out what is unnecessary) version of
         https://github.com/kovidgoyal/calibre/blob/99d85b97918625d172227c8ffb7e0c71794966c0/
         src/calibre/ebooks/metadata/sources/base.py#L363-L367

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2019 pwr
@@ -16,15 +15,14 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import sys
 import inspect
 import logging
+import os
+import sys
 from logging import Formatter, StreamHandler
 from logging.handlers import RotatingFileHandler
 
 from .constants import CONFIG_DIR as _CONFIG_DIR
-
 
 ACCESS_FORMATTER_GEVENT  = Formatter("%(message)s")
 ACCESS_FORMATTER_TORNADO = Formatter("[%(asctime)s] %(message)s")
@@ -33,8 +31,8 @@ FORMATTER           = Formatter("[%(asctime)s] %(levelname)5s {%(name)s:%(lineno
 DEFAULT_LOG_LEVEL   = logging.INFO
 DEFAULT_LOG_FILE    = os.path.join(_CONFIG_DIR, "calibre-web.log")
 DEFAULT_ACCESS_LOG  = os.path.join(_CONFIG_DIR, "access.log")
-LOG_TO_STDERR       = '/dev/stderr'
-LOG_TO_STDOUT       = '/dev/stdout'
+LOG_TO_STDERR       = "/dev/stderr"
+LOG_TO_STDOUT       = "/dev/stdout"
 
 logging.addLevelName(logging.WARNING, "WARN")
 logging.addLevelName(logging.CRITICAL, "CRIT")
@@ -48,11 +46,10 @@ class _Logger(logging.Logger):
                 self.exception(message, stacklevel=stacklevel, *args, **kwargs)
             else:
                 self.error(message, stacklevel=stacklevel, *args, **kwargs)
+        elif is_debug_enabled():
+            self.exception(message, stack_info=True, *args, **kwargs)
         else:
-            if is_debug_enabled():
-                self.exception(message, stack_info=True, *args, **kwargs)
-            else:
-                self.error(message, *args, **kwargs)
+            self.error(message, *args, **kwargs)
 
     def debug_no_auth(self, message, *args, **kwargs):
         message = message.strip("\r\n")
@@ -68,7 +65,7 @@ def get(name=None):
 
 def create():
     parent_frame = inspect.stack(0)[1]
-    if hasattr(parent_frame, 'frame'):
+    if hasattr(parent_frame, "frame"):
         parent_frame = parent_frame.frame
     else:
         parent_frame = parent_frame[0]
@@ -116,8 +113,7 @@ def get_accesslogfile(log_file):
 
 
 def setup(log_file, log_level=None):
-    """
-    Configure the logging output.
+    """Configure the logging output.
     May be called multiple times.
     """
     log_level = log_level or DEFAULT_LOG_LEVEL
@@ -125,7 +121,7 @@ def setup(log_file, log_level=None):
     logging.getLogger(__package__).setLevel(log_level)
 
     r = logging.root
-    if log_level >= logging.INFO or os.environ.get('FLASK_DEBUG'):
+    if log_level >= logging.INFO or os.environ.get("FLASK_DEBUG"):
         # avoid spamming the log with debug messages from libraries
         r.setLevel(log_level)
 
@@ -136,7 +132,7 @@ def setup(log_file, log_level=None):
     previous_handler = r.handlers[0] if r.handlers else None
     if previous_handler:
         # if the log_file has not changed, don't create a new handler
-        if getattr(previous_handler, 'baseFilename', None) == log_file:
+        if getattr(previous_handler, "baseFilename", None) == log_file:
             return "" if log_file == DEFAULT_LOG_FILE else log_file
         logging.debug("logging to %s level %s", log_file, r.level)
 
@@ -149,11 +145,11 @@ def setup(log_file, log_level=None):
             file_handler.baseFilename = log_file
     else:
         try:
-            file_handler = RotatingFileHandler(log_file, maxBytes=100000, backupCount=2, encoding='utf-8')
-        except (IOError, PermissionError):
+            file_handler = RotatingFileHandler(log_file, maxBytes=100000, backupCount=2, encoding="utf-8")
+        except (OSError, PermissionError):
             if log_file == DEFAULT_LOG_FILE:
                 raise
-            file_handler = RotatingFileHandler(DEFAULT_LOG_FILE, maxBytes=100000, backupCount=2, encoding='utf-8')
+            file_handler = RotatingFileHandler(DEFAULT_LOG_FILE, maxBytes=100000, backupCount=2, encoding="utf-8")
             log_file = ""
     file_handler.setFormatter(FORMATTER)
 
@@ -166,8 +162,7 @@ def setup(log_file, log_level=None):
 
 
 def create_access_log(log_file, log_name, formatter):
-    """
-    One-time configuration for the web server's access log.
+    """One-time configuration for the web server's access log.
     """
     log_file = _absolute_log_file(log_file, DEFAULT_ACCESS_LOG)
     logging.debug("access log: %s", log_file)
@@ -176,11 +171,11 @@ def create_access_log(log_file, log_name, formatter):
     access_log.propagate = False
     access_log.setLevel(logging.INFO)
     try:
-        file_handler = RotatingFileHandler(log_file, maxBytes=50000, backupCount=2, encoding='utf-8')
-    except (IOError, PermissionError):
+        file_handler = RotatingFileHandler(log_file, maxBytes=50000, backupCount=2, encoding="utf-8")
+    except (OSError, PermissionError):
         if log_file == DEFAULT_ACCESS_LOG:
             raise
-        file_handler = RotatingFileHandler(DEFAULT_ACCESS_LOG, maxBytes=50000, backupCount=2, encoding='utf-8')
+        file_handler = RotatingFileHandler(DEFAULT_ACCESS_LOG, maxBytes=50000, backupCount=2, encoding="utf-8")
         log_file = ""
 
     file_handler.setFormatter(formatter)
@@ -189,16 +184,16 @@ def create_access_log(log_file, log_name, formatter):
 
 
 # Enable logging of smtp lib debug output
-class StderrLogger(object):
+class StderrLogger:
     def __init__(self, name=None):
         self.log = get(name or self.__class__.__name__)
-        self.buffer = ''
+        self.buffer = ""
 
     def write(self, message):
         try:
-            if message == '\n':
-                self.log.debug(self.buffer.replace('\n', '\\n'))
-                self.buffer = ''
+            if message == "\n":
+                self.log.debug(self.buffer.replace("\n", "\\n"))
+                self.buffer = ""
             else:
                 self.buffer += message
         except Exception:
@@ -206,4 +201,4 @@ class StderrLogger(object):
 
 
 # default configuration, before application settings are applied
-setup(LOG_TO_STDERR, logging.DEBUG if os.environ.get('FLASK_DEBUG') else DEFAULT_LOG_LEVEL)
+setup(LOG_TO_STDERR, logging.DEBUG if os.environ.get("FLASK_DEBUG") else DEFAULT_LOG_LEVEL)

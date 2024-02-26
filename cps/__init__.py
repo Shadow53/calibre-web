@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs, cervinko, jkrehm, bodybybuddha, ok11,
@@ -21,25 +20,21 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 __package__ = "cps"
 
-import sys
-import os
 import mimetypes
+import os
+import sys
 
 from flask import Flask
-from .MyLoginManager import MyLoginManager
 from flask_principal import Principal
 
-from . import logger
+from . import cache_buster, config_sql, db, logger, ub
+from .babel import babel, get_locale
 from .cli import CliParameter
-from .constants import CONFIG_DIR
+from .dep_check import dependency_check
+from .MyLoginManager import MyLoginManager
 from .reverseproxy import ReverseProxied
 from .server import WebServer
-from .dep_check import dependency_check
 from .updater import Updater
-from .babel import babel, get_locale
-from . import config_sql
-from . import cache_buster
-from . import ub, db
 
 try:
     from flask_limiter import Limiter
@@ -54,34 +49,34 @@ except ImportError:
 
 
 mimetypes.init()
-mimetypes.add_type('application/xhtml+xml', '.xhtml')
-mimetypes.add_type('application/epub+zip', '.epub')
-mimetypes.add_type('application/fb2+zip', '.fb2')
-mimetypes.add_type('application/x-mobipocket-ebook', '.mobi')
-mimetypes.add_type('application/x-mobipocket-ebook', '.prc')
-mimetypes.add_type('application/vnd.amazon.ebook', '.azw')
-mimetypes.add_type('application/x-mobi8-ebook', '.azw3')
-mimetypes.add_type('application/x-cbr', '.cbr')
-mimetypes.add_type('application/x-cbz', '.cbz')
-mimetypes.add_type('application/x-cbt', '.cbt')
-mimetypes.add_type('application/x-cb7', '.cb7')
-mimetypes.add_type('image/vnd.djv', '.djv')
-mimetypes.add_type('application/mpeg', '.mpeg')
-mimetypes.add_type('application/mpeg', '.mp3')
-mimetypes.add_type('application/mp4', '.m4a')
-mimetypes.add_type('application/mp4', '.m4b')
-mimetypes.add_type('application/ogg', '.ogg')
-mimetypes.add_type('application/ogg', '.oga')
-mimetypes.add_type('text/css', '.css')
-mimetypes.add_type('text/javascript; charset=UTF-8', '.js')
+mimetypes.add_type("application/xhtml+xml", ".xhtml")
+mimetypes.add_type("application/epub+zip", ".epub")
+mimetypes.add_type("application/fb2+zip", ".fb2")
+mimetypes.add_type("application/x-mobipocket-ebook", ".mobi")
+mimetypes.add_type("application/x-mobipocket-ebook", ".prc")
+mimetypes.add_type("application/vnd.amazon.ebook", ".azw")
+mimetypes.add_type("application/x-mobi8-ebook", ".azw3")
+mimetypes.add_type("application/x-cbr", ".cbr")
+mimetypes.add_type("application/x-cbz", ".cbz")
+mimetypes.add_type("application/x-cbt", ".cbt")
+mimetypes.add_type("application/x-cb7", ".cb7")
+mimetypes.add_type("image/vnd.djv", ".djv")
+mimetypes.add_type("application/mpeg", ".mpeg")
+mimetypes.add_type("application/mpeg", ".mp3")
+mimetypes.add_type("application/mp4", ".m4a")
+mimetypes.add_type("application/mp4", ".m4b")
+mimetypes.add_type("application/ogg", ".ogg")
+mimetypes.add_type("application/ogg", ".oga")
+mimetypes.add_type("text/css", ".css")
+mimetypes.add_type("text/javascript; charset=UTF-8", ".js")
 
 log = logger.create()
 
 app = Flask(__name__)
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE='Lax',
-    REMEMBER_COOKIE_SAMESITE='Lax',  # will be available in flask-login 0.5.1 earliest
+    SESSION_COOKIE_SAMESITE="Lax",
+    REMEMBER_COOKIE_SAMESITE="Lax",  # will be available in flask-login 0.5.1 earliest
     WTF_CSRF_SSL_STRICT=False
 )
 
@@ -134,11 +129,11 @@ def create_app():
         sys.exit(8)
     if sys.version_info < (3, 0):
         log.info(
-            '*** Python2 is EOL since end of 2019, this version of Calibre-Web is no longer supporting Python2, '
-            'please update your installation to Python3 ***')
+            "*** Python2 is EOL since end of 2019, this version of Calibre-Web is no longer supporting Python2, "
+            "please update your installation to Python3 ***")
         print(
-            '*** Python2 is EOL since end of 2019, this version of Calibre-Web is no longer supporting Python2, '
-            'please update your installation to Python3 ***')
+            "*** Python2 is EOL since end of 2019, this version of Calibre-Web is no longer supporting Python2, "
+            "please update your installation to Python3 ***")
         web_server.stop(True)
         sys.exit(5)
     if not wtf_present:
@@ -149,9 +144,9 @@ def create_app():
         web_server.stop(True)
         sys.exit(7)
 
-    lm.login_view = 'web.login'
+    lm.login_view = "web.login"
     lm.anonymous_user = ub.Anonymous
-    lm.session_protection = 'strong' if config.config_session == 1 else "basic"
+    lm.session_protection = "strong" if config.config_session == 1 else "basic"
 
     db.CalibreDB.update_config(config)
     db.CalibreDB.setup_db(config.config_calibre_dir, cli_param.settings_path)
@@ -167,17 +162,17 @@ def create_app():
     for res in dependency_check() + dependency_check(True):
         log.info('*** "{}" version does not meet the requirements. '
                  'Should: {}, Found: {}, please consider installing required version ***'
-                 .format(res['name'],
-                         res['target'],
-                         res['found']))
+                 .format(res["name"],
+                         res["target"],
+                         res["found"]))
     app.wsgi_app = ReverseProxied(app.wsgi_app)
 
-    if os.environ.get('FLASK_DEBUG'):
+    if os.environ.get("FLASK_DEBUG"):
         cache_buster.init_cache_busting(app)
-    log.info('Starting Calibre Web...')
+    log.info("Starting Calibre Web...")
     Principal(app)
     lm.init_app(app)
-    app.secret_key = os.getenv('SECRET_KEY', config_sql.get_flask_session_key(ub.session))
+    app.secret_key = os.getenv("SECRET_KEY", config_sql.get_flask_session_key(ub.session))
 
     web_server.init_app(app, config)
     if hasattr(babel, "localeselector"):

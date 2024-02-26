@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2019 pwr
@@ -16,27 +15,27 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from .iso_language_names import LANGUAGE_NAMES as _LANGUAGE_NAMES
 from . import logger
+from .iso_language_names import LANGUAGE_NAMES as _LANGUAGE_NAMES
 
 log = logger.create()
 
 
 try:
-    from iso639 import languages, __version__
+    from iso639 import __version__, languages
     get = languages.get
 except ImportError:
     from pycountry import languages as pyc_languages
     try:
         import pkg_resources
-        __version__ = pkg_resources.get_distribution('pycountry').version + ' (PyCountry)'
+        __version__ = pkg_resources.get_distribution("pycountry").version + " (PyCountry)"
         del pkg_resources
     except (ImportError, Exception):
         __version__ = "? (PyCountry)"
 
     def _copy_fields(l):
-        l.part1 = getattr(l, 'alpha_2', None)
-        l.part3 = getattr(l, 'alpha_3', None)
+        l.part1 = getattr(l, "alpha_2", None)
+        l.part3 = getattr(l, "alpha_3", None)
         return l
 
     def get(name=None, part1=None, part3=None):
@@ -56,7 +55,7 @@ def get_language_name(locale, lang_code):
     try:
         return get_language_names(locale)[lang_code]
     except KeyError:
-        log.error('Missing translation for language name: {}'.format(lang_code))
+        log.error(f"Missing translation for language name: {lang_code}")
         return "Unknown"
 
 

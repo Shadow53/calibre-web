@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2020 OzzieIsaacs
@@ -20,20 +19,20 @@ import traceback
 
 from flask import render_template
 from werkzeug.exceptions import default_exceptions
+
 try:
     from werkzeug.exceptions import FailedDependency
 except ImportError:
     from werkzeug.exceptions import UnprocessableEntity as FailedDependency
 
-from . import config, app, logger, services
-
+from . import app, config, logger, services
 
 log = logger.create()
 
 # custom error page
 def error_http(error):
-    return render_template('http_error.html',
-                           error_code="Error {0}".format(error.code),
+    return render_template("http_error.html",
+                           error_code=f"Error {error.code}",
                            error_name=error.name,
                            issue=False,
                            unconfigured=not config.db_configured,
@@ -42,10 +41,10 @@ def error_http(error):
 
 
 def internal_error(error):
-    return render_template('http_error.html',
+    return render_template("http_error.html",
                            error_code="500 Internal Server Error",
-                           error_name='The server encountered an internal error and was unable to complete your '
-                                      'request. There is an error in the application.',
+                           error_name="The server encountered an internal error and was unable to complete your "
+                                      "request. There is an error in the application.",
                            issue=True,
                            unconfigured=False,
                            error_stack=traceback.format_exc().split("\n"),
@@ -66,6 +65,6 @@ def init_errorhandler():
         @app.errorhandler(services.ldap.LDAPException)
         # pylint: disable=unused-variable
         def handle_exception(e):
-            log.debug('LDAP server not accessible while trying to login to opds feed')
+            log.debug("LDAP server not accessible while trying to login to opds feed")
             return error_http(FailedDependency())
 

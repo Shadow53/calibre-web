@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2020 monkey
@@ -17,20 +16,22 @@
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import os
+
+from flask_babel import lazy_gettext as N_
 from lxml import etree
 
 from cps import config, db, gdriveutils, logger
 from cps.services.worker import CalibreTask
-from flask_babel import lazy_gettext as N_
 
 from ..epub_helper import create_new_metadata_backup
+
 
 class TaskBackupMetadata(CalibreTask):
 
     def __init__(self, export_language="en",
                  translated_title="Cover",
                  set_dirty=False,
-                 task_message=N_('Backing up Metadata')):
+                 task_message=N_("Backing up Metadata")):
         super(TaskBackupMetadata, self).__init__(task_message)
         self.log = logger.create()
         self.calibre_db = db.CalibreDB(expire_on_commit=False, init=True)
@@ -52,8 +53,8 @@ class TaskBackupMetadata(CalibreTask):
             self.calibre_db.session.commit()
             self._handleSuccess()
         except Exception as ex:
-            self.log.debug('Error adding book for backup: ' + str(ex))
-            self._handleError('Error adding book for backup: ' + str(ex))
+            self.log.debug("Error adding book for backup: " + str(ex))
+            self._handleError("Error adding book for backup: " + str(ex))
             self.calibre_db.session.rollback()
         self.calibre_db.session.close()
 
@@ -74,16 +75,16 @@ class TaskBackupMetadata(CalibreTask):
                 if book:
                     self.open_metadata(book, custom_columns)
                 else:
-                    self.log.error("Book {} not found in database".format(backup.book))
+                    self.log.error(f"Book {backup.book} not found in database")
                 i += 1
                 self.progress = (1.0 / count) * i
             self._handleSuccess()
             self.calibre_db.session.close()
 
         except Exception as ex:
-            b = "NaN" if not hasattr(book, 'id') else book.id
-            self.log.debug('Error creating metadata backup for book {}: '.format(b) + str(ex))
-            self._handleError('Error creating metadata backup: ' + str(ex))
+            b = "NaN" if not hasattr(book, "id") else book.id
+            self.log.debug(f"Error creating metadata backup for book {b}: " + str(ex))
+            self._handleError("Error creating metadata backup: " + str(ex))
             self.calibre_db.session.rollback()
             self.calibre_db.session.close()
 
@@ -92,24 +93,24 @@ class TaskBackupMetadata(CalibreTask):
         package = create_new_metadata_backup(book, custom_columns, self.export_language, self.translated_title)
         if config.config_use_google_drive:
             if not gdriveutils.is_gdrive_ready():
-                raise Exception('Google Drive is configured but not ready')
+                raise Exception("Google Drive is configured but not ready")
 
-            gdriveutils.uploadFileToEbooksFolder(os.path.join(book.path, 'metadata.opf').replace("\\", "/"),
+            gdriveutils.uploadFileToEbooksFolder(os.path.join(book.path, "metadata.opf").replace("\\", "/"),
                                                  etree.tostring(package,
                                                                 xml_declaration=True,
-                                                                encoding='utf-8',
-                                                                pretty_print=True).decode('utf-8'),
+                                                                encoding="utf-8",
+                                                                pretty_print=True).decode("utf-8"),
                                                  True)
         else:
-            # ToDo: Handle book folder not found or not readable
-            book_metadata_filepath = os.path.join(config.get_book_path(), book.path, 'metadata.opf')
+            # TODO: Handle book folder not found or not readable
+            book_metadata_filepath = os.path.join(config.get_book_path(), book.path, "metadata.opf")
             # prepare finalize everything and output
             doc = etree.ElementTree(package)
             try:
-                with open(book_metadata_filepath, 'wb') as f:
-                    doc.write(f, xml_declaration=True, encoding='utf-8', pretty_print=True)
+                with open(book_metadata_filepath, "wb") as f:
+                    doc.write(f, xml_declaration=True, encoding="utf-8", pretty_print=True)
             except Exception as ex:
-                raise Exception('Writing Metadata failed with error: {} '.format(ex))
+                raise Exception(f"Writing Metadata failed with error: {ex} ")
 
     @property
     def name(self):

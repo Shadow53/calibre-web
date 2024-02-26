@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2016-2019 jkrehm andy29485 OzzieIsaacs
@@ -19,45 +18,42 @@
 # Inspired by https://github.com/ChrisTM/Flask-CacheBust
 # Uses query strings so CSS font files are found without having to resort to absolute URLs
 
-import os
 import hashlib
+import os
 
 from . import logger
-
 
 log = logger.create()
 
 
 def init_cache_busting(app):
-    """
-    Configure `app` to so that `url_for` adds a unique query string to URLs generated
+    """Configure `app` to so that `url_for` adds a unique query string to URLs generated
     for the `'static'` endpoint.
 
     This allows setting long cache expiration values on static resources
     because whenever the resource changes, so does its URL.
     """
-
-    static_folder = os.path.join(app.static_folder, '')  # path to the static file folder, with trailing slash
+    static_folder = os.path.join(app.static_folder, "")  # path to the static file folder, with trailing slash
 
     hash_table = {}  # map of file hashes
 
-    log.debug('Computing cache-busting values...')
+    log.debug("Computing cache-busting values...")
     # compute file hashes
     for dirpath, __, filenames in os.walk(static_folder):
         for filename in filenames:
             # compute version component
             rooted_filename = os.path.join(dirpath, filename)
             try:
-                with open(rooted_filename, 'rb') as f:
+                with open(rooted_filename, "rb") as f:
                     file_hash = hashlib.md5(f.read()).hexdigest()[:7]  # nosec
                 # save version to tables
                 file_path = rooted_filename.replace(static_folder, "")
                 file_path = file_path.replace("\\", "/")  # Convert Windows path to web path
                 hash_table[file_path] = file_hash
             except PermissionError:
-                log.error("No permission to access {} file.".format(rooted_filename))
+                log.error(f"No permission to access {rooted_filename} file.")
 
-    log.debug('Finished computing cache-busting values')
+    log.debug("Finished computing cache-busting values")
 
     def bust_filename(file_name):
         return hash_table.get(file_name, "")
@@ -68,8 +64,7 @@ def init_cache_busting(app):
     @app.url_defaults
     # pylint: disable=unused-variable
     def reverse_to_cache_busted_url(endpoint, values):
-        """
-        Make `url_for` produce busted filenames when using the 'static' endpoint.
+        """Make `url_for` produce busted filenames when using the 'static' endpoint.
         """
         if endpoint == "static":
             file_hash = bust_filename(values["filename"])
@@ -77,8 +72,7 @@ def init_cache_busting(app):
                 values["q"] = file_hash
 
     def debusting_static_view(filename):
-        """
-        Serve a request for a static file having a busted name.
+        """Serve a request for a static file having a busted name.
         """
         return original_static_view(filename=unbust_filename(filename))
 

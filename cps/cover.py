@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2022 OzzieIsaacs
@@ -21,27 +20,27 @@ import os
 try:
     from wand.image import Image
     use_IM = True
-except (ImportError, RuntimeError) as e:
+except (ImportError, RuntimeError):
     use_IM = False
 
 
-NO_JPEG_EXTENSIONS = ['.png', '.webp', '.bmp']
-COVER_EXTENSIONS = ['.png', '.webp', '.bmp', '.jpg', '.jpeg']
+NO_JPEG_EXTENSIONS = [".png", ".webp", ".bmp"]
+COVER_EXTENSIONS = [".png", ".webp", ".bmp", ".jpg", ".jpeg"]
 
 
 def cover_processing(tmp_file_name, img, extension):
-    tmp_cover_name = os.path.join(os.path.dirname(tmp_file_name), 'cover.jpg')
+    tmp_cover_name = os.path.join(os.path.dirname(tmp_file_name), "cover.jpg")
     if extension in NO_JPEG_EXTENSIONS:
         if use_IM:
             with Image(blob=img) as imgc:
-                imgc.format = 'jpeg'
-                imgc.transform_colorspace('rgb')
+                imgc.format = "jpeg"
+                imgc.transform_colorspace("rgb")
                 imgc.save(filename=tmp_cover_name)
                 return tmp_cover_name
         else:
             return None
     if img:
-        with open(tmp_cover_name, 'wb') as f:
+        with open(tmp_cover_name, "wb") as f:
             f.write(img)
         return tmp_cover_name
     else:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2020 mmonkey
@@ -19,34 +18,35 @@
 import datetime
 
 from . import config, constants
-from .services.background_scheduler import BackgroundScheduler, CronTrigger, use_APScheduler
-from .tasks.database import TaskReconnectDatabase
-from .tasks.tempFolder import TaskDeleteTempFolder
-from .tasks.thumbnail import TaskGenerateCoverThumbnails, TaskGenerateSeriesThumbnails, TaskClearCoverThumbnailCache
+from .services.background_scheduler import BackgroundScheduler, CronTrigger
 from .services.worker import WorkerThread
+from .tasks.database import TaskReconnectDatabase
 from .tasks.metadata_backup import TaskBackupMetadata
+from .tasks.tempFolder import TaskDeleteTempFolder
+from .tasks.thumbnail import TaskClearCoverThumbnailCache, TaskGenerateCoverThumbnails, TaskGenerateSeriesThumbnails
+
 
 def get_scheduled_tasks(reconnect=True):
     tasks = list()
     # Reconnect Calibre database (metadata.db) based on config.schedule_reconnect
     if reconnect:
-        tasks.append([lambda: TaskReconnectDatabase(), 'reconnect', False])
+        tasks.append([lambda: TaskReconnectDatabase(), "reconnect", False])
 
     # Delete temp folder
-    tasks.append([lambda: TaskDeleteTempFolder(), 'delete temp', True])
+    tasks.append([lambda: TaskDeleteTempFolder(), "delete temp", True])
 
     # Generate metadata.opf file for each changed book
     if config.schedule_metadata_backup:
-        tasks.append([lambda: TaskBackupMetadata("en"), 'backup metadata', False])
+        tasks.append([lambda: TaskBackupMetadata("en"), "backup metadata", False])
 
     # Generate all missing book cover thumbnails
     if config.schedule_generate_book_covers:
-        tasks.append([lambda: TaskClearCoverThumbnailCache(0), 'delete superfluous book covers', True])
-        tasks.append([lambda: TaskGenerateCoverThumbnails(), 'generate book covers', False])
+        tasks.append([lambda: TaskClearCoverThumbnailCache(0), "delete superfluous book covers", True])
+        tasks.append([lambda: TaskGenerateCoverThumbnails(), "generate book covers", False])
 
     # Generate all missing series thumbnails
     if config.schedule_generate_series_covers:
-        tasks.append([lambda: TaskGenerateSeriesThumbnails(), 'generate book covers', False])
+        tasks.append([lambda: TaskGenerateSeriesThumbnails(), "generate book covers", False])
 
     return tasks
 
@@ -88,10 +88,10 @@ def register_startup_tasks():
 
         # Run scheduled tasks immediately for development and testing
         # Ignore tasks that should currently be running, as these will be added when registering scheduled tasks
-        if constants.APP_MODE in ['development', 'test'] and not should_task_be_running(start, duration):
+        if constants.APP_MODE in ["development", "test"] and not should_task_be_running(start, duration):
             scheduler.schedule_tasks_immediately(tasks=get_scheduled_tasks(False))
         else:
-            scheduler.schedule_tasks_immediately(tasks=[[lambda: TaskDeleteTempFolder(), 'delete temp', True]])
+            scheduler.schedule_tasks_immediately(tasks=[[lambda: TaskDeleteTempFolder(), "delete temp", True]])
 
 
 def should_task_be_running(start, duration):

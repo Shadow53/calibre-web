@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2018 OzzieIsaacs
@@ -16,49 +15,49 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-import os
 import argparse
+import os
 import socket
+import sys
 
 from .constants import CONFIG_DIR as _CONFIG_DIR
-from .constants import STABLE_VERSION as _STABLE_VERSION
+from .constants import DEFAULT_GDRIVE_FILE, DEFAULT_SETTINGS_FILE
 from .constants import NIGHTLY_VERSION as _NIGHTLY_VERSION
-from .constants import DEFAULT_SETTINGS_FILE, DEFAULT_GDRIVE_FILE
+from .constants import STABLE_VERSION as _STABLE_VERSION
 
 
 def version_info():
-    if _NIGHTLY_VERSION[1].startswith('$Format'):
-        return "Calibre-Web version: %s - unknown git-clone" % _STABLE_VERSION['version'].replace("b", " Beta")
-    return "Calibre-Web version: %s -%s" % (_STABLE_VERSION['version'].replace("b", " Beta"), _NIGHTLY_VERSION[1])
+    if _NIGHTLY_VERSION[1].startswith("$Format"):
+        return "Calibre-Web version: %s - unknown git-clone" % _STABLE_VERSION["version"].replace("b", " Beta")
+    return "Calibre-Web version: %s -%s" % (_STABLE_VERSION["version"].replace("b", " Beta"), _NIGHTLY_VERSION[1])
 
 
-class CliParameter(object):
+class CliParameter:
 
     def init(self):
         self.arg_parser()
 
     def arg_parser(self):
-        parser = argparse.ArgumentParser(description='Calibre Web is a web app providing '
-                                                     'a interface for browsing, reading and downloading eBooks\n',
-                                         prog='cps.py')
-        parser.add_argument('-p', metavar='path', help='path and name to settings db, e.g. /opt/cw.db')
-        parser.add_argument('-g', metavar='path', help='path and name to gdrive db, e.g. /opt/gd.db')
-        parser.add_argument('-c', metavar='path', help='path and name to SSL certfile, e.g. /opt/test.cert, '
-                                                       'works only in combination with keyfile')
-        parser.add_argument('-k', metavar='path', help='path and name to SSL keyfile, e.g. /opt/test.key, '
-                                                       'works only in combination with certfile')
-        parser.add_argument('-o', metavar='path', help='path and name Calibre-Web logfile')
-        parser.add_argument('-v', '--version', action='version', help='Shows version number and exits Calibre-Web',
+        parser = argparse.ArgumentParser(description="Calibre Web is a web app providing "
+                                                     "a interface for browsing, reading and downloading eBooks\n",
+                                         prog="cps.py")
+        parser.add_argument("-p", metavar="path", help="path and name to settings db, e.g. /opt/cw.db")
+        parser.add_argument("-g", metavar="path", help="path and name to gdrive db, e.g. /opt/gd.db")
+        parser.add_argument("-c", metavar="path", help="path and name to SSL certfile, e.g. /opt/test.cert, "
+                                                       "works only in combination with keyfile")
+        parser.add_argument("-k", metavar="path", help="path and name to SSL keyfile, e.g. /opt/test.key, "
+                                                       "works only in combination with certfile")
+        parser.add_argument("-o", metavar="path", help="path and name Calibre-Web logfile")
+        parser.add_argument("-v", "--version", action="version", help="Shows version number and exits Calibre-Web",
                             version=version_info())
-        parser.add_argument('-i', metavar='ip-address', help='Server IP-Address to listen')
-        parser.add_argument('-s', metavar='user:pass',
-                            help='Sets specific username to new password and exits Calibre-Web')
-        parser.add_argument('-f', action='store_true', help='Flag is depreciated and will be removed in next version')
-        parser.add_argument('-l', action='store_true', help='Allow loading covers from localhost')
-        parser.add_argument('-d', action='store_true', help='Dry run of updater to check file permissions in advance '
-                                                            'and exits Calibre-Web')
-        parser.add_argument('-r', action='store_true', help='Enable public database reconnect route under /reconnect')
+        parser.add_argument("-i", metavar="ip-address", help="Server IP-Address to listen")
+        parser.add_argument("-s", metavar="user:pass",
+                            help="Sets specific username to new password and exits Calibre-Web")
+        parser.add_argument("-f", action="store_true", help="Flag is depreciated and will be removed in next version")
+        parser.add_argument("-l", action="store_true", help="Allow loading covers from localhost")
+        parser.add_argument("-d", action="store_true", help="Dry run of updater to check file permissions in advance "
+                                                            "and exits Calibre-Web")
+        parser.add_argument("-r", action="store_true", help="Enable public database reconnect route under /reconnect")
         args = parser.parse_args()
 
         self.logpath = args.o or ""
@@ -109,8 +108,8 @@ class CliParameter(object):
         if self.ip_address:
             try:
                 # try to parse the given ip address with socket
-                if hasattr(socket, 'inet_pton'):
-                    if ':' in self.ip_address:
+                if hasattr(socket, "inet_pton"):
+                    if ":" in self.ip_address:
                         socket.inet_pton(socket.AF_INET6, self.ip_address)
                     else:
                         socket.inet_pton(socket.AF_INET, self.ip_address)
@@ -118,8 +117,8 @@ class CliParameter(object):
                     # on Windows python < 3.4, inet_pton is not available
                     # inet_atom only handles IPv4 addresses
                     socket.inet_aton(self.ip_address)
-            except socket.error as err:
-                print(self.ip_address, ':', err)
+            except OSError as err:
+                print(self.ip_address, ":", err)
                 sys.exit(1)
 
         # handle and check user password argument

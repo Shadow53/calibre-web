@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2022 quarz12
@@ -17,20 +16,21 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import concurrent.futures
-import requests
-from bs4 import BeautifulSoup as BS  # requirement
 from typing import List, Optional
 
+import requests
+from bs4 import BeautifulSoup as BS  # requirement
+
 try:
-    import cchardet #optional for better speed
+    import cchardet  #optional for better speed
 except ImportError:
     pass
-from cps import logger
-from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
-import cps.logger as logger
-
 #from time import time
 from operator import itemgetter
+
+from cps import logger
+from cps.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
+
 log = logger.create()
 
 log = logger.create()
@@ -39,16 +39,16 @@ log = logger.create()
 class Amazon(Metadata):
     __name__ = "Amazon"
     __id__ = "amazon"
-    headers = {'upgrade-insecure-requests': '1',
-               'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36',
-               'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-               'sec-gpc': '1',
-               'sec-fetch-site': 'none',
-               'sec-fetch-mode': 'navigate',
-               'sec-fetch-user': '?1',
-               'sec-fetch-dest': 'document',
-               'accept-encoding': 'gzip, deflate, br',
-               'accept-language': 'en-US,en;q=0.9'}
+    headers = {"upgrade-insecure-requests": "1",
+               "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36",
+               "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+               "sec-gpc": "1",
+               "sec-fetch-site": "none",
+               "sec-fetch-mode": "navigate",
+               "sec-fetch-user": "?1",
+               "sec-fetch-dest": "document",
+               "accept-encoding": "gzip, deflate, br",
+               "accept-language": "en-US,en;q=0.9"}
     session = requests.Session()
     session.headers=headers
 
@@ -131,7 +131,7 @@ class Amazon(Metadata):
             except Exception as e:
                 log.warning(e)
                 return []
-            soup = BS(results.text, 'html.parser')
+            soup = BS(results.text, "html.parser")
             links_list = [next(filter(lambda i: "digital-text" in i["href"], x.findAll("a")))["href"] for x in
                           soup.findAll("div", attrs={"data-component-type": "s-search-result"})]
             with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:

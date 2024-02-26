@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs
@@ -16,10 +15,10 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import sys
 import os
-import subprocess
 import re
+import subprocess
+
 
 def process_open(command, quotes=(), env=None, sout=subprocess.PIPE, serr=subprocess.PIPE, newlines=True):
     # Linux py2.7 encode as list without quotes no empty element for parameters
@@ -27,7 +26,7 @@ def process_open(command, quotes=(), env=None, sout=subprocess.PIPE, serr=subpro
     # windows py2.7 encode as string with quotes empty element for parameters is okay
     # windows py 3.x no encode and as string with quotes empty element for parameters is okay
     # separate handling for windows and linux
-    if os.name == 'nt':
+    if os.name == "nt":
         for key, element in enumerate(command):
             if key in quotes:
                 command[key] = '"' + element + '"'
@@ -40,13 +39,13 @@ def process_open(command, quotes=(), env=None, sout=subprocess.PIPE, serr=subpro
 
 def process_wait(command, serr=subprocess.PIPE, pattern=""):
     # Run command, wait for process to terminate, and return an iterator over lines of its output.
-    newlines = os.name != 'nt'
+    newlines = os.name != "nt"
     ret_val = ""
     p = process_open(command, serr=serr, newlines=newlines)
     p.wait()
     for line in p.stdout.readlines():
         if isinstance(line, bytes):
-            line = line.decode('utf-8', errors="ignore")
+            line = line.decode("utf-8", errors="ignore")
         match = re.search(pattern, line, re.IGNORECASE)
         if match and ret_val == "":
             ret_val = match

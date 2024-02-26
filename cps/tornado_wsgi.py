@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2022 OzzieIsaacs
@@ -16,20 +15,17 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from tornado.wsgi import WSGIContainer
-import tornado
-
-from tornado import escape
-from tornado import httputil
-from tornado.ioloop import IOLoop
-
-from typing import List, Tuple, Optional, Callable, Any, Dict, Text
-from types import TracebackType
 import typing
+from types import TracebackType
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
+import tornado
+from tornado import escape, httputil
+from tornado.ioloop import IOLoop
+from tornado.wsgi import WSGIContainer
 
 if typing.TYPE_CHECKING:
-    from typing import Type  # noqa: F401
-    from wsgiref.types import WSGIApplication as WSGIAppType  # noqa: F4
+    from typing import Type
 
 class MyWSGIContainer(WSGIContainer):
 
@@ -90,11 +86,11 @@ class MyWSGIContainer(WSGIContainer):
             IOLoop.current().spawn_callback(self.handle_request, request)
 
 
-    def environ(self, request: httputil.HTTPServerRequest) -> Dict[Text, Any]:
+    def environ(self, request: httputil.HTTPServerRequest) -> Dict[str, Any]:
         try:
             environ = WSGIContainer.environ(self, request)
-        except TypeError as e:
+        except TypeError:
             environ = WSGIContainer.environ(request)
-        environ['RAW_URI'] = request.path
+        environ["RAW_URI"] = request.path
         return environ
 

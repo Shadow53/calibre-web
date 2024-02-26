@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2020 mmonkey
@@ -16,7 +15,6 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import atexit
 
 from .. import logger
 from .worker import WorkerThread
@@ -26,10 +24,10 @@ try:
     from apscheduler.triggers.cron import CronTrigger
     from apscheduler.triggers.date import DateTrigger
     use_APScheduler = True
-except (ImportError, RuntimeError) as e:
+except (ImportError, RuntimeError):
     use_APScheduler = False
     log = logger.create()
-    log.info('APScheduler not found. Unable to schedule tasks.')
+    log.info("APScheduler not found. Unable to schedule tasks.")
 
 
 class BackgroundScheduler:

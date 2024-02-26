@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2021 OzzieIsaacs
@@ -29,7 +28,7 @@ except FakeUserAgentError:
     raise ImportError("No module named 'scholarly'")
 
 from cps import logger
-from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
+from cps.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
 
 log = logger.create()
 

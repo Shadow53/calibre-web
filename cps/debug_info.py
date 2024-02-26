@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2012-2019 cervinko, idalin, SiphonSquirrel, ouzklcn, akushsky,
@@ -17,18 +16,17 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import shutil
 import glob
-import zipfile
 import json
+import os
+import shutil
+import zipfile
 from io import BytesIO
+
+from flask import __version__, send_file
 from flask_babel.speaklater import LazyString
 
-import os
-
-from flask import send_file, __version__
-
-from . import logger, config
+from . import config, logger
 from .about import collect_stats
 
 log = logger.create()
@@ -41,13 +39,13 @@ class lazyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 def assemble_logfiles(file_name):
-    log_list = sorted(glob.glob(file_name + '*'), reverse=True)
+    log_list = sorted(glob.glob(file_name + "*"), reverse=True)
     wfd = BytesIO()
     for f in log_list:
-        with open(f, 'rb') as fd:
+        with open(f, "rb") as fd:
             shutil.copyfileobj(fd, wfd)
     wfd.seek(0)
-    if int(__version__.split('.')[0]) < 2:
+    if int(__version__.split(".")[0]) < 2:
         return send_file(wfd,
                          as_attachment=True,
                          attachment_filename=os.path.basename(file_name))
@@ -58,19 +56,19 @@ def assemble_logfiles(file_name):
 
 
 def send_debug():
-    file_list = glob.glob(logger.get_logfile(config.config_logfile) + '*')
-    file_list.extend(glob.glob(logger.get_accesslogfile(config.config_access_logfile) + '*'))
+    file_list = glob.glob(logger.get_logfile(config.config_logfile) + "*")
+    file_list.extend(glob.glob(logger.get_accesslogfile(config.config_access_logfile) + "*"))
     for element in [logger.LOG_TO_STDOUT, logger.LOG_TO_STDERR]:
         if element in file_list:
             file_list.remove(element)
     memory_zip = BytesIO()
-    with zipfile.ZipFile(memory_zip, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
-        zf.writestr('settings.txt', json.dumps(config.to_dict(), sort_keys=True, indent=2))
-        zf.writestr('libs.txt', json.dumps(collect_stats(), sort_keys=True, indent=2, cls=lazyEncoder))
+    with zipfile.ZipFile(memory_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        zf.writestr("settings.txt", json.dumps(config.to_dict(), sort_keys=True, indent=2))
+        zf.writestr("libs.txt", json.dumps(collect_stats(), sort_keys=True, indent=2, cls=lazyEncoder))
         for fp in file_list:
             zf.write(fp, os.path.basename(fp))
     memory_zip.seek(0)
-    if int(__version__.split('.')[0]) < 2:
+    if int(__version__.split(".")[0]) < 2:
         return send_file(memory_zip,
                          as_attachment=True,
                          attachment_filename="Calibre-Web-debug-pack.zip")

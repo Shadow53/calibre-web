@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  Flask License
 #
@@ -37,7 +36,8 @@
 # Inspired by http://flask.pocoo.org/snippets/35/
 
 
-class ReverseProxied(object):
+class ReverseProxied:
+
     """Wrap the application in this middleware and configure the
     front-end server to add these headers, to let you quietly bind
     this to a URL other than / and to an HTTP scheme that is
@@ -61,20 +61,20 @@ class ReverseProxied(object):
 
     def __call__(self, environ, start_response):
         self.proxied = False
-        script_name = environ.get('HTTP_X_SCRIPT_NAME', '')
+        script_name = environ.get("HTTP_X_SCRIPT_NAME", "")
         if script_name:
             self.proxied = True
-            environ['SCRIPT_NAME'] = script_name
-            path_info = environ.get('PATH_INFO', '')
+            environ["SCRIPT_NAME"] = script_name
+            path_info = environ.get("PATH_INFO", "")
             if path_info and path_info.startswith(script_name):
-                environ['PATH_INFO'] = path_info[len(script_name):]
+                environ["PATH_INFO"] = path_info[len(script_name):]
 
-        scheme = environ.get('HTTP_X_SCHEME', '')
+        scheme = environ.get("HTTP_X_SCHEME", "")
         if scheme:
-            environ['wsgi.url_scheme'] = scheme
-        servr = environ.get('HTTP_X_FORWARDED_HOST', '')
+            environ["wsgi.url_scheme"] = scheme
+        servr = environ.get("HTTP_X_FORWARDED_HOST", "")
         if servr:
-            environ['HTTP_HOST'] = servr
+            environ["HTTP_HOST"] = servr
             self.proxied = True
         return self.app(environ, start_response)
 

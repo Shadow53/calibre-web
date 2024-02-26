@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2023 OzzieIsaacs
@@ -16,17 +15,18 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from tempfile import gettempdir
 import os
 import shutil
+from tempfile import gettempdir
+
 
 def get_temp_dir():
-    tmp_dir = os.path.join(gettempdir(), 'calibre_web')
+    tmp_dir = os.path.join(gettempdir(), "calibre_web")
     if not os.path.isdir(tmp_dir):
         os.mkdir(tmp_dir)
     return tmp_dir
 
 
 def del_temp_dir():
-    tmp_dir = os.path.join(gettempdir(), 'calibre_web')
+    tmp_dir = os.path.join(gettempdir(), "calibre_web")
     shutil.rmtree(tmp_dir)

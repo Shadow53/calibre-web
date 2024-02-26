@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2012-2022 OzzieIsaacs
@@ -18,10 +17,11 @@
 
 import sys
 
+from flask import request
+
 from . import create_app, limiter
 from .jinjia import jinjia
 from .remotelogin import remotelogin
-from flask import request
 
 
 def request_username():
@@ -30,21 +30,22 @@ def request_username():
 def main():
     app = create_app()
 
-    from .web import web
-    from .opds import opds
-    from .admin import admi
-    from .gdrive import gdrive
-    from .editbooks import editbook
     from .about import about
+    from .admin import admi
+    from .editbooks import editbook
+    from .error_handler import init_errorhandler
+    from .gdrive import gdrive
+    from .opds import opds
     from .search import search
     from .search_metadata import meta
     from .shelf import shelf
     from .tasks_status import tasks
-    from .error_handler import init_errorhandler
+    from .web import web
     try:
-        from .kobo import kobo, get_kobo_activated
-        from .kobo_auth import kobo_auth
         from flask_limiter.util import get_remote_address
+
+        from .kobo import get_kobo_activated, kobo
+        from .kobo_auth import kobo_auth
         kobo_available = get_kobo_activated()
     except (ImportError, AttributeError):  # Catch also error for not installed flask-WTF (missing csrf decorator)
         kobo_available = False

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs, cervinko, jkrehm, bodybybuddha, ok11,
@@ -24,16 +23,15 @@ import json
 from datetime import datetime
 from functools import wraps
 
-from flask import Blueprint, request, make_response, abort, url_for, flash, redirect
-from flask_login import login_required, current_user, login_user
+from flask import Blueprint, abort, flash, make_response, redirect, request, url_for
 from flask_babel import gettext as _
+from flask_login import current_user, login_required, login_user
 from sqlalchemy.sql.expression import true
 
 from . import config, logger, ub
 from .render_template import render_title_template
 
-
-remotelogin = Blueprint('remotelogin', __name__)
+remotelogin = Blueprint("remotelogin", __name__)
 log = logger.create()
 
 
@@ -42,8 +40,8 @@ def remote_login_required(f):
     def inner(*args, **kwargs):
         if config.config_remote_login:
             return f(*args, **kwargs)
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            data = {'status': 'error', 'message': 'Forbidden'}
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            data = {"status": "error", "message": "Forbidden"}
             response = make_response(json.dumps(data, ensure_ascii=False))
             response.headers["Content-Type"] = "application/json; charset=utf-8"
             return response, 403
@@ -51,19 +49,19 @@ def remote_login_required(f):
 
     return inner
 
-@remotelogin.route('/remote/login')
+@remotelogin.route("/remote/login")
 @remote_login_required
 def remote_login():
     auth_token = ub.RemoteAuthToken()
     ub.session.add(auth_token)
     ub.session_commit()
-    verify_url = url_for('remotelogin.verify_token', token=auth_token.auth_token, _external=true)
+    verify_url = url_for("remotelogin.verify_token", token=auth_token.auth_token, _external=true)
     log.debug("Remot Login request with token: %s", auth_token.auth_token)
-    return render_title_template('remote_login.html', title=_("Login"), token=auth_token.auth_token,
+    return render_title_template("remote_login.html", title=_("Login"), token=auth_token.auth_token,
                                  verify_url=verify_url, page="remotelogin")
 
 
-@remotelogin.route('/verify/<token>')
+@remotelogin.route("/verify/<token>")
 @remote_login_required
 @login_required
 def verify_token(token):
@@ -73,7 +71,7 @@ def verify_token(token):
     if auth_token is None:
         flash(_("Token not found"), category="error")
         log.error("Remote Login token not found")
-        return redirect(url_for('web.index'))
+        return redirect(url_for("web.index"))
 
     # Token expired
     elif datetime.now() > auth_token.expiration:
@@ -82,7 +80,7 @@ def verify_token(token):
 
         flash(_("Token has expired"), category="error")
         log.error("Remote Login token expired")
-        return redirect(url_for('web.index'))
+        return redirect(url_for("web.index"))
 
     # Update token with user information
     auth_token.user_id = current_user.id
@@ -91,41 +89,41 @@ def verify_token(token):
 
     flash(_("Success! Please return to your device"), category="success")
     log.debug("Remote Login token for userid %s verified", auth_token.user_id)
-    return redirect(url_for('web.index'))
+    return redirect(url_for("web.index"))
 
 
-@remotelogin.route('/ajax/verify_token', methods=['POST'])
+@remotelogin.route("/ajax/verify_token", methods=["POST"])
 @remote_login_required
 def token_verified():
-    token = request.form['token']
+    token = request.form["token"]
     auth_token = ub.session.query(ub.RemoteAuthToken).filter(ub.RemoteAuthToken.auth_token == token).first()
 
     data = {}
 
     # Token not found
     if auth_token is None:
-        data['status'] = 'error'
-        data['message'] = _("Token not found")
+        data["status"] = "error"
+        data["message"] = _("Token not found")
 
     # Token expired
     elif datetime.now() > auth_token.expiration:
         ub.session.delete(auth_token)
         ub.session_commit()
 
-        data['status'] = 'error'
-        data['message'] = _("Token has expired")
+        data["status"] = "error"
+        data["message"] = _("Token has expired")
 
     elif not auth_token.verified:
-        data['status'] = 'not_verified'
+        data["status"] = "not_verified"
 
     else:
         user = ub.session.query(ub.User).filter(ub.User.id == auth_token.user_id).first()
         login_user(user)
 
         ub.session.delete(auth_token)
-        ub.session_commit("User {} logged in via remotelogin, token deleted".format(user.name))
+        ub.session_commit(f"User {user.name} logged in via remotelogin, token deleted")
 
-        data['status'] = 'success'
+        data["status"] = "success"
         log.debug("Remote Login for userid %s succeeded", user.id)
         flash(_("Success! You are now logged in as: %(nickname)s", nickname=user.name), category="success")
 

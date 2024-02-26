@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 shavitmichael, OzzieIsaacs
@@ -17,14 +16,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import sys
 from base64 import b64decode, b64encode
-from jsonschema import validate, exceptions
 from datetime import datetime
 
 from flask import json
-from .. import logger
+from jsonschema import exceptions, validate
 
+from .. import logger
 
 log = logger.create()
 
@@ -47,14 +45,17 @@ def get_datetime_from_json(json_object, field_name):
 
 
 class SyncToken:
-    """ The SyncToken is used to persist state accross requests.
+
+    """The SyncToken is used to persist state accross requests.
     When serialized over the response headers, the Kobo device will propagate the token onto following
     requests to the service. As an example use-case, the SyncToken is used to detect books that have been added
     to the library since the last time the device synced to the server.
 
-    Attributes:
+    Attributes
+    ----------
         books_last_created: Datetime representing the newest book that the device knows about.
         books_last_modified: Datetime representing the last modified book that the device knows about.
+
     """
 
     SYNC_TOKEN_HEADER = "x-kobo-synctoken"  # nosec

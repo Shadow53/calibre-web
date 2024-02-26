@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2020 pwr
@@ -20,7 +19,8 @@ from datetime import datetime
 
 from flask_babel import lazy_gettext as N_
 
-from cps.services.worker import CalibreTask, STAT_FINISH_SUCCESS
+from cps.services.worker import STAT_FINISH_SUCCESS, CalibreTask
+
 
 class TaskUpload(CalibreTask):
     def __init__(self, task_message, book_title):
@@ -38,7 +38,7 @@ class TaskUpload(CalibreTask):
         return N_("Upload")
 
     def __str__(self):
-        return "Upload {}".format(self.book_title)
+        return f"Upload {self.book_title}"
 
     @property
     def is_cancellable(self):

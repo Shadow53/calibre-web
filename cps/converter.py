@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2016-2019 Ben Bennett, OzzieIsaacs
@@ -24,12 +23,11 @@ from flask_babel import lazy_gettext as N_
 from . import config, logger
 from .subproc_wrapper import process_wait
 
-
 log = logger.create()
 
 # strings getting translated when used
-_NOT_INSTALLED = N_('not installed')
-_EXECUTION_ERROR = N_('Execution permissions missing')
+_NOT_INSTALLED = N_("not installed")
+_EXECUTION_ERROR = N_("Execution permissions missing")
 
 
 def _get_command_version(path, pattern, argument=None):
@@ -48,15 +46,15 @@ def _get_command_version(path, pattern, argument=None):
 
 
 def get_calibre_version():
-    return _get_command_version(config.config_converterpath, r'ebook-convert.*\(calibre', '--version')
+    return _get_command_version(config.config_converterpath, r"ebook-convert.*\(calibre", "--version")
 
 
 def get_unrar_version():
-    unrar_version = _get_command_version(config.config_rarfile_location, r'UNRAR.*\d')
+    unrar_version = _get_command_version(config.config_rarfile_location, r"UNRAR.*\d")
     if unrar_version == "not installed":
-        unrar_version = _get_command_version(config.config_rarfile_location, r'unrar.*\d', '-V')
+        unrar_version = _get_command_version(config.config_rarfile_location, r"unrar.*\d", "-V")
     return unrar_version
 
 
 def get_kepubify_version():
-    return _get_command_version(config.config_kepubifypath, r'kepubify\s', '--version')
+    return _get_command_version(config.config_kepubifypath, r"kepubify\s", "--version")
