@@ -15,6 +15,11 @@
         default = mkPoetryApplication { projectDir = self; };
       });
 
+      overlays = {
+        default = final: prev: {
+          calibre-web = self.packages.${prev.system}.default;
+        };
+      };
 
       devShells = forAllSystems (system: let
         inherit (poetry2nix.lib.mkPoetry2Nix { pkgs = pkgs.${system}; }) mkPoetryEnv defaultPoetryOverrides;
