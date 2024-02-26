@@ -17,6 +17,7 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import base64
+import contextlib
 import datetime
 import json
 import os
@@ -39,7 +40,7 @@ from .constants import COVER_THUMBNAIL_SMALL  #, sqlalchemy_version2
 from .epub import get_epub_layout
 from .helper import get_download_link
 from .kobo_auth import get_auth_token, requires_kobo_auth
-from .services import SyncToken as SyncToken
+from .services import SyncToken
 from .web import download_required
 
 KOBO_FORMATS = {"KEPUB": ["KEPUB"], "EPUB": ["EPUB3", "EPUB"]}
@@ -200,7 +201,7 @@ def HandleSyncRequest():
 
         kobo_reading_state = get_or_create_reading_state(book.Books.id)
         entitlement = {
-            "BookEntitlement": create_book_entitlement(book.Books, archived=(book.is_archived == True)),
+            "BookEntitlement": create_book_entitlement(book.Books, archived=(book.is_archived is True)),
             "BookMetadata": get_metadata(book.Books),
         }
 
@@ -211,10 +212,8 @@ def HandleSyncRequest():
 
         ts_created = book.Books.timestamp.replace(tzinfo=None)
 
-        try:
+        with contextlib.suppress(AttributeError):
             ts_created = max(ts_created, book.date_added)
-        except AttributeError:
-            pass
 
         if ts_created > sync_token.books_last_created:
             sync_results.append({"NewEntitlement": entitlement})
@@ -224,12 +223,10 @@ def HandleSyncRequest():
         new_books_last_modified = max(
             book.Books.last_modified.replace(tzinfo=None), new_books_last_modified
         )
-        try:
+        with contextlib.suppress(AttributeError):
             new_books_last_modified = max(
                 new_books_last_modified, book.date_added
             )
-        except AttributeError:
-            pass
 
         new_books_last_created = max(ts_created, new_books_last_created)
         kobo_sync_status.add_synced_books(book.Books.id)
@@ -444,7 +441,7 @@ def get_metadata(book):
                     }
                 )
             except (zipfile.BadZipfile, FileNotFoundError) as e:
-                log.error(e)
+                log.exception(e)
 
     book_uuid = book.uuid
     metadata = {
@@ -554,7 +551,7 @@ def HandleTagUpdate(tag_id):
 
 # Adds items to the given shelf.
 def add_items_to_shelf(items, shelf):
-    book_ids_already_in_shelf = set([book_shelf.book_id for book_shelf in shelf.books])
+    book_ids_already_in_shelf = {book_shelf.book_id for book_shelf in shelf.books}
     items_unknown_to_calibre = []
     for item in items:
         try:
@@ -652,7 +649,7 @@ def HandleTagRemoveItem(tag_id):
 
 # Add new, changed, or deleted shelves to the sync_results.
 # Note: Public shelves that aren't owned by the user aren't supported.
-def sync_shelves(sync_token, sync_results, only_kobo_shelves=False):
+def sync_shelves(sync_token, sync_results, only_kobo_shelves=False) -> None:
     new_tags_last_modified = sync_token.tags_last_modified
     # transmit all archived shelfs independent of last sync (why should this matter?)
     for shelf in ub.session.query(ub.ShelfArchive).filter(ub.ShelfArchive.user_id == current_user.id):
@@ -894,7 +891,7 @@ def HandleCoverImageRequest(book_uuid, width, height, Quality, isGreyscale):
     try:
         resolution = None if int(height) > 1000 else COVER_THUMBNAIL_SMALL
     except ValueError:
-        log.error("Requested height %s of book %s is invalid" % (book_uuid, height))
+        log.exception(f"Requested height {book_uuid} of book {height} is invalid")
         resolution = COVER_THUMBNAIL_SMALL
     book_cover = helper.get_book_cover_with_uuid(book_uuid, resolution=resolution)
     if book_cover:
@@ -1022,7 +1019,7 @@ def HandleAuthRequest():
         try:
             return redirect_or_proxy_request()
         except Exception:
-            log.error("Failed to receive or parse response from Kobo's auth endpoint. Falling back to un-proxied mode.")
+            log.exception("Failed to receive or parse response from Kobo's auth endpoint. Falling back to un-proxied mode.")
     return make_calibre_web_auth_response()
 
 
@@ -1039,7 +1036,7 @@ def HandleInitRequest():
             if "Resources" in store_response_json:
                 kobo_resources = store_response_json["Resources"]
         except Exception:
-            log.error("Failed to receive or parse response from Kobo's init endpoint. Falling back to un-proxied mode.")
+            log.exception("Failed to receive or parse response from Kobo's init endpoint. Falling back to un-proxied mode.")
     if not kobo_resources:
         kobo_resources = NATIVE_KOBO_RESOURCES()
 

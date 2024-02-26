@@ -90,8 +90,7 @@ def _fetch_user_by_name(username):
 
 @lm.user_loader
 def load_user(user_id):
-    user = ub.session.query(ub.User).filter(ub.User.id == int(user_id)).first()
-    return user
+    return ub.session.query(ub.User).filter(ub.User.id == int(user_id)).first()
 
 
 @lm.request_loader

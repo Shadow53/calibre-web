@@ -92,7 +92,7 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
                         cover_data = cf.read([name])
                         break
         except Exception as ex:
-            log.error(f"Rarfile failed with error: {ex}")
+            log.exception(f"Rarfile failed with error: {ex}")
     elif original_file_extension.upper() == ".CB7" and use_7zip:
         cf = py7zr.SevenZipFile(tmp_file_name)
         for name in cf.getnames():
@@ -103,7 +103,7 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
                     try:
                         cover_data = cf.read(name)[name].read()
                     except (py7zr.Bad7zFile, OSError) as ex:
-                        log.error(f"7Zip file failed with error: {ex}")
+                        log.exception(f"7Zip file failed with error: {ex}")
                     break
     return cover_data, extension
 

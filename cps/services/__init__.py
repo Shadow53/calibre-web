@@ -35,7 +35,7 @@ except ImportError as err:
     ldapVersion = None
 
 try:
-    from . import SyncToken as SyncToken
+    from . import SyncToken
     kobo = True
 except ImportError as err:
     log.debug("Cannot import SyncToken, syncing books with Kobo Devices will not work: %s", err)

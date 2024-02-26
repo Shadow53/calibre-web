@@ -55,7 +55,7 @@ class ReverseProxied:
         }
     """
 
-    def __init__(self, application):
+    def __init__(self, application) -> None:
         self.app = application
         self.proxied = False
 

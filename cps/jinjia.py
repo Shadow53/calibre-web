@@ -78,7 +78,7 @@ def formatdate_filter(val):
     try:
         return format_date(val, format="medium")
     except AttributeError as e:
-        log.error("Babel error: %s, Current user locale: %s, Current User: %s", e,
+        log.exception("Babel error: %s, Current user locale: %s, Current User: %s", e,
                   current_user.locale,
                   current_user.name
                   )
@@ -97,10 +97,7 @@ def timestamptodate(date, fmt=None):
         int(date)/1000
     )
     native = date.replace(tzinfo=None)
-    if fmt:
-        time_format = fmt
-    else:
-        time_format = "%d %m %Y - %H:%S"
+    time_format = fmt if fmt else "%d %m %Y - %H:%S"
     return native.strftime(time_format)
 
 
@@ -111,7 +108,7 @@ def yesno(value, yes, no):
 
 @jinjia.app_template_filter("formatfloat")
 def formatfloat(value, decimals=1):
-    value = 0 if not value else value
+    value = value if value else 0
     return ("{0:." + str(decimals) + "f}").format(value).rstrip("0").rstrip(".")
 
 
@@ -129,7 +126,7 @@ def formatseriesindex_filter(series_index):
 
 
 @jinjia.app_template_filter("escapedlink")
-def escapedlink_filter(url, text):
+def escapedlink_filter(url, text) -> str:
     return f"<a href='{url}'>{escape(text)}</a>"
 
 
@@ -155,7 +152,7 @@ def book_last_modified(book):
 
 @jinjia.app_template_filter("get_cover_srcset")
 def get_cover_srcset(book):
-    srcset = list()
+    srcset = []
     resolutions = {
         constants.COVER_THUMBNAIL_SMALL: "sm",
         constants.COVER_THUMBNAIL_MEDIUM: "md",
@@ -169,7 +166,7 @@ def get_cover_srcset(book):
 
 @jinjia.app_template_filter("get_series_srcset")
 def get_cover_srcset(series):
-    srcset = list()
+    srcset = []
     resolutions = {
         constants.COVER_THUMBNAIL_SMALL: "sm",
         constants.COVER_THUMBNAIL_MEDIUM: "md",

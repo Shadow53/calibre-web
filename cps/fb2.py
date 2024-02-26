@@ -34,20 +34,11 @@ def get_fb2_info(tmp_file_path, original_file_extension):
 
     def get_author(element):
         last_name = element.xpath("fb:last-name/text()", namespaces=ns)
-        if len(last_name):
-            last_name = last_name[0]
-        else:
-            last_name = ""
+        last_name = last_name[0] if len(last_name) else ""
         middle_name = element.xpath("fb:middle-name/text()", namespaces=ns)
-        if len(middle_name):
-            middle_name = middle_name[0]
-        else:
-            middle_name = ""
+        middle_name = middle_name[0] if len(middle_name) else ""
         first_name = element.xpath("fb:first-name/text()", namespaces=ns)
-        if len(first_name):
-            first_name = first_name[0]
-        else:
-            first_name = ""
+        first_name = first_name[0] if len(first_name) else ""
         return (first_name + " "
                 + middle_name + " "
                 + last_name)
@@ -55,15 +46,9 @@ def get_fb2_info(tmp_file_path, original_file_extension):
     author = str(", ".join(map(get_author, authors)))
 
     title = tree.xpath("/fb:FictionBook/fb:description/fb:title-info/fb:book-title/text()", namespaces=ns)
-    if len(title):
-        title = str(title[0])
-    else:
-        title = ""
+    title = str(title[0]) if len(title) else ""
     description = tree.xpath("/fb:FictionBook/fb:description/fb:publish-info/fb:book-name/text()", namespaces=ns)
-    if len(description):
-        description = str(description[0])
-    else:
-        description = ""
+    description = str(description[0]) if len(description) else ""
 
     return BookMeta(
         file_path=tmp_file_path,

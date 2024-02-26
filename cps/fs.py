@@ -29,7 +29,7 @@ class FileSystem:
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(FileSystem, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
             cls.log = logger.create()
         return cls._instance
 
@@ -69,7 +69,7 @@ class FileSystem:
         path = self.get_cache_file_path(filename, cache_type)
         return isfile(path)
 
-    def delete_cache_dir(self, cache_type=None):
+    def delete_cache_dir(self, cache_type=None) -> None:
         if not cache_type and isdir(self._cache_dir):
             try:
                 rmtree(self._cache_dir)
@@ -85,7 +85,7 @@ class FileSystem:
                 self.log.info(f"Failed to delete path {path} (Permission denied).")
                 raise
 
-    def delete_cache_file(self, filename, cache_type=None):
+    def delete_cache_file(self, filename, cache_type=None) -> None:
         path = self.get_cache_file_path(filename, cache_type)
         if isfile(path):
             try:

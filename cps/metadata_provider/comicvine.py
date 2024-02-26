@@ -42,7 +42,7 @@ class ComicVine(Metadata):
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"
     ) -> Optional[List[MetaRecord]]:
-        val = list()
+        val = []
         if self.active:
             title_tokens = list(self.get_title_tokens(query, strip_joiners=False))
             if title_tokens:

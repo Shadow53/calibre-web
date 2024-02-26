@@ -16,22 +16,22 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
+import contextlib
+
 from flask import current_app
 from flask_simpleldap import LDAP, LDAPException
 from flask_simpleldap import ldap as pyLDAP
 
 from .. import constants, logger
 
-try:
-    from ldap.pkginfo import __version__ as ldapVersion
-except ImportError:
+with contextlib.suppress(ImportError):
     pass
 
 log = logger.create()
 
 class LDAPLogger:
 
-    def write(self, message):
+    def write(self, message) -> None:
         try:
             log.debug(message.strip("\n").replace("\n", ""))
         except Exception:
@@ -41,7 +41,7 @@ class LDAPLogger:
 class mySimpleLDap(LDAP):
 
     @staticmethod
-    def init_app(app):
+    def init_app(app) -> None:
         super(mySimpleLDap, mySimpleLDap).init_app(app)
         app.config.setdefault("LDAP_LOGLEVEL", 0)
 
@@ -53,7 +53,7 @@ class mySimpleLDap(LDAP):
         """
         try:
             log_level = 2 if current_app.config["LDAP_LOGLEVEL"] == logger.logging.DEBUG else 0
-            conn = pyLDAP.initialize("{0}://{1}:{2}".format(
+            conn = pyLDAP.initialize("{}://{}:{}".format(
                 current_app.config["LDAP_SCHEMA"],
                 current_app.config["LDAP_HOST"],
                 current_app.config["LDAP_PORT"]), trace_level=log_level, trace_file=LDAPLogger())
@@ -70,7 +70,7 @@ class mySimpleLDap(LDAP):
 
 _ldap = mySimpleLDap()
 
-def init_app(app, config):
+def init_app(app, config) -> None:
     if config.config_login_type != constants.LOGIN_LDAP:
         return
 
@@ -118,9 +118,9 @@ def init_app(app, config):
         try:
             _ldap.init_app(app)
         except RuntimeError as e:
-            log.error(e)
+            log.exception(e)
     except RuntimeError as e:
-        log.error(e)
+        log.exception(e)
 
 
 def get_object_details(user=None,query_filter=None):

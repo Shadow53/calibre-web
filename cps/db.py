@@ -46,6 +46,7 @@ try:
     from sqlalchemy.orm import declarative_base
 except ImportError:
     from sqlalchemy.ext.declarative import declarative_base
+import contextlib
 from weakref import WeakSet
 
 from flask import flash
@@ -111,7 +112,7 @@ class Identifiers(Base):
     val = Column(String(collation="NOCASE"), nullable=False)
     book = Column(Integer, ForeignKey("books.id"), nullable=False)
 
-    def __init__(self, val, id_type, book):
+    def __init__(self, val, id_type, book) -> None:
         self.val = val
         self.type = id_type
         self.book = book
@@ -149,9 +150,9 @@ class Identifiers(Base):
         else:
             return self.type
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         format_type = self.type.lower()
-        if format_type == "amazon" or format_type == "asin":
+        if format_type in ("amazon", "asin"):
             return f"https://amazon.com/dp/{self.val}"
         elif format_type.startswith("amazon_"):
             return f"https://amazon.{format_type[7:]}/dp/{self.val}"
@@ -195,14 +196,14 @@ class Comments(Base):
     book = Column(Integer, ForeignKey("books.id"), nullable=False, unique=True)
     text = Column(String(collation="NOCASE"), nullable=False)
 
-    def __init__(self, comment, book):
+    def __init__(self, comment, book) -> None:
         self.text = comment
         self.book = book
 
     def get(self):
         return self.text
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Comments({self.text})>"
 
 
@@ -212,7 +213,7 @@ class Tags(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(collation="NOCASE"), unique=True, nullable=False)
 
-    def __init__(self, name):
+    def __init__(self, name) -> None:
         self.name = name
 
     def get(self):
@@ -221,7 +222,7 @@ class Tags(Base):
     def __eq__(self, other):
         return self.name == other
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Tags('{self.name})>"
 
 
@@ -233,7 +234,7 @@ class Authors(Base):
     sort = Column(String(collation="NOCASE"))
     link = Column(String, nullable=False, default="")
 
-    def __init__(self, name, sort, link=""):
+    def __init__(self, name, sort, link="") -> None:
         self.name = name
         self.sort = sort
         self.link = link
@@ -244,7 +245,7 @@ class Authors(Base):
     def __eq__(self, other):
         return self.name == other
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Authors('{self.name},{self.sort}{self.link}')>"
 
 
@@ -255,7 +256,7 @@ class Series(Base):
     name = Column(String(collation="NOCASE"), unique=True, nullable=False)
     sort = Column(String(collation="NOCASE"))
 
-    def __init__(self, name, sort):
+    def __init__(self, name, sort) -> None:
         self.name = name
         self.sort = sort
 
@@ -265,7 +266,7 @@ class Series(Base):
     def __eq__(self, other):
         return self.name == other
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Series('{self.name},{self.sort}')>"
 
 
@@ -275,7 +276,7 @@ class Ratings(Base):
     id = Column(Integer, primary_key=True)
     rating = Column(Integer, CheckConstraint("rating>-1 AND rating<11"), unique=True)
 
-    def __init__(self, rating):
+    def __init__(self, rating) -> None:
         self.rating = rating
 
     def get(self):
@@ -284,7 +285,7 @@ class Ratings(Base):
     def __eq__(self, other):
         return self.rating == other
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Ratings('{self.rating}')>"
 
 
@@ -294,7 +295,7 @@ class Languages(Base):
     id = Column(Integer, primary_key=True)
     lang_code = Column(String(collation="NOCASE"), nullable=False, unique=True)
 
-    def __init__(self, lang_code):
+    def __init__(self, lang_code) -> None:
         self.lang_code = lang_code
 
     def get(self):
@@ -306,7 +307,7 @@ class Languages(Base):
     def __eq__(self, other):
         return self.lang_code == other
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Languages('{self.lang_code}')>"
 
 
@@ -317,7 +318,7 @@ class Publishers(Base):
     name = Column(String(collation="NOCASE"), nullable=False, unique=True)
     sort = Column(String(collation="NOCASE"))
 
-    def __init__(self, name, sort):
+    def __init__(self, name, sort) -> None:
         self.name = name
         self.sort = sort
 
@@ -327,7 +328,7 @@ class Publishers(Base):
     def __eq__(self, other):
         return self.name == other
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Publishers('{self.name},{self.sort}')>"
 
 
@@ -341,7 +342,7 @@ class Data(Base):
     uncompressed_size = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
 
-    def __init__(self, book, book_format, uncompressed_size, name):
+    def __init__(self, book, book_format, uncompressed_size, name) -> None:
         self.book = book
         self.format = book_format
         self.uncompressed_size = uncompressed_size
@@ -351,7 +352,7 @@ class Data(Base):
     def get(self):
         return self.name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Data('{self.book},{self.format}{self.uncompressed_size}{self.name}')>"
 
 
@@ -360,7 +361,7 @@ class Metadata_Dirtied(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     book = Column(Integer, ForeignKey("books.id"), nullable=False, unique=True)
 
-    def __init__(self, book):
+    def __init__(self, book) -> None:
         self.book = book
 
 
@@ -394,7 +395,7 @@ class Books(Base):
     identifiers = relationship(Identifiers, backref="books")
 
     def __init__(self, title, sort, author_sort, timestamp, pubdate, series_index, last_modified, path, has_cover,
-                 authors, tags, languages=None):
+                 authors, tags, languages=None) -> None:
         self.title = title
         self.sort = sort
         self.author_sort = author_sort
@@ -403,10 +404,10 @@ class Books(Base):
         self.series_index = series_index
         self.last_modified = last_modified
         self.path = path
-        self.has_cover = (has_cover != None)
+        self.has_cover = (has_cover is not None)
 
-    def __repr__(self):
-        return "<Books('{0},{1}{2}{3}{4}{5}{6}{7}{8}')>".format(self.title, self.sort, self.author_sort,
+    def __repr__(self) -> str:
+        return "<Books('{},{}{}{}{}{}{}{}{}')>".format(self.title, self.sort, self.author_sort,
                                                                  self.timestamp, self.pubdate, self.series_index,
                                                                  self.last_modified, self.path, self.has_cover)
 
@@ -429,11 +430,10 @@ class CustomColumns(Base):
     normalized = Column(Boolean)
 
     def get_display_dict(self):
-        display_dict = json.loads(self.display)
-        return display_dict
+        return json.loads(self.display)
 
     def to_json(self, value, extra, sequence):
-        content = dict()
+        content = {}
         content["table"] = "custom_column_" + str(self.id)
         content["column"] = "value"
         content["datatype"] = self.datatype
@@ -474,7 +474,7 @@ class AlchemyEncoder(json.JSONEncoder):
                     if isinstance(data, str):
                         data = data.replace("'", "'")
                     elif isinstance(data, InstrumentedList):
-                        el = list()
+                        el = []
                         # ele = None
                         for ele in data:
                             if hasattr(ele, "value"):       # converter for custom_column values
@@ -483,10 +483,7 @@ class AlchemyEncoder(json.JSONEncoder):
                                 el.append(ele.get())
                             else:
                                 el.append(json.dumps(ele, cls=AlchemyEncoder))
-                        if field == "authors":
-                            data = " & ".join(el)
-                        else:
-                            data = ",".join(el)
+                        data = " & ".join(el) if field == "authors" else ",".join(el)
                         if data == "[]":
                             data = ""
                     else:
@@ -509,21 +506,20 @@ class CalibreDB:
     # instances alive once they reach the end of their respective scopes
     instances = WeakSet()
 
-    def __init__(self, expire_on_commit=True, init=False):
-        """Initialize a new CalibreDB session
-        """
+    def __init__(self, expire_on_commit=True, init=False) -> None:
+        """Initialize a new CalibreDB session."""
         self.session = None
         if init:
             self.init_db(expire_on_commit)
 
 
-    def init_db(self, expire_on_commit=True):
+    def init_db(self, expire_on_commit=True) -> None:
         if self._init:
             self.init_session(expire_on_commit)
 
         self.instances.add(self)
 
-    def init_session(self, expire_on_commit=True):
+    def init_session(self, expire_on_commit=True) -> None:
         self.session = self.session_factory()
         self.session.expire_on_commit = expire_on_commit
         self.update_title_sort(self.config)
@@ -627,11 +623,11 @@ class CalibreDB:
         return True, db_change
 
     @classmethod
-    def update_config(cls, config):
+    def update_config(cls, config) -> None:
         cls.config = config
 
     @classmethod
-    def setup_db(cls, config_calibre_dir, app_db_path):
+    def setup_db(cls, config_calibre_dir, app_db_path) -> None:
         cls.dispose()
 
         if not config_calibre_dir:
@@ -696,7 +692,7 @@ class CalibreDB:
                       .join(read_column, read_column.book == book_id,
                       isouter=True))
             except (KeyError, AttributeError, IndexError):
-                log.error(f"Custom Column No.{read_column} does not exist in calibre database")
+                log.exception(f"Custom Column No.{read_column} does not exist in calibre database")
                 # Skip linking read column and return None instead of read status
                 bd = self.session.query(Books, None, ub.ArchivedBook.is_archived)
         return (bd.filter(Books.id == book_id)
@@ -710,24 +706,24 @@ class CalibreDB:
     def get_book_format(self, book_id, file_format):
         return self.session.query(Data).filter(Data.book == book_id).filter(Data.format == file_format).first()
 
-    def set_metadata_dirty(self, book_id):
+    def set_metadata_dirty(self, book_id) -> None:
         if not self.session.query(Metadata_Dirtied).filter(Metadata_Dirtied.book == book_id).one_or_none():
             self.session.add(Metadata_Dirtied(book_id))
 
-    def delete_dirty_metadata(self, book_id):
+    def delete_dirty_metadata(self, book_id) -> None:
         try:
             self.session.query(Metadata_Dirtied).filter(Metadata_Dirtied.book == book_id).delete()
             self.session.commit()
         except (OperationalError) as e:
             self.session.rollback()
-            log.error(f"Database error: {e}")
+            log.exception(f"Database error: {e}")
 
     # Language and content filters for displaying in the UI
     def common_filters(self, allow_show_archived=False, return_all_languages=False):
         if not allow_show_archived:
             archived_books = (ub.session.query(ub.ArchivedBook)
                               .filter(ub.ArchivedBook.user_id == int(current_user.id))
-                              .filter(ub.ArchivedBook.is_archived == True)
+                              .filter(ub.ArchivedBook.is_archived is True)
                               .all())
             archived_book_ids = [archived_book.book_id for archived_book in archived_books]
             archived_filter = Books.id.notin_(archived_book_ids)
@@ -755,7 +751,7 @@ class CalibreDB:
             except (KeyError, AttributeError, IndexError):
                 pos_content_cc_filter = false()
                 neg_content_cc_filter = true()
-                log.error(f"Custom Column No.{self.config.config_restricted_column} does not exist in calibre database")
+                log.exception(f"Custom Column No.{self.config.config_restricted_column} does not exist in calibre database")
                 flash(_("Custom Column No.%(column)d does not exist in calibre database",
                         column=self.config.config_restricted_column),
                       category="error")
@@ -779,7 +775,7 @@ class CalibreDB:
                          .select_from(Books)
                          .outerjoin(read_column, read_column.book == Books.id))
             except (KeyError, AttributeError, IndexError):
-                log.error(f"Custom Column No.{config_read_column} does not exist in calibre database")
+                log.exception(f"Custom Column No.{config_read_column} does not exist in calibre database")
                 # Skip linking read column and return None instead of read status
                 query = self.session.query(database, None, ub.ArchivedBook.is_archived)
         return query.outerjoin(ub.ArchivedBook, and_(Books.id == ub.ArchivedBook.book_id,
@@ -787,16 +783,11 @@ class CalibreDB:
 
     @staticmethod
     def get_checkbox_sorted(inputlist, state, offset, limit, order, combo=False):
-        outcome = list()
-        if combo:
-            elementlist = {ele[0].id: ele for ele in inputlist}
-        else:
-            elementlist = {ele.id: ele for ele in inputlist}
+        outcome = []
+        elementlist = {ele[0].id: ele for ele in inputlist} if combo else {ele.id: ele for ele in inputlist}
         for entry in state:
-            try:
+            with contextlib.suppress(KeyError):
                 outcome.append(elementlist[entry])
-            except KeyError:
-                pass
             del elementlist[entry]
         for entry in elementlist:
             outcome.append(elementlist[entry])
@@ -843,8 +834,8 @@ class CalibreDB:
                 element += 1
         query = query.filter(db_filter)\
             .filter(self.common_filters(allow_show_archived))
-        entries = list()
-        pagination = list()
+        entries = []
+        pagination = []
         try:
             pagination = Pagination(page, pagesize,
                                     len(query.all()))
@@ -865,7 +856,7 @@ class CalibreDB:
             else:
                 sort_authors = entry.author_sort.split("&")
                 ids = [a.id for a in entry.authors]
-            authors_ordered = list()
+            authors_ordered = []
             # error = False
             for auth in sort_authors:
                 results = self.session.query(Authors).filter(Authors.sort == auth.lstrip().strip()).all()
@@ -897,12 +888,11 @@ class CalibreDB:
         entries = self.session.query(database).filter(tag_filter). \
             filter(func.lower(database.name).ilike("%" + query + "%")).all()
         # json_dumps = json.dumps([dict(name=escape(r.name.replace(*replace))) for r in entries])
-        json_dumps = json.dumps([dict(name=r.name.replace(*replace)) for r in entries])
-        return json_dumps
+        return json.dumps([{"name": r.name.replace(*replace)} for r in entries])
 
     def check_exists_book(self, authr, title):
         self.session.connection().connection.connection.create_function("lower", 1, lcase)
-        q = list()
+        q = []
         author_terms = re.split(r"\s*&\s*", authr)
         for author_term in author_terms:
             q.append(Books.authors.any(func.lower(Authors.name).ilike("%" + author_term + "%")))
@@ -913,7 +903,7 @@ class CalibreDB:
     def search_query(self, term, config, *join):
         term.strip().lower()
         self.session.connection().connection.connection.create_function("lower", 1, lcase)
-        q = list()
+        q = []
         author_terms = re.split("[, ]+", term)
         for author_term in author_terms:
             q.append(Books.authors.any(func.lower(Authors.name).ilike("%" + author_term + "%")))
@@ -963,7 +953,7 @@ class CalibreDB:
         pagination = None
         result = self.search_query(term, config, *join).order_by(*order).all()
         result_count = len(result)
-        if offset != None and limit != None:
+        if offset is not None and limit is not None:
             offset = int(offset)
             limit_all = offset + int(limit)
             pagination = Pagination((offset / (int(limit)) + 1), limit, result_count)
@@ -985,7 +975,7 @@ class CalibreDB:
                     .join(books_languages_link).join(Books)\
                     .filter(self.common_filters(return_all_languages=return_all_languages)) \
                     .group_by(text("books_languages_link.lang_code")).all()
-            tags = list()
+            tags = []
             for lang in languages:
                 tag = Category(isoLanguages.get_language_name(get_locale(), lang[0].lang_code), lang[0].lang_code)
                 tags.append([tag, lang[1]])
@@ -993,7 +983,7 @@ class CalibreDB:
             if not return_all_languages:
                 no_lang_count = (self.session.query(Books)
                                  .outerjoin(books_languages_link).outerjoin(Languages)
-                                 .filter(Languages.lang_code == None)
+                                 .filter(Languages.lang_code is None)
                                  .filter(self.common_filters())
                                  .count())
                 if no_lang_count:
@@ -1010,7 +1000,7 @@ class CalibreDB:
                 lang.name = isoLanguages.get_language_name(get_locale(), lang.lang_code)
             return sorted(languages, key=lambda x: x.name, reverse=reverse_order)
 
-    def update_title_sort(self, config, conn=None):
+    def update_title_sort(self, config, conn=None) -> None:
         # user defined sort function for calibre databases (Series, etc.)
         def _title_sort(title):
             # calibre sort stuff
@@ -1027,28 +1017,22 @@ class CalibreDB:
         except AttributeError:
             # sqlalchemy >1.4.24 and sqlalchemy 2.0
             conn = conn or self.session.connection().connection.connection
-        try:
+        with contextlib.suppress(sqliteOperationalError):
             conn.create_function("title_sort", 1, _title_sort)
-        except sqliteOperationalError:
-            pass
 
     @classmethod
-    def dispose(cls):
+    def dispose(cls) -> None:
         # global session
 
         for inst in cls.instances:
             old_session = inst.session
             inst.session = None
             if old_session:
-                try:
+                with contextlib.suppress(Exception):
                     old_session.close()
-                except Exception:
-                    pass
                 if old_session.bind:
-                    try:
+                    with contextlib.suppress(Exception):
                         old_session.bind.dispose()
-                    except Exception:
-                        pass
 
         for attr in list(Books.__dict__.keys()):
             if attr.startswith("custom_column_"):
@@ -1060,11 +1044,10 @@ class CalibreDB:
 
         for table in reversed(Base.metadata.sorted_tables):
             name = table.key
-            if name.startswith("custom_column_") or name.startswith("books_custom_column_"):
-                if table is not None:
-                    Base.metadata.remove(table)
+            if name.startswith(("custom_column_", "books_custom_column_")) and table is not None:
+                Base.metadata.remove(table)
 
-    def reconnect_db(self, config, app_db_path):
+    def reconnect_db(self, config, app_db_path) -> None:
         self.dispose()
         self.engine.dispose()
         self.setup_db(config.config_calibre_dir, app_db_path)
@@ -1086,7 +1069,7 @@ class Category:
     count = None
     rating = None
 
-    def __init__(self, name, cat_id, rating=None):
+    def __init__(self, name, cat_id, rating=None) -> None:
         self.name = name
         self.id = cat_id
         self.rating = rating

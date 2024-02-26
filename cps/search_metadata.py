@@ -16,6 +16,7 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import concurrent.futures
+import contextlib
 import importlib
 import inspect
 import json
@@ -46,7 +47,7 @@ except ImportError:
     web_server.stop(True)
     sys.exit(6)
 
-new_list = list()
+new_list = []
 meta_dir = os.path.join(constants.BASE_DIR, "cps", "metadata_provider")
 modules = os.listdir(os.path.join(constants.BASE_DIR, "cps", "metadata_provider"))
 for f in modules:
@@ -56,13 +57,13 @@ for f in modules:
             importlib.import_module("cps.metadata_provider." + a)
             new_list.append(a)
         except (IndentationError, SyntaxError) as e:
-            log.error(f"Syntax error for metadata source: {a} - {e}")
+            log.exception(f"Syntax error for metadata source: {a} - {e}")
         except ImportError as e:
             log.debug(f"Import error for metadata source: {a} - {e}")
 
 
 def list_classes(provider_list):
-    classes = list()
+    classes = []
     for element in provider_list:
         for name, obj in inspect.getmembers(
             sys.modules["cps.metadata_provider." + element]
@@ -83,7 +84,7 @@ cl = list_classes(new_list)
 @login_required
 def metadata_provider():
     active = current_user.view_settings.get("metadata", {})
-    provider = list()
+    provider = []
     for c in cl:
         ac = active.get(c.__id__, True)
         provider.append(
@@ -101,13 +102,11 @@ def metadata_change_active_provider(prov_name):
     active[new_state["id"]] = new_state["value"]
     current_user.view_settings["metadata"] = active
     try:
-        try:
+        with contextlib.suppress(AttributeError):
             flag_modified(current_user, "view_settings")
-        except AttributeError:
-            pass
         ub.session.commit()
     except (InvalidRequestError, OperationalError):
-        log.error(f"Invalid request received: {request}")
+        log.exception(f"Invalid request received: {request}")
         return "Invalid request", 400
     if "initial" in new_state and prov_name:
         data = []
@@ -124,7 +123,7 @@ def metadata_change_active_provider(prov_name):
 @login_required
 def metadata_search():
     query = request.form.to_dict().get("query")
-    data = list()
+    data = []
     active = current_user.view_settings.get("metadata", {})
     locale = get_locale()
     if query:

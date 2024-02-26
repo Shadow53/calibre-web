@@ -86,10 +86,7 @@ cli_param = CliParameter()
 
 config = config_sql.ConfigSQL()
 
-if wtf_present:
-    csrf = CSRFProtect()
-else:
-    csrf = None
+csrf = CSRFProtect() if wtf_present else None
 
 calibre_db = db.CalibreDB()
 
@@ -127,15 +124,6 @@ def create_app():
               'Please install it using pip: "pip install flask-limiter" ***')
         web_server.stop(True)
         sys.exit(8)
-    if sys.version_info < (3, 0):
-        log.info(
-            "*** Python2 is EOL since end of 2019, this version of Calibre-Web is no longer supporting Python2, "
-            "please update your installation to Python3 ***")
-        print(
-            "*** Python2 is EOL since end of 2019, this version of Calibre-Web is no longer supporting Python2, "
-            "please update your installation to Python3 ***")
-        web_server.stop(True)
-        sys.exit(5)
     if not wtf_present:
         log.info('*** "flask-WTF" is needed for calibre-web to run. '
                  'Please install it using pip: "pip install flask-WTF" ***')

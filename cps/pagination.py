@@ -24,7 +24,7 @@ from math import ceil
 
 # simple pagination for the feed
 class Pagination:
-    def __init__(self, page, per_page, total_count):
+    def __init__(self, page, per_page, total_count) -> None:
         self.page = int(page)
         self.per_page = int(per_page)
         self.total_count = int(total_count)

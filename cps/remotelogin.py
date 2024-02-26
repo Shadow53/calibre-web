@@ -46,6 +46,7 @@ def remote_login_required(f):
             response.headers["Content-Type"] = "application/json; charset=utf-8"
             return response, 403
         abort(403)
+        return None
 
     return inner
 

@@ -40,18 +40,13 @@ logging.addLevelName(logging.CRITICAL, "CRIT")
 
 class _Logger(logging.Logger):
 
-    def error_or_exception(self, message, stacklevel=2, *args, **kwargs):
-        if sys.version_info > (3, 7):
-            if is_debug_enabled():
-                self.exception(message, stacklevel=stacklevel, *args, **kwargs)
-            else:
-                self.error(message, stacklevel=stacklevel, *args, **kwargs)
-        elif is_debug_enabled():
-            self.exception(message, stack_info=True, *args, **kwargs)
+    def error_or_exception(self, message, stacklevel=2, *args, **kwargs) -> None:
+        if is_debug_enabled():
+            self.exception(message, stacklevel=stacklevel, *args, **kwargs)
         else:
-            self.error(message, *args, **kwargs)
+            self.error(message, stacklevel=stacklevel, *args, **kwargs)
 
-    def debug_no_auth(self, message, *args, **kwargs):
+    def debug_no_auth(self, message, *args, **kwargs) -> None:
         message = message.strip("\r\n")
         if message.startswith("send: AUTH"):
             self.debug(message[:16], *args, **kwargs)
@@ -65,10 +60,7 @@ def get(name=None):
 
 def create():
     parent_frame = inspect.stack(0)[1]
-    if hasattr(parent_frame, "frame"):
-        parent_frame = parent_frame.frame
-    else:
-        parent_frame = parent_frame[0]
+    parent_frame = parent_frame.frame if hasattr(parent_frame, "frame") else parent_frame[0]
     parent_module = inspect.getmodule(parent_frame)
     return get(parent_module.__name__)
 
@@ -86,7 +78,7 @@ def get_level_name(level):
 
 
 def is_valid_logfile(file_path):
-    if file_path == LOG_TO_STDERR or file_path == LOG_TO_STDOUT:
+    if file_path in (LOG_TO_STDERR, LOG_TO_STDOUT):
         return True
     if not file_path:
         return True
@@ -126,7 +118,7 @@ def setup(log_file, log_level=None):
         r.setLevel(log_level)
 
     # Otherwise, name gets destroyed on Windows
-    if log_file != LOG_TO_STDERR and log_file != LOG_TO_STDOUT:
+    if log_file not in (LOG_TO_STDERR, LOG_TO_STDOUT):
         log_file = _absolute_log_file(log_file, DEFAULT_LOG_FILE)
 
     previous_handler = r.handlers[0] if r.handlers else None
@@ -136,7 +128,7 @@ def setup(log_file, log_level=None):
             return "" if log_file == DEFAULT_LOG_FILE else log_file
         logging.debug("logging to %s level %s", log_file, r.level)
 
-    if log_file == LOG_TO_STDERR or log_file == LOG_TO_STDOUT:
+    if log_file in (LOG_TO_STDERR, LOG_TO_STDOUT):
         if log_file == LOG_TO_STDOUT:
             file_handler = StreamHandler(sys.stdout)
             file_handler.baseFilename = log_file
@@ -162,8 +154,7 @@ def setup(log_file, log_level=None):
 
 
 def create_access_log(log_file, log_name, formatter):
-    """One-time configuration for the web server's access log.
-    """
+    """One-time configuration for the web server's access log."""
     log_file = _absolute_log_file(log_file, DEFAULT_ACCESS_LOG)
     logging.debug("access log: %s", log_file)
 
@@ -185,11 +176,11 @@ def create_access_log(log_file, log_name, formatter):
 
 # Enable logging of smtp lib debug output
 class StderrLogger:
-    def __init__(self, name=None):
+    def __init__(self, name=None) -> None:
         self.log = get(name or self.__class__.__name__)
         self.buffer = ""
 
-    def write(self, message):
+    def write(self, message) -> None:
         try:
             if message == "\n":
                 self.log.debug(self.buffer.replace("\n", "\\n"))

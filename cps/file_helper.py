@@ -27,6 +27,6 @@ def get_temp_dir():
     return tmp_dir
 
 
-def del_temp_dir():
+def del_temp_dir() -> None:
     tmp_dir = os.path.join(gettempdir(), "calibre_web")
     shutil.rmtree(tmp_dir)

@@ -65,10 +65,7 @@ def add_to_shelf(shelf_id, book_id):
         return "Book is already part of the shelf: %s" % shelf.name, 400
 
     maxOrder = ub.session.query(func.max(ub.BookShelf.order)).filter(ub.BookShelf.shelf == shelf_id).first()
-    if maxOrder[0] is None:
-        maxOrder = 0
-    else:
-        maxOrder = maxOrder[0]
+    maxOrder = 0 if maxOrder[0] is None else maxOrder[0]
 
     if not calibre_db.session.query(db.Books).filter(db.Books.id == book_id).one_or_none():
         log.error("Invalid Book Id: %s. Could not be added to shelf %s", book_id, shelf.name)
@@ -116,10 +113,10 @@ def search_to_shelf(shelf_id):
         return redirect(url_for("web.index"))
 
     if ub.searched_ids.get(current_user.id):
-        books_for_shelf = list()
+        books_for_shelf = []
         books_in_shelf = ub.session.query(ub.BookShelf).filter(ub.BookShelf.shelf == shelf_id).all()
         if books_in_shelf:
-            book_ids = list()
+            book_ids = []
             for book_id in books_in_shelf:
                 book_ids.append(book_id.book_id)
             for searchid in ub.searched_ids[current_user.id]:
@@ -278,7 +275,7 @@ def order_shelf(shelf_id):
                 log.error_or_exception(f"Settings Database error: {e}")
                 flash(_("Oops! Database Error: %(error)s.", error=e.orig), category="error")
 
-        result = list()
+        result = []
         if shelf:
             result = calibre_db.session.query(db.Books) \
                 .join(ub.BookShelf, ub.BookShelf.book_id == db.Books.id, isouter=True) \
@@ -289,9 +286,10 @@ def order_shelf(shelf_id):
                                      shelf=shelf, page="shelforder")
     else:
         abort(404)
+        return None
 
 
-def check_shelf_edit_permissions(cur_shelf):
+def check_shelf_edit_permissions(cur_shelf) -> bool:
     if not cur_shelf.is_public and cur_shelf.user_id != int(current_user.id):
         log.error(f"User {current_user.id} not allowed to edit shelf: {cur_shelf.name}")
         return False
@@ -301,7 +299,7 @@ def check_shelf_edit_permissions(cur_shelf):
     return True
 
 
-def check_shelf_view_permissions(cur_shelf):
+def check_shelf_view_permissions(cur_shelf) -> bool:
     try:
         if cur_shelf.is_public:
             return True
@@ -309,7 +307,7 @@ def check_shelf_view_permissions(cur_shelf):
             log.error(f"User is unauthorized to view non-public shelf: {cur_shelf.name}")
             return False
     except Exception as e:
-        log.error(e)
+        log.exception(e)
     return True
 
 
@@ -324,7 +322,7 @@ def create_edit_shelf(shelf, page_title, page, shelf_id=False):
             return redirect(url_for("web.index"))
         is_public = 1 if to_save.get("is_public") == "on" else 0
         if config.config_kobo_sync:
-            shelf.kobo_sync = True if to_save.get("kobo_sync") else False
+            shelf.kobo_sync = bool(to_save.get("kobo_sync"))
             if shelf.kobo_sync:
                 ub.session.query(ub.ShelfArchive).filter(ub.ShelfArchive.user_id == current_user.id).filter(
                     ub.ShelfArchive.uuid == shelf.uuid).delete()
@@ -364,10 +362,7 @@ def create_edit_shelf(shelf, page_title, page, shelf_id=False):
 
 
 def check_shelf_is_unique(title, is_public, shelf_id=False):
-    if shelf_id:
-        ident = ub.Shelf.id != shelf_id
-    else:
-        ident = true()
+    ident = ub.Shelf.id != shelf_id if shelf_id else true()
     if is_public == 1:
         is_shelf_name_unique = ub.session.query(ub.Shelf) \
                                    .filter((ub.Shelf.name == title) & (ub.Shelf.is_public == 1)) \
@@ -392,7 +387,7 @@ def check_shelf_is_unique(title, is_public, shelf_id=False):
     return is_shelf_name_unique
 
 
-def delete_shelf_helper(cur_shelf):
+def delete_shelf_helper(cur_shelf) -> bool:
     if not cur_shelf or not check_shelf_edit_permissions(cur_shelf):
         return False
     shelf_id = cur_shelf.id
@@ -403,7 +398,7 @@ def delete_shelf_helper(cur_shelf):
     return True
 
 
-def change_shelf_order(shelf_id, order):
+def change_shelf_order(shelf_id, order) -> None:
     result = calibre_db.session.query(db.Books).outerjoin(db.books_series_link,
                                                           db.Books.id == db.books_series_link.c.book)\
         .outerjoin(db.Series).join(ub.BookShelf, ub.BookShelf.book_id == db.Books.id) \
@@ -455,7 +450,7 @@ def render_show_shelf(shelf_type, shelf_id, page_no, sort_param):
         # delete chelf entries where book is not existent anymore, can happen if book is deleted outside calibre-web
         wrong_entries = calibre_db.session.query(ub.BookShelf) \
             .join(db.Books, ub.BookShelf.book_id == db.Books.id, isouter=True) \
-            .filter(db.Books.id == None).all()
+            .filter(db.Books.id is None).all()
         for entry in wrong_entries:
             log.info(f"Not existing book {entry.book_id} in {shelf} deleted")
             try:

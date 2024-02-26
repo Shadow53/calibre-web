@@ -35,9 +35,9 @@ SYMBOLS_TO_TRANSLATE = (
     "öÖüÜóÓőŐúÚéÉáÁűŰíÍąĄćĆęĘłŁńŃóÓśŚźŹżŻ",
     "oOuUoOoOuUeEaAuUiIaAcCeElLnNoOsSzZzZ",
 )
-SYMBOL_TRANSLATION_MAP = dict(
-    [(ord(a), ord(b)) for (a, b) in zip(*SYMBOLS_TO_TRANSLATE)]
-)
+SYMBOL_TRANSLATION_MAP = {
+    ord(a): ord(b) for (a, b) in zip(*SYMBOLS_TO_TRANSLATE)
+}
 
 
 def get_int_or_float(value: str) -> Union[int, float]:
@@ -53,8 +53,7 @@ def strip_accents(s: Optional[str]) -> Optional[str]:
 def sanitize_comments_html(html: str) -> str:
     text = html2text(html)
     md = Markdown()
-    html = md.convert(text)
-    return html
+    return md.convert(text)
 
 
 def html2text(html: str) -> str:
@@ -124,12 +123,12 @@ class LubimyCzytac(Metadata):
             matches = lc_parser.parse_search_results()
             if matches:
                 with ThreadPool(processes=10) as pool:
-                    final_matches = pool.starmap(
+                    return pool.starmap(
                         lc_parser.parse_single_book,
                         [(match, generic_cover, locale) for match in matches],
                     )
-                return final_matches
             return matches
+        return None
 
     def _prepare_query(self, title: str) -> str:
         query = ""
@@ -254,7 +253,7 @@ class LubimyCzytacParser:
         return self._parse_xpath_node(xpath=LubimyCzytac.PUBLISHER, take_first=True)
 
     def _parse_languages(self, locale: str) -> List[str]:
-        languages = list()
+        languages = []
         lang = self._parse_xpath_node(xpath=LubimyCzytac.LANGUAGES, take_first=True)
         if lang:
             if "polski" in lang:
@@ -266,16 +265,15 @@ class LubimyCzytacParser:
     def _parse_series(self) -> Tuple[Optional[str], Optional[Union[float, int]]]:
         series_index = 0
         series = self._parse_xpath_node(xpath=LubimyCzytac.SERIES, take_first=True)
-        if series:
-            if "tom " in series:
-                series_name, series_info = series.split(" (tom ", 1)
-                series_info = series_info.replace(" ", "").replace(")", "")
-                # Check if book is not a bundle, i.e. chapter 1-3
-                if "-" in series_info:
-                    series_info = series_info.split("-", 1)[0]
-                if series_info.replace(".", "").isdigit() is True:
-                    series_index = get_int_or_float(series_info)
-                return series_name, series_index
+        if series and "tom " in series:
+            series_name, series_info = series.split(" (tom ", 1)
+            series_info = series_info.replace(" ", "").replace(")", "")
+            # Check if book is not a bundle, i.e. chapter 1-3
+            if "-" in series_info:
+                series_info = series_info.split("-", 1)[0]
+            if series_info.replace(".", "").isdigit() is True:
+                series_index = get_int_or_float(series_info)
+            return series_name, series_index
         return None, None
 
     def _parse_tags(self) -> List[str]:
@@ -325,8 +323,7 @@ class LubimyCzytacParser:
             if description_node is not None:
                 description = description_node
                 description = sanitize_comments_html(description)
-        description = self._add_extra_info_to_description(description=description)
-        return description
+        return self._add_extra_info_to_description(description=description)
 
     def _add_extra_info_to_description(self, description: str) -> str:
         pages = self._parse_from_summary(attribute_name="numberOfPages")

@@ -76,7 +76,7 @@ def get_user_info(credentials):
     user_info = user_info_service.userinfo().get().execute()
     return user_info.get("email", "")
 
-def send_messsage(token, msg):
+def send_messsage(token, msg) -> None:
     log.debug("Start sending e-mail via Gmail")
     creds = Credentials(
         token=token["token"],

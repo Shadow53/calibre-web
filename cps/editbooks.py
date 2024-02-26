@@ -44,6 +44,8 @@ except ImportError:
         except ImportError:
             clean_html = None
 
+from typing import Optional
+
 from flask import Blueprint, Response, abort, flash, redirect, request, url_for
 from flask_babel import get_locale
 from flask_babel import gettext as _
@@ -82,6 +84,7 @@ def upload_required(f):
         if current_user.role_upload():
             return f(*args, **kwargs)
         abort(403)
+        return None
 
     return inner
 
@@ -92,6 +95,7 @@ def edit_required(f):
         if current_user.role_edit() or current_user.role_admin():
             return f(*args, **kwargs)
         abort(403)
+        return None
 
     return inner
 
@@ -327,6 +331,7 @@ def upload():
                 flash(_("Oops! Database Error: %(error)s.", error=e.orig if hasattr(e, "orig") else e),
                       category="error")
         return Response(json.dumps({"location": url_for("web.index")}), mimetype="application/json")
+    return None
 
 
 @editbook.route("/admin/book/convert/<int:book_id>", methods=["POST"])
@@ -357,12 +362,12 @@ def convert_bookformat(book_id):
 @editbook.route("/ajax/getcustomenum/<int:c_id>")
 @login_required
 def table_get_custom_enum(c_id):
-    ret = list()
+    ret = []
     cc = (calibre_db.session.query(db.CustomColumns)
           .filter(db.CustomColumns.id == c_id)
           .filter(db.CustomColumns.datatype.notin_(db.cc_exceptions)).one_or_none())
     ret.append({"value": "", "text": ""})
-    for idx, en in enumerate(cc.get_display_dict()["enum_values"]):
+    for _idx, en in enumerate(cc.get_display_dict()["enum_values"]):
         ret.append({"value": en, "text": en})
     return json.dumps(ret)
 
@@ -393,14 +398,14 @@ def edit_list_book(param):
                                        "newValue": ", ".join([publisher.name for publisher in book.publishers])}),
                            mimetype="application/json")
         elif param == "languages":
-            invalid = list()
+            invalid = []
             edit_book_languages(vals["value"], book, invalid=invalid)
             if invalid:
                 ret = Response(json.dumps({"success": False,
                                            "msg": "Invalid languages in request: {}".format(",".join(invalid))}),
                                mimetype="application/json")
             else:
-                lang_names = list()
+                lang_names = []
                 for lang in book.languages:
                     lang_names.append(isoLanguages.get_language_name(get_locale(), lang.lang_code))
                 ret = Response(json.dumps({"success": True, "newValue":  ", ".join(lang_names)}),
@@ -452,7 +457,7 @@ def edit_list_book(param):
             if ret:
                 return ret, 400
         elif param.startswith("custom_column_"):
-            new_val = dict()
+            new_val = {}
             new_val[param] = vals["value"]
             edit_single_cc_data(book.id, book, param[14:], new_val)
             # TODO: Very hacky find better solution
@@ -517,7 +522,7 @@ def simulate_merge_list_book():
 @edit_required
 def merge_list_book():
     vals = request.get_json().get("Merge_books")
-    to_file = list()
+    to_file = []
     if vals:
         # load all formats from target book
         to_book = calibre_db.get_book(vals[0])
@@ -577,7 +582,7 @@ def table_xchange_author_title():
 
             if edited_books_id:
                 # TODO: Handle error
-                edit_error = helper.update_dir_structure(edited_books_id, config.get_book_path(), input_authors[0],
+                _edit_error = helper.update_dir_structure(edited_books_id, config.get_book_path(), input_authors[0],
                                                          renamed_author=renamed)
             if modify_date:
                 book.last_modified = datetime.utcnow()
@@ -595,7 +600,7 @@ def table_xchange_author_title():
     return ""
 
 
-def merge_metadata(to_save, meta):
+def merge_metadata(to_save, meta) -> None:
     if to_save.get("author_name", "") == _("Unknown"):
         to_save["author_name"] = ""
     if to_save.get("book_title", "") == _("Unknown"):
@@ -610,7 +615,7 @@ def merge_metadata(to_save, meta):
 
 
 def identifier_list(to_save, book):
-    """Generate a list of Identifiers from form information"""
+    """Generate a list of Identifiers from form information."""
     id_type_prefix = "identifier-type-"
     id_val_prefix = "identifier-val-"
     result = []
@@ -618,7 +623,7 @@ def identifier_list(to_save, book):
         if not type_key.startswith(id_type_prefix):
             continue
         val_key = id_val_prefix + type_key[len(id_type_prefix):]
-        if val_key not in to_save.keys():
+        if val_key not in to_save:
             continue
         if to_save[val_key].startswith("data:"):
             to_save[val_key], __, __ = str.partition(to_save[val_key], ",")
@@ -630,7 +635,7 @@ def prepare_authors(authr):
     # handle authors
     input_authors = authr.split("&")
     # handle_authors(input_authors)
-    input_authors = list(map(lambda it: it.strip().replace(",", "|"), input_authors))
+    input_authors = [it.strip().replace(",", "|") for it in input_authors]
     # Remove duplicates in authors list
     input_authors = helper.uniq(input_authors)
 
@@ -638,7 +643,7 @@ def prepare_authors(authr):
     if input_authors == [""]:
         input_authors = [_("Unknown")]  # prevent empty Author
 
-    renamed = list()
+    renamed = []
     for in_aut in input_authors:
         renamed_author = calibre_db.session.query(db.Authors).filter(db.Authors.name == in_aut).first()
         if renamed_author and in_aut != renamed_author.name:
@@ -662,7 +667,7 @@ def prepare_authors_on_upload(title, authr):
 
     input_authors, renamed = prepare_authors(authr)
 
-    sort_authors_list = list()
+    sort_authors_list = []
     db_author = None
     for inp in input_authors:
         stored_author = calibre_db.session.query(db.Authors).filter(db.Authors.name == inp).first()
@@ -761,19 +766,16 @@ def file_handling_on_upload(requested_file):
     try:
         meta = uploader.upload(requested_file, config.config_rarfile_location)
     except OSError:
-        log.error("File %s could not saved to temp dir", requested_file.filename)
+        log.exception("File %s could not saved to temp dir", requested_file.filename)
         flash(_("File %(filename)s could not saved to temp dir",
                 filename=requested_file.filename), category="error")
         return None, Response(json.dumps({"location": url_for("web.index")}), mimetype="application/json")
     return meta, None
 
 
-def move_coverfile(meta, db_book):
+def move_coverfile(meta, db_book) -> None:
     # move cover to final directory, including book id
-    if meta.cover:
-        cover_file = meta.cover
-    else:
-        cover_file = os.path.join(constants.STATIC_DIR, "generic_cover.jpg")
+    cover_file = meta.cover if meta.cover else os.path.join(constants.STATIC_DIR, "generic_cover.jpg")
     new_cover_path = os.path.join(config.get_book_path(), db_book.path)
     try:
         os.makedirs(new_cover_path, exist_ok=True)
@@ -781,13 +783,13 @@ def move_coverfile(meta, db_book):
         if meta.cover:
             os.unlink(meta.cover)
     except OSError as e:
-        log.error("Failed to move cover file %s: %s", new_cover_path, e)
+        log.exception("Failed to move cover file %s: %s", new_cover_path, e)
         flash(_("Failed to Move Cover File %(file)s: %(error)s", file=new_cover_path,
                 error=e),
               category="error")
 
 
-def delete_whole_book(book_id, book):
+def delete_whole_book(book_id, book) -> None:
     # delete book from shelves, Downloads, Read list
     ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == book_id).delete()
     ub.session.query(ub.ReadBook).filter(ub.ReadBook.book_id == book_id).delete()
@@ -808,7 +810,7 @@ def delete_whole_book(book_id, book):
         cc_string = "custom_column_" + str(c.id)
         if not c.is_multiple:
             if len(getattr(book, cc_string)) > 0:
-                if c.datatype == "bool" or c.datatype == "integer" or c.datatype == "float":
+                if c.datatype in ("bool", "integer", "float"):
                     del_cc = getattr(book, cc_string)[0]
                     getattr(book, cc_string).remove(del_cc)
                     log.debug("remove " + str(c.id))
@@ -930,8 +932,8 @@ def render_edit_book(book_id):
         author_names.append(authr.name.replace("|", ","))
 
     # Option for showing convert_book button
-    valid_source_formats = list()
-    allowed_conversion_formats = list()
+    valid_source_formats = []
+    allowed_conversion_formats = []
     kepub_possible = None
     if config.config_converterpath:
         for file in book.data:
@@ -982,7 +984,7 @@ def edit_book_ratings(to_save, book):
 
 def edit_book_tags(tags, book):
     input_tags = tags.split(",")
-    input_tags = list(map(lambda it: it.strip(), input_tags))
+    input_tags = [it.strip() for it in input_tags]
     # Remove duplicates
     input_tags = helper.uniq(input_tags)
     return modify_database_object(input_tags, book.tags, db.Tags, calibre_db.session, "tags")
@@ -1012,12 +1014,9 @@ def edit_book_comments(comments, book):
     modify_date = False
     if comments:
         try:
-            if BLEACH:
-                comments = clean_html(comments, tags=set(), attributes=set())
-            else:
-                comments = clean_html(comments)
+            comments = clean_html(comments, tags=set(), attributes=set()) if BLEACH else clean_html(comments)
         except ParserError as e:
-            log.error(f"Comments of book {book.id} are corrupted: {e}")
+            log.exception(f"Comments of book {book.id} are corrupted: {e}")
             comments = ""
     if len(book.comments):
         if book.comments[0].text != comments:
@@ -1146,10 +1145,7 @@ def edit_cc_data(book_id, book, to_save, cc):
     for c in cc:
         cc_string = "custom_column_" + str(c.id)
         if not c.is_multiple:
-            if len(getattr(book, cc_string)) > 0:
-                cc_db_value = getattr(book, cc_string)[0].value
-            else:
-                cc_db_value = None
+            cc_db_value = getattr(book, cc_string)[0].value if len(getattr(book, cc_string)) > 0 else None
             if to_save[cc_string].strip():
                 if c.datatype in ["int", "bool", "float", "datetime", "comments"]:
                     change, to_save = edit_cc_data_value(book_id, book, c, to_save, cc_db_value, cc_string)
@@ -1165,7 +1161,7 @@ def edit_cc_data(book_id, book, to_save, cc):
                     changed = True
         else:
             input_tags = to_save[cc_string].split(",")
-            input_tags = list(map(lambda it: it.strip(), input_tags))
+            input_tags = [it.strip() for it in input_tags]
             changed |= modify_database_object(input_tags,
                                               getattr(book, cc_string),
                                               db.cc_classes[c.id],
@@ -1242,7 +1238,7 @@ def upload_single_file(file_request, book, book_id):
     return None
 
 
-def upload_cover(cover_request, book):
+def upload_cover(cover_request, book) -> Optional[bool]:
     requested_file = cover_request.files.get("btn-upload-cover", None)
     if requested_file:
         # check for empty request
@@ -1260,7 +1256,7 @@ def upload_cover(cover_request, book):
     return None
 
 
-def handle_title_on_edit(book, book_title):
+def handle_title_on_edit(book, book_title) -> bool:
     # handle book title
     book_title = book_title.rstrip().strip()
     if book.title != book_title:
@@ -1279,13 +1275,10 @@ def handle_author_on_edit(book, author_name, update_stored=True):
     # change |= modify_database_object(input_authors, book.authors, db.Authors, calibre_db.session, 'author')
     # Search for each author if author is in database, if not, author name and sorted author name is generated new
     # everything then is assembled for sorted author field in database
-    sort_authors_list = list()
+    sort_authors_list = []
     for inp in input_authors:
         stored_author = calibre_db.session.query(db.Authors).filter(db.Authors.name == inp).first()
-        if not stored_author:
-            stored_author = helper.get_sorted_author(inp.replace("|", ","))
-        else:
-            stored_author = stored_author.sort
+        stored_author = helper.get_sorted_author(inp.replace("|", ",")) if not stored_author else stored_author.sort
         sort_authors_list.append(helper.get_sorted_author(stored_author))
     sort_authors = " & ".join(sort_authors_list)
     if book.author_sort != sort_authors and update_stored:
@@ -1323,10 +1316,7 @@ def search_objects_add(db_book_object, db_type, input_elements):
     for inp_element in input_elements:
         found = False
         for c_elements in db_book_object:
-            if db_type == "custom":
-                type_elements = c_elements.value
-            else:
-                type_elements = c_elements
+            type_elements = c_elements.value if db_type == "custom" else c_elements
             if type_elements == inp_element:
                 found = True
                 break
@@ -1449,10 +1439,10 @@ def modify_identifiers(input_identifiers, db_identifiers, db_session):
     """
     changed = False
     error = False
-    input_dict = dict([(identifier.type.lower(), identifier) for identifier in input_identifiers])
+    input_dict = {identifier.type.lower(): identifier for identifier in input_identifiers}
     if len(input_identifiers) != len(input_dict):
         error = True
-    db_dict = dict([(identifier.type.lower(), identifier) for identifier in db_identifiers])
+    db_dict = {identifier.type.lower(): identifier for identifier in db_identifiers}
     # delete db identifiers not present in input or modify them with input val
     for identifier_type, identifier in db_dict.items():
         if identifier_type not in input_dict:

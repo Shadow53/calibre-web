@@ -51,7 +51,7 @@ def internal_error(error):
                            instance=config.config_calibre_web_title
                            ), 500
 
-def init_errorhandler():
+def init_errorhandler() -> None:
     # http error handling
     for ex in default_exceptions:
         if ex < 500:

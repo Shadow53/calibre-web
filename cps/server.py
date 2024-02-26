@@ -48,15 +48,15 @@ from . import logger
 log = logger.create()
 
 
-def _readable_listen_address(address, port):
+def _readable_listen_address(address, port) -> str:
     if ":" in address:
         address = "[" + address + "]"
-    return "%s:%s" % (address, port)
+    return f"{address}:{port}"
 
 
 class WebServer:
 
-    def __init__(self):
+    def __init__(self) -> None:
         signal.signal(signal.SIGINT, self._killServer)
         signal.signal(signal.SIGTERM, self._killServer)
 
@@ -69,7 +69,7 @@ class WebServer:
         self.unix_socket_file = None
         self.ssl_args = None
 
-    def init_app(self, application, config):
+    def init_app(self, application, config) -> None:
         self.app = application
         self.listen_address = config.get_config_ipaddress()
         self.listen_port = config.config_port
@@ -89,7 +89,7 @@ class WebServer:
         keyfile_path = config.get_config_keyfile()
         if certfile_path and keyfile_path:
             if os.path.isfile(certfile_path) and os.path.isfile(keyfile_path):
-                self.ssl_args = dict(certfile=certfile_path, keyfile=keyfile_path)
+                self.ssl_args = {"certfile": certfile_path, "keyfile": keyfile_path}
             else:
                 log.warning("The specified paths for the ssl certificate file and/or key file seem to be broken. "
                             "Ignoring ssl.")
@@ -101,7 +101,7 @@ class WebServer:
         SD_LISTEN_FDS_START = 3
         return GeventSocket(fileno=SD_LISTEN_FDS_START)
 
-    def _prepare_unix_socket(self, socket_file):
+    def _prepare_unix_socket(self, socket_file) -> None:
         # the socket file must not exist prior to bind()
         if os.path.exists(socket_file):
             # avoid nuking regular files and symbolic links (could be a mistype or security issue)
@@ -142,7 +142,7 @@ class WebServer:
             address = ("::", self.listen_port)
             sock = WSGIServer.get_listener(address, family=socket.AF_INET6)
         except OSError as ex:
-            log.error("%s", ex)
+            log.exception("%s", ex)
             log.warning(f"Unable to listen on {address}, trying on IPv4 only...")
             address = ("", self.listen_port)
             sock = WSGIServer.get_listener(address, family=socket.AF_INET)
@@ -153,7 +153,7 @@ class WebServer:
     def _get_args_for_reloading():
         """Determine how the script was executed, and return the args needed
         to execute it again in a new process.
-        Code from https://github.com/pyload/pyload. Author GammaC0de, voulter
+        Code from https://github.com/pyload/pyload. Author GammaC0de, voulter.
         """
         rv = [sys.executable]
         py_script = sys.argv[0]
@@ -207,7 +207,7 @@ class WebServer:
             rv = [f'"{a}"' for a in rv]
         return rv
 
-    def _start_gevent(self):
+    def _start_gevent(self) -> None:
         ssl_args = self.ssl_args or {}
 
         try:
@@ -232,7 +232,7 @@ class WebServer:
                 os.remove(self.unix_socket_file)
                 self.unix_socket_file = None
 
-    def _start_tornado(self):
+    def _start_tornado(self) -> None:
         if os.name == "nt" and sys.version_info > (3, 7):
             import asyncio
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -273,7 +273,7 @@ class WebServer:
                 os.remove(self.unix_socket_file)
                 self.unix_socket_file = None
 
-    def start(self):
+    def start(self) -> bool:
         try:
             if _GEVENT:
                 # leave subprocess out to allow forking for fetchers and processors
@@ -281,7 +281,7 @@ class WebServer:
             else:
                 self._start_tornado()
         except Exception as ex:
-            log.error("Error starting server: %s", ex)
+            log.exception("Error starting server: %s", ex)
             print("Error starting server: %s" % ex)
             self.stop()
             return False
@@ -301,16 +301,16 @@ class WebServer:
         return True
 
     @staticmethod
-    def shutdown_scheduler():
+    def shutdown_scheduler() -> None:
         from .services.background_scheduler import BackgroundScheduler
         scheduler = BackgroundScheduler()
         if scheduler:
             scheduler.scheduler.shutdown()
 
-    def _killServer(self, __, ___):
+    def _killServer(self, __, ___) -> None:
         self.stop()
 
-    def stop(self, restart=False):
+    def stop(self, restart=False) -> None:
         from . import updater_thread
         updater_thread.stop()
 

@@ -126,7 +126,7 @@ def feed_hot():
     all_books = ub.session.query(ub.Downloads, func.count(ub.Downloads.book_id)).order_by(
         func.count(ub.Downloads.book_id).desc()).group_by(ub.Downloads.book_id)
     hot_books = all_books.offset(off).limit(config.config_books_per_page)
-    entries = list()
+    entries = []
     for book in hot_books:
         query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
         download_book = query.filter(calibre_db.common_filters()).filter(
@@ -267,7 +267,7 @@ def feed_ratingindex():
 
     pagination = Pagination((int(off) / (int(config.config_books_per_page)) + 1), config.config_books_per_page,
                             len(entries))
-    element = list()
+    element = []
     for entry in entries:
         element.append(FeedObject(entry[0].id, _("{} Stars").format(entry.name)))
     return render_xml_template("feed.xml", listelements=element, folder="opds.feed_ratings", pagination=pagination)
@@ -290,7 +290,7 @@ def feed_formatindex():
     pagination = Pagination((int(off) / (int(config.config_books_per_page)) + 1), config.config_books_per_page,
                             len(entries))
 
-    element = list()
+    element = []
     for entry in entries:
         element.append(FeedObject(entry.format, entry.format))
     return render_xml_template("feed.xml", listelements=element, folder="opds.feed_format", pagination=pagination)
@@ -360,7 +360,7 @@ def feed_shelf(book_id):
                                                            ub.Shelf.id == book_id),
                                                       and_(ub.Shelf.is_public == 1,
                                                            ub.Shelf.id == book_id))).first()
-    result = list()
+    result = []
     # user is allowed to access shelf
     if shelf:
         result, __, pagination = calibre_db.fill_indexpage((int(off) / (int(config.config_books_per_page)) + 1),
@@ -373,7 +373,7 @@ def feed_shelf(book_id):
         # delete shelf entries where book is not existent anymore, can happen if book is deleted outside calibre-web
         wrong_entries = calibre_db.session.query(ub.BookShelf) \
             .join(db.Books, ub.BookShelf.book_id == db.Books.id, isouter=True) \
-            .filter(db.Books.id == None).all()
+            .filter(db.Books.id is None).all()
         for entry in wrong_entries:
             log.info(f"Not existing book {entry.book_id} in {shelf} deleted")
             try:
@@ -390,10 +390,7 @@ def feed_shelf(book_id):
 def opds_download_link(book_id, book_format):
     if not current_user.role_download():
         return abort(403)
-    if "Kobo" in request.headers.get("User-Agent"):
-        client = "kobo"
-    else:
-        client = ""
+    client = "kobo" if "Kobo" in request.headers.get("User-Agent") else ""
     return get_download_link(book_id, book_format.lower(), client)
 
 
@@ -414,7 +411,7 @@ def get_metadata_calibre_companion(uuid, library):
 @opds.route("/opds/stats")
 @requires_basic_auth_if_no_ano
 def get_database_stats():
-    stat = dict()
+    stat = {}
     stat["books"] = calibre_db.session.query(db.Books).count()
     stat["authors"] = calibre_db.session.query(db.Authors).count()
     stat["categories"] = calibre_db.session.query(db.Tags).count()
@@ -448,7 +445,7 @@ def feed_unread_books():
 
 
 class FeedObject:
-    def __init__(self, rating_id, rating_name):
+    def __init__(self, rating_id, rating_name) -> None:
         self.rating_id = rating_id
         self.rating_name = rating_name
 

@@ -59,12 +59,13 @@ class MyWSGIContainer(WSGIContainer):
                 if hasattr(app_response, "close"):
                     app_response.close()  # type: ignore
             if not data:
-                raise Exception("WSGI app did not call start_response")
+                msg = "WSGI app did not call start_response"
+                raise Exception(msg)
 
             status_code_str, reason = data["status"].split(" ", 1)
             status_code = int(status_code_str)
             headers = data["headers"]  # type: List[Tuple[str, str]]
-            header_set = set(k.lower() for (k, v) in headers)
+            header_set = {k.lower() for (k, v) in headers}
             body = escape.utf8(body)
             if status_code != 304:
                 if "content-length" not in header_set:

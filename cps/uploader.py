@@ -113,8 +113,7 @@ def default_meta(tmp_file_path, original_file_name, original_file_extension):
 
 
 def parse_xmp(pdf_file):
-    """Parse XMP Metadata and prepare for BookMeta object
-    """
+    """Parse XMP Metadata and prepare for BookMeta object."""
     try:
         xmp_info = pdf_file.xmp_metadata
     except Exception as ex:
@@ -127,15 +126,9 @@ def parse_xmp(pdf_file):
         except AttributeError:
             xmp_author = ["Unknown"]
 
-        if xmp_info.dc_title:
-            xmp_title = xmp_info.dc_title["x-default"]
-        else:
-            xmp_title = ""
+        xmp_title = xmp_info.dc_title["x-default"] if xmp_info.dc_title else ""
 
-        if xmp_info.dc_description:
-            xmp_description = xmp_info.dc_description["x-default"]
-        else:
-            xmp_description = ""
+        xmp_description = xmp_info.dc_description["x-default"] if xmp_info.dc_description else ""
 
         languages = []
         try:
@@ -154,6 +147,7 @@ def parse_xmp(pdf_file):
                 "languages": languages,
                 "publisher": xmp_publisher
                 }
+    return None
 
 
 def pdf_meta(tmp_file_path, original_file_name, original_file_extension):
@@ -239,7 +233,7 @@ def pdf_preview(tmp_file_path, tmp_dir):
 
 
 def get_magick_version():
-    ret = dict()
+    ret = {}
     if not use_generic_pdf_cover:
         ret["Image Magick"] = ImageVersion.MAGICK_VERSION
     else:

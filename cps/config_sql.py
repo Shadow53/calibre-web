@@ -45,7 +45,7 @@ class _Flask_Settings(_Base):
     id = Column(Integer, primary_key=True)
     flask_session_key = Column(BLOB, default=b"")
 
-    def __init__(self, key):
+    def __init__(self, key) -> None:
         self.flask_session_key = key
 
 
@@ -167,17 +167,17 @@ class _Settings(_Base):
     config_session = Column(Integer, default=1)
     config_ratelimiter = Column(Boolean, default=True)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__class__.__name__
 
 
 # Class holds all application specific settings in calibre-web
 class ConfigSQL:
     # pylint: disable=no-member
-    def __init__(self):
-        self.__dict__["dirty"] = list()
+    def __init__(self) -> None:
+        self.__dict__["dirty"] = []
 
-    def init_config(self, session, secret_key, cli):
+    def init_config(self, session, secret_key, cli) -> None:
         self._session = session
         self._settings = None
         self.db_configured = None
@@ -188,16 +188,16 @@ class ConfigSQL:
 
         change = False
 
-        if self.config_binariesdir == None: # pylint: disable=access-member-before-definition
+        if self.config_binariesdir is None: # pylint: disable=access-member-before-definition
             change = True
             self.config_binariesdir = autodetect_calibre_binaries()
             self.config_converterpath = autodetect_converter_binary(self.config_binariesdir)
 
-        if self.config_kepubifypath == None:  # pylint: disable=access-member-before-definition
+        if self.config_kepubifypath is None:  # pylint: disable=access-member-before-definition
             change = True
             self.config_kepubifypath = autodetect_kepubify_binary()
 
-        if self.config_rarfile_location == None:  # pylint: disable=access-member-before-definition
+        if self.config_rarfile_location is None:  # pylint: disable=access-member-before-definition
             change = True
             self.config_rarfile_location = autodetect_unrar_binary()
         if change:
@@ -288,7 +288,7 @@ class ConfigSQL:
     def get_scheduled_task_settings(self):
         return {k: v for k, v in self.__dict__.items() if k.startswith("schedule_")}
 
-    def set_from_dictionary(self, dictionary, field, convertor=None, default=None, encode=None):
+    def set_from_dictionary(self, dictionary, field, convertor=None, default=None, encode=None) -> bool:
         """Possibly updates a field of this object.
         The new value, if present, is grabbed from the given dictionary, and optionally passed through a convertor.
 
@@ -303,10 +303,7 @@ class ConfigSQL:
             return False
 
         if convertor is not None:
-            if encode:
-                new_value = convertor(new_value.encode(encode))
-            else:
-                new_value = convertor(new_value)
+            new_value = convertor(new_value.encode(encode)) if encode else convertor(new_value)
 
         current_value = self.__dict__.get(field)
         if current_value == new_value:
@@ -322,7 +319,7 @@ class ConfigSQL:
                 storage[k] = v
         return storage
 
-    def load(self):
+    def load(self) -> None:
         """Load all configuration values from the underlying storage."""
         s = self._read_from_storage()  # type: _Settings
         for k, v in s.__dict__.items():
@@ -361,11 +358,11 @@ class ConfigSQL:
             try:
                 self._session.commit()
             except OperationalError as e:
-                log.error("Database error: %s", e)
+                log.exception("Database error: %s", e)
                 self._session.rollback()
-        self.__dict__["dirty"] = list()
+        self.__dict__["dirty"] = []
 
-    def save(self):
+    def save(self) -> None:
         """Apply all configuration values to the underlying storage."""
         s = self._read_from_storage()  # type: _Settings
 
@@ -383,11 +380,11 @@ class ConfigSQL:
         try:
             self._session.commit()
         except OperationalError as e:
-            log.error("Database error: %s", e)
+            log.exception("Database error: %s", e)
             self._session.rollback()
         self.load()
 
-    def invalidate(self, error=None):
+    def invalidate(self, error=None) -> None:
         if error:
             log.error(error)
         log.warning("invalidating configuration")
@@ -397,7 +394,7 @@ class ConfigSQL:
     def get_book_path(self):
         return self.config_calibre_split_dir if self.config_calibre_split_dir else self.config_calibre_dir
 
-    def store_calibre_uuid(self, calibre_db, Library_table):
+    def store_calibre_uuid(self, calibre_db, Library_table) -> None:
         try:
             calibre_uuid = calibre_db.session.query(Library_table).one_or_none()
             if self.config_calibre_uuid != calibre_uuid.uuid:
@@ -406,12 +403,12 @@ class ConfigSQL:
         except AttributeError:
             pass
 
-    def __setattr__(self, attr_name, attr_value):
+    def __setattr__(self, attr_name, attr_value) -> None:
         super().__setattr__(attr_name, attr_value)
         self.__dict__["dirty"].append(attr_name)
 
 
-def _encrypt_fields(session, secret_key):
+def _encrypt_fields(session, secret_key) -> None:
     try:
         session.query(exists().where(_Settings.mail_password_e)).scalar()
     except OperationalError:
@@ -437,7 +434,7 @@ def _encrypt_fields(session, secret_key):
         session.commit()
 
 
-def _migrate_table(session, orm_class, secret_key=None):
+def _migrate_table(session, orm_class, secret_key=None) -> None:
     if secret_key:
         _encrypt_fields(session, secret_key)
     changed = False
@@ -454,11 +451,8 @@ def _migrate_table(session, orm_class, secret_key=None):
                     column_default = f"DEFAULT {int(column.default.arg)}"
                 else:
                     column_default = f"DEFAULT `{column.default.arg}`"
-                if isinstance(column.type, JSON):
-                    column_type = "JSON"
-                else:
-                    column_type = column.type
-                alter_table = text("ALTER TABLE %s ADD COLUMN `%s` %s %s" % (orm_class.__tablename__,
+                column_type = "JSON" if isinstance(column.type, JSON) else column.type
+                alter_table = text("ALTER TABLE {} ADD COLUMN `{}` {} {}".format(orm_class.__tablename__,
                                                                              column_name,
                                                                              column_type,
                                                                              column_default))
@@ -466,7 +460,7 @@ def _migrate_table(session, orm_class, secret_key=None):
                 session.execute(alter_table)
                 changed = True
             except json.decoder.JSONDecodeError as e:
-                log.error(f"Database corrupt column: {column_name}")
+                log.exception(f"Database corrupt column: {column_name}")
                 log.debug(e)
 
     if changed:
@@ -529,14 +523,14 @@ def autodetect_kepubify_binary():
     return ""
 
 
-def _migrate_database(session, secret_key):
+def _migrate_database(session, secret_key) -> None:
     # make sure the table is created, if it does not exist
     _Base.metadata.create_all(session.bind)
     _migrate_table(session, _Settings, secret_key)
     _migrate_table(session, _Flask_Settings)
 
 
-def load_configuration(session, secret_key):
+def load_configuration(session, secret_key) -> None:
     _migrate_database(session, secret_key)
     if not session.query(_Settings).count():
         session.add(_Settings())
@@ -545,7 +539,7 @@ def load_configuration(session, secret_key):
 
 def get_flask_session_key(_session):
     flask_settings = _session.query(_Flask_Settings).one_or_none()
-    if flask_settings == None:
+    if flask_settings is None:
         flask_settings = _Flask_Settings(os.urandom(32))
         _session.add(flask_settings)
         _session.commit()

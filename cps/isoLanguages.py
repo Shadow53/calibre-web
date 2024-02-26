@@ -45,6 +45,7 @@ except ImportError:
             return _copy_fields(pyc_languages.get(alpha_2=part1))
         if name is not None:
             return _copy_fields(pyc_languages.get(name=name))
+        return None
 
 
 def get_language_names(locale):
@@ -55,13 +56,13 @@ def get_language_name(locale, lang_code):
     try:
         return get_language_names(locale)[lang_code]
     except KeyError:
-        log.error(f"Missing translation for language name: {lang_code}")
+        log.exception(f"Missing translation for language name: {lang_code}")
         return "Unknown"
 
 
 def get_language_codes(locale, language_names, remainder=None):
-    language_names = set(x.strip().lower() for x in language_names if x)
-    lang = list()
+    language_names = {x.strip().lower() for x in language_names if x}
+    lang = []
     for k, v in get_language_names(locale).items():
         v = v.lower()
         if v in language_names:
@@ -74,10 +75,10 @@ def get_language_codes(locale, language_names, remainder=None):
 
 
 def get_valid_language_codes(locale, language_names, remainder=None):
-    lang = list()
+    lang = []
     if "" in language_names:
         language_names.remove("")
-    for k, __ in get_language_names(locale).items():
+    for k in get_language_names(locale):
         if k in language_names:
             lang.append(k)
             language_names.remove(k)

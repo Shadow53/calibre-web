@@ -38,7 +38,7 @@ class BackgroundScheduler:
             return False
 
         if cls._instance is None:
-            cls._instance = super(BackgroundScheduler, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
             cls.log = logger.create()
             cls.scheduler = BScheduler()
             cls.scheduler.start()
@@ -48,18 +48,20 @@ class BackgroundScheduler:
     def schedule(self, func, trigger, name=None):
         if use_APScheduler:
             return self.scheduler.add_job(func=func, trigger=trigger, name=name)
+        return None
 
     # Expects a lambda expression for the task
     def schedule_task(self, task, user=None, name=None, hidden=False, trigger=None):
         if use_APScheduler:
-            def scheduled_task():
+            def scheduled_task() -> None:
                 worker_task = task()
                 worker_task.scheduled = True
                 WorkerThread.add(user, worker_task, hidden=hidden)
             return self.schedule(func=scheduled_task, trigger=trigger, name=name)
+        return None
 
     # Expects a list of lambda expressions for the tasks
-    def schedule_tasks(self, tasks, user=None, trigger=None):
+    def schedule_tasks(self, tasks, user=None, trigger=None) -> None:
         if use_APScheduler:
             for task in tasks:
                 self.schedule_task(task[0], user=user, trigger=trigger, name=task[1], hidden=task[2])
@@ -67,16 +69,17 @@ class BackgroundScheduler:
     # Expects a lambda expression for the task
     def schedule_task_immediately(self, task, user=None, name=None, hidden=False):
         if use_APScheduler:
-            def immediate_task():
+            def immediate_task() -> None:
                 WorkerThread.add(user, task(), hidden)
             return self.schedule(func=immediate_task, trigger=DateTrigger(), name=name)
+        return None
 
     # Expects a list of lambda expressions for the tasks
-    def schedule_tasks_immediately(self, tasks, user=None):
+    def schedule_tasks_immediately(self, tasks, user=None) -> None:
         if use_APScheduler:
             for task in tasks:
                 self.schedule_task_immediately(task[0], user, name="immediately " + task[1], hidden=task[2])
 
     # Remove all jobs
-    def remove_all_jobs(self):
+    def remove_all_jobs(self) -> None:
         self.scheduler.remove_all_jobs()

@@ -55,7 +55,7 @@ def get_tasks_status():
 
 # helper function to apply localize status information in tasklist entries
 def render_task_status(tasklist):
-    rendered_tasklist = list()
+    rendered_tasklist = []
     for __, user, __, task, __ in tasklist:
         if user == current_user.name or current_user.role_admin():
             ret = {}

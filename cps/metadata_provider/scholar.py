@@ -25,7 +25,8 @@ except (ImportError):
 try:
     from scholarly import scholarly
 except FakeUserAgentError:
-    raise ImportError("No module named 'scholarly'")
+    msg = "No module named 'scholarly'"
+    raise ImportError(msg)
 
 from cps import logger
 from cps.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
@@ -41,7 +42,7 @@ class scholar(Metadata):
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"
     ) -> Optional[List[MetaRecord]]:
-        val = list()
+        val = []
         if self.active:
             title_tokens = list(self.get_title_tokens(query, strip_joiners=False))
             if title_tokens:
@@ -53,7 +54,7 @@ class scholar(Metadata):
                 scholar_gen = itertools.islice(scholarly.search_pubs(query), 10)
             except Exception as e:
                 log.warning(e)
-                return list()
+                return []
             for result in scholar_gen:
                 match = self._parse_search_result(
                     result=result, generic_cover="", locale=locale

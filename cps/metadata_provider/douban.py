@@ -216,7 +216,7 @@ class Douban(Metadata):
         return match
 
     def _clean_date(self, date: str) -> str:
-        """Clean up the date string to be in the format YYYY-MM-DD
+        """Clean up the date string to be in the format YYYY-MM-DD.
 
         Examples of possible patterns:
             '2014-7-16', '1988年4月', '1995-04', '2021-8', '2020-12-1', '1996年',

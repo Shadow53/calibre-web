@@ -26,6 +26,7 @@ except ImportError:
     import Queue as queue
 from collections import namedtuple
 from datetime import datetime
+from typing import NoReturn
 
 from cps import logger
 
@@ -49,13 +50,13 @@ def _get_main_thread():
     for t in threading.enumerate():
         if t.__class__.__name__ == "_MainThread":
             return t
-    raise Exception("main thread not found?!")
+    msg = "main thread not found?!"
+    raise Exception(msg)
 
 
 class ImprovedQueue(queue.Queue):
     def to_list(self):
-        """Returns a copy of all items in the queue without removing them.
-        """
+        """Returns a copy of all items in the queue without removing them."""
         with self.mutex:
             return list(self.queue)
 
@@ -70,10 +71,10 @@ class WorkerThread(threading.Thread):
             cls._instance = WorkerThread()
         return cls._instance
 
-    def __init__(self):
+    def __init__(self) -> None:
         threading.Thread.__init__(self)
 
-        self.dequeued = list()
+        self.dequeued = []
 
         self.doLock = threading.Lock()
         self.queue = ImprovedQueue()
@@ -81,7 +82,7 @@ class WorkerThread(threading.Thread):
         self.start()
 
     @classmethod
-    def add(cls, user, task, hidden=False):
+    def add(cls, user, task, hidden=False) -> None:
         ins = cls.get_instance()
         ins.num += 1
         username = user if user is not None else "System"
@@ -100,7 +101,7 @@ class WorkerThread(threading.Thread):
             tasks = self.queue.to_list() + self.dequeued
             return sorted(tasks, key=lambda x: x.num)
 
-    def cleanup_tasks(self):
+    def cleanup_tasks(self) -> None:
         with self.doLock:
             dead = []
             alive = []
@@ -118,7 +119,7 @@ class WorkerThread(threading.Thread):
             self.dequeued = sorted(ret, key=lambda y: y.num)
 
     # Main thread loop starting the different tasks
-    def run(self):
+    def run(self) -> None:
         main_thread = _get_main_thread()
         while main_thread.is_alive():
             try:
@@ -151,7 +152,7 @@ class WorkerThread(threading.Thread):
 
             self.queue.task_done()
 
-    def end_task(self, task_id):
+    def end_task(self, task_id) -> None:
         ins = self.get_instance()
         for __, __, __, task, __ in ins.tasks:
             if str(task.id) == str(task_id) and task.is_cancellable:
@@ -161,7 +162,7 @@ class WorkerThread(threading.Thread):
 class CalibreTask:
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, message):
+    def __init__(self, message) -> None:
         self._progress = 0
         self.stat = STAT_WAITING
         self.error = None
@@ -173,21 +174,21 @@ class CalibreTask:
         self._scheduled = False
 
     @abc.abstractmethod
-    def run(self, worker_thread):
-        """The main entry-point for this task"""
+    def run(self, worker_thread) -> NoReturn:
+        """The main entry-point for this task."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def name(self):
-        """Provides the caller some human-readable name for this class"""
+    def name(self) -> NoReturn:
+        """Provides the caller some human-readable name for this class."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def is_cancellable(self):
-        """Does this task gracefully handle being cancelled (STAT_ENDED, STAT_CANCELLED)?"""
+    def is_cancellable(self) -> NoReturn:
+        """Does this task gracefully handle being cancelled (STAT_ENDED, STAT_CANCELLED)?."""
         raise NotImplementedError
 
-    def start(self, *args):
+    def start(self, *args) -> None:
         self.start_time = datetime.now()
         self.stat = STAT_STARTED
 
@@ -205,7 +206,7 @@ class CalibreTask:
         return self._stat
 
     @stat.setter
-    def stat(self, x):
+    def stat(self, x) -> None:
         self._stat = x
 
     @property
@@ -213,9 +214,10 @@ class CalibreTask:
         return self._progress
 
     @progress.setter
-    def progress(self, x):
+    def progress(self, x) -> None:
         if not 0 <= x <= 1:
-            raise ValueError("Task progress should within [0, 1] range")
+            msg = "Task progress should within [0, 1] range"
+            raise ValueError(msg)
         self._progress = x
 
     @property
@@ -223,7 +225,7 @@ class CalibreTask:
         return self._error
 
     @error.setter
-    def error(self, x):
+    def error(self, x) -> None:
         self._error = x
 
     @property
@@ -232,7 +234,7 @@ class CalibreTask:
 
     @property
     def dead(self):
-        """Determines whether or not this task can be garbage collected
+        """Determines whether or not this task can be garbage collected.
 
         We have a separate dictating this because there may be certain tasks that want to override this
         """
@@ -244,7 +246,7 @@ class CalibreTask:
         return self._self_cleanup
 
     @self_cleanup.setter
-    def self_cleanup(self, is_self_cleanup):
+    def self_cleanup(self, is_self_cleanup) -> None:
         self._self_cleanup = is_self_cleanup
 
     @property
@@ -252,14 +254,14 @@ class CalibreTask:
         return self._scheduled
 
     @scheduled.setter
-    def scheduled(self, is_scheduled):
+    def scheduled(self, is_scheduled) -> None:
         self._scheduled = is_scheduled
 
-    def _handleError(self, error_message):
+    def _handleError(self, error_message) -> None:
         self.stat = STAT_FAIL
         self.progress = 1
         self.error = error_message
 
-    def _handleSuccess(self):
+    def _handleSuccess(self) -> None:
         self.stat = STAT_FINISH_SUCCESS
         self.progress = 1

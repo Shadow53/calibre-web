@@ -18,7 +18,7 @@ def get_locale():
         if current_user.name != "Guest":
             return current_user.locale
 
-    preferred = list()
+    preferred = []
     if request.accept_languages:
         for x in request.accept_languages.values():
             try:
@@ -34,8 +34,8 @@ def get_user_locale_language(user_language):
 
 
 def get_available_locale():
-    return [Locale("en")] + babel.list_translations()
+    return [Locale("en"), *babel.list_translations()]
 
 
 def get_available_translations():
-    return set(str(item) for item in get_available_locale())
+    return {str(item) for item in get_available_locale()}

@@ -62,6 +62,8 @@ try:
     from sqlalchemy.orm import declarative_base
 except ImportError:
     from sqlalchemy.ext.declarative import declarative_base
+import contextlib
+
 from sqlalchemy.orm import Session, backref, relationship, scoped_session, sessionmaker
 from werkzeug.security import generate_password_hash
 
@@ -74,14 +76,14 @@ app_DB_path = None
 Base = declarative_base()
 searched_ids = {}
 
-logged_in = dict()
+logged_in = {}
 
 
-def signal_store_user_session(object, user):
+def signal_store_user_session(object, user) -> None:
     store_user_session()
 
 
-def store_user_session():
+def store_user_session() -> None:
     if flask_session.get("user_id", ""):
         flask_session["_user_id"] = flask_session.get("user_id", "")
     if flask_session.get("_user_id", ""):
@@ -100,7 +102,7 @@ def store_user_session():
         log.error("No user id in session")
 
 
-def delete_user_session(user_id, session_key):
+def delete_user_session(user_id, session_key) -> None:
     try:
         log.debug("Deleted session_key: " + session_key)
         session.query(User_Sessions).filter(User_Sessions.user_id == user_id,
@@ -122,14 +124,14 @@ def check_user_session(user_id, session_key):
 
 user_logged_in.connect(signal_store_user_session)
 
-def store_ids(result):
-    ids = list()
+def store_ids(result) -> None:
+    ids = []
     for element in result:
         ids.append(element.id)
     searched_ids[current_user.id] = ids
 
-def store_combo_ids(result):
-    ids = list()
+def store_combo_ids(result) -> None:
+    ids = []
     for element in result:
         ids.append(element[0].id)
     searched_ids[current_user.id] = ids
@@ -172,7 +174,7 @@ class UserBase:
         return self._has_role(constants.ROLE_VIEWER)
 
     @property
-    def is_active(self):
+    def is_active(self) -> bool:
         return True
 
     @property
@@ -214,21 +216,19 @@ class UserBase:
             return None
         return self.view_settings[page].get(prop)
 
-    def set_view_property(self, page, prop, value):
+    def set_view_property(self, page, prop, value) -> None:
         if not self.view_settings.get(page):
-            self.view_settings[page] = dict()
+            self.view_settings[page] = {}
         self.view_settings[page][prop] = value
-        try:
+        with contextlib.suppress(AttributeError):
             flag_modified(self, "view_settings")
-        except AttributeError:
-            pass
         try:
             session.commit()
         except (exc.OperationalError, exc.InvalidRequestError) as e:
             session.rollback()
             log.error_or_exception(e)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<User %r>" % self.name
 
 
@@ -286,10 +286,10 @@ class OAuthProvider(Base):
 # Class for anonymous user is derived from User base and completely overrides methods and properties for the
 # anonymous user
 class Anonymous(AnonymousUserMixin, UserBase):
-    def __init__(self):
+    def __init__(self) -> None:
         self.loadSettings()
 
-    def loadSettings(self):
+    def loadSettings(self) -> None:
         data = session.query(User).filter(User.role.op("&")(constants.ROLE_ANONYMOUS) == constants.ROLE_ANONYMOUS)\
             .first()  # type: User
         self.name = data.name
@@ -307,19 +307,19 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.kobo_only_shelves_sync = data.kobo_only_shelves_sync
 
 
-    def role_admin(self):
+    def role_admin(self) -> bool:
         return False
 
     @property
-    def is_active(self):
+    def is_active(self) -> bool:
         return False
 
     @property
-    def is_anonymous(self):
+    def is_anonymous(self) -> bool:
         return True
 
     @property
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         return False
 
     def get_view_property(self, page, prop):
@@ -329,11 +329,11 @@ class Anonymous(AnonymousUserMixin, UserBase):
             return flask_session["view"][page].get(prop)
         return None
 
-    def set_view_property(self, page, prop, value):
+    def set_view_property(self, page, prop, value) -> None:
         if "view" not in flask_session:
-            flask_session["view"] = dict()
+            flask_session["view"] = {}
         if not flask_session["view"].get(page):
-            flask_session["view"][page] = dict()
+            flask_session["view"][page] = {}
         flask_session["view"][page][prop] = value
 
 class User_Sessions(Base):
@@ -343,7 +343,7 @@ class User_Sessions(Base):
     user_id = Column(Integer, ForeignKey("user.id"))
     session_key = Column(String, default="")
 
-    def __init__(self, user_id, session_key):
+    def __init__(self, user_id, session_key) -> None:
         self.user_id = user_id
         self.session_key = session_key
 
@@ -362,7 +362,7 @@ class Shelf(Base):
     created = Column(DateTime, default=datetime.datetime.utcnow)
     last_modified = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<Shelf %d:%r>" % (self.id, self.name)
 
 
@@ -376,7 +376,7 @@ class BookShelf(Base):
     shelf = Column(Integer, ForeignKey("shelf.id"))
     date_added = Column(DateTime, default=datetime.datetime.utcnow)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<Book %r>" % self.id
 
 
@@ -480,11 +480,10 @@ class KoboStatistics(Base):
 
 # Updates the last_modified timestamp in the KoboReadingState table if any of its children tables are modified.
 @event.listens_for(Session, "before_flush")
-def receive_before_flush(session, flush_context, instances):
+def receive_before_flush(session, flush_context, instances) -> None:
     for change in itertools.chain(session.new, session.dirty):
-        if isinstance(change, (ReadBook, KoboStatistics, KoboBookmark)):
-            if change.kobo_reading_state:
-                change.kobo_reading_state.last_modified = datetime.datetime.utcnow()
+        if isinstance(change, (ReadBook, KoboStatistics, KoboBookmark)) and change.kobo_reading_state:
+            change.kobo_reading_state.last_modified = datetime.datetime.utcnow()
     # Maintain the last_modified bit for the Shelf table.
     for change in itertools.chain(session.new, session.deleted):
         if isinstance(change, BookShelf):
@@ -499,7 +498,7 @@ class Downloads(Base):
     book_id = Column(Integer)
     user_id = Column(Integer, ForeignKey("user.id"))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<Download %r" % self.book_id
 
 
@@ -511,7 +510,7 @@ class Registration(Base):
     domain = Column(String)
     allow = Column(Integer)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Registration('{self.domain}')>"
 
 
@@ -525,11 +524,11 @@ class RemoteAuthToken(Base):
     expiration = Column(DateTime)
     token_type = Column(Integer, default=0)
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.auth_token = (hexlify(os.urandom(4))).decode("utf-8")
         self.expiration = datetime.datetime.now() + datetime.timedelta(minutes=10)  # 10 min from now
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<Token %r>" % self.id
 
 
@@ -556,7 +555,7 @@ class Thumbnail(Base):
 
 
 # Add missing tables during migration of database
-def add_missing_tables(engine, _session):
+def add_missing_tables(engine, _session) -> None:
     if not engine.dialect.has_table(engine.connect(), "book_read_link"):
         ReadBook.__table__.create(bind=engine)
     if not engine.dialect.has_table(engine.connect(), "bookmark"):
@@ -586,7 +585,7 @@ def add_missing_tables(engine, _session):
 
 
 # migrate all settings missing in registration table
-def migrate_registration_table(engine, _session):
+def migrate_registration_table(engine, _session) -> None:
     try:
         _session.query(exists().where(Registration.allow)).scalar()
         _session.commit()
@@ -610,7 +609,7 @@ def migrate_registration_table(engine, _session):
 
 
 # Remove login capability of user Guest
-def migrate_guest_password(engine):
+def migrate_guest_password(engine) -> None:
     try:
         with engine.connect() as conn:
             trans = conn.begin()
@@ -621,7 +620,7 @@ def migrate_guest_password(engine):
         sys.exit(2)
 
 
-def migrate_shelfs(engine, _session):
+def migrate_shelfs(engine, _session) -> None:
     try:
         _session.query(exists().where(Shelf.uuid)).scalar()
     except exc.OperationalError:
@@ -657,7 +656,7 @@ def migrate_shelfs(engine, _session):
             trans.commit()
 
 
-def migrate_readBook(engine, _session):
+def migrate_readBook(engine, _session) -> None:
     try:
         _session.query(exists().where(ReadBook.read_status)).scalar()
     except exc.OperationalError:
@@ -669,13 +668,13 @@ def migrate_readBook(engine, _session):
             conn.execute(text("ALTER TABLE book_read_link ADD column 'last_time_started_reading' DATETIME"))
             conn.execute(text("ALTER TABLE book_read_link ADD column 'times_started_reading' INTEGER DEFAULT 0"))
             trans.commit()
-    test = _session.query(ReadBook).filter(ReadBook.last_modified == None).all()
+    test = _session.query(ReadBook).filter(ReadBook.last_modified is None).all()
     for book in test:
         book.last_modified = datetime.datetime.utcnow()
     _session.commit()
 
 
-def migrate_remoteAuthToken(engine, _session):
+def migrate_remoteAuthToken(engine, _session) -> None:
     try:
         _session.query(exists().where(RemoteAuthToken.token_type)).scalar()
         _session.commit()
@@ -689,7 +688,7 @@ def migrate_remoteAuthToken(engine, _session):
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # everywhere to current should work. Migration is done by checking if relevant columns are existing, and than adding
 # rows with SQL commands
-def migrate_Database(_session):
+def migrate_Database(_session) -> None:
     engine = _session.bind
     add_missing_tables(engine, _session)
     migrate_registration_table(engine, _session)
@@ -787,7 +786,7 @@ def migrate_Database(_session):
     migrate_guest_password(engine)
 
 
-def clean_database(_session):
+def clean_database(_session) -> None:
     # Remove expired remote login tokens
     now = datetime.datetime.now()
     _session.query(RemoteAuthToken).filter(now > RemoteAuthToken.expiration).\
@@ -796,7 +795,7 @@ def clean_database(_session):
 
 
 # Save downloaded books per user in calibre-web's own database
-def update_download(book_id, user_id):
+def update_download(book_id, user_id) -> None:
     check = session.query(Downloads).filter(Downloads.user_id == user_id).filter(Downloads.book_id == book_id).first()
 
     if not check:
@@ -809,7 +808,7 @@ def update_download(book_id, user_id):
 
 
 # Delete non existing downloaded books in calibre-web's own database
-def delete_download(book_id):
+def delete_download(book_id) -> None:
     session.query(Downloads).filter(book_id == Downloads.book_id).delete()
     try:
         session.commit()
@@ -817,7 +816,7 @@ def delete_download(book_id):
         session.rollback()
 
 # Generate user Guest (translated text), as anonymous user, no rights
-def create_anonymous_user(_session):
+def create_anonymous_user(_session) -> None:
     user = User()
     user.name = "Guest"
     user.email = "no@email"
@@ -832,7 +831,7 @@ def create_anonymous_user(_session):
 
 
 # Generate User admin with admin123 password, and access to everything
-def create_admin_user(_session):
+def create_admin_user(_session) -> None:
     user = User()
     user.name = "admin"
     user.email = "admin@example.org"
@@ -856,7 +855,7 @@ def init_db_thread():
     return Session()
 
 
-def init_db(app_db_path):
+def init_db(app_db_path) -> None:
     # Open session for database connection
     global session
     global app_DB_path
@@ -877,7 +876,7 @@ def init_db(app_db_path):
         create_admin_user(session)
         create_anonymous_user(session)
 
-def password_change(user_credentials=None):
+def password_change(user_credentials=None) -> None:
     if user_credentials:
         username, password = user_credentials.split(":", 1)
         user = session.query(User).filter(func.lower(User.name) == username.lower()).first()
@@ -912,23 +911,19 @@ def get_new_session_instance():
     return new_session
 
 
-def dispose():
+def dispose() -> None:
     global session
 
     old_session = session
     session = None
     if old_session:
-        try:
+        with contextlib.suppress(Exception):
             old_session.close()
-        except Exception:
-            pass
         if old_session.bind:
-            try:
+            with contextlib.suppress(Exception):
                 old_session.bind.dispose()
-            except Exception:
-                pass
 
-def session_commit(success=None, _session=None):
+def session_commit(success=None, _session=None) -> str:
     s = _session if _session else session
     try:
         s.commit()

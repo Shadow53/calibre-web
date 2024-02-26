@@ -27,7 +27,7 @@ from .tasks.thumbnail import TaskClearCoverThumbnailCache, TaskGenerateCoverThum
 
 
 def get_scheduled_tasks(reconnect=True):
-    tasks = list()
+    tasks = []
     # Reconnect Calibre database (metadata.db) based on config.schedule_reconnect
     if reconnect:
         tasks.append([lambda: TaskReconnectDatabase(), "reconnect", False])
@@ -51,14 +51,14 @@ def get_scheduled_tasks(reconnect=True):
     return tasks
 
 
-def end_scheduled_tasks():
+def end_scheduled_tasks() -> None:
     worker = WorkerThread.get_instance()
     for __, __, __, task, __ in worker.tasks:
         if task.scheduled and task.is_cancellable:
             worker.end_task(task.id)
 
 
-def register_scheduled_tasks(reconnect=True):
+def register_scheduled_tasks(reconnect=True) -> None:
     scheduler = BackgroundScheduler()
 
     if scheduler:
@@ -79,7 +79,7 @@ def register_scheduled_tasks(reconnect=True):
             scheduler.schedule_tasks_immediately(tasks=get_scheduled_tasks(reconnect))
 
 
-def register_startup_tasks():
+def register_startup_tasks() -> None:
     scheduler = BackgroundScheduler()
 
     if scheduler:

@@ -39,14 +39,13 @@ OPF_NS = {None: OPF_NAMESPACE}  # the default namespace (no prefix)
 NSMAP = {"dc": PURL_NAMESPACE, "opf": OPF_NAMESPACE}
 
 
-def updateEpub(src, dest, filename, data, ):
+def updateEpub(src, dest, filename, data, ) -> None:
     # create a temp copy of the archive without filename
-    with zipfile.ZipFile(src, "r") as zin:
-        with zipfile.ZipFile(dest, "w") as zout:
-            zout.comment = zin.comment # preserve the comment
-            for item in zin.infolist():
-                if item.filename != filename:
-                    zout.writestr(item, zin.read(item.filename))
+    with zipfile.ZipFile(src, "r") as zin, zipfile.ZipFile(dest, "w") as zout:
+        zout.comment = zin.comment # preserve the comment
+        for item in zin.infolist():
+            if item.filename != filename:
+                zout.writestr(item, zin.read(item.filename))
 
     # now add filename with its new data
     with zipfile.ZipFile(dest, mode="a", compression=zipfile.ZIP_DEFLATED) as zf:

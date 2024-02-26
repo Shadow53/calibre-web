@@ -92,7 +92,7 @@ class SyncToken:
         reading_state_last_modified=datetime.min,
         tags_last_modified=datetime.min
         # books_last_id=-1
-    ):  # nosec
+    ) -> None:  # nosec
         self.raw_kobo_store_token = raw_kobo_store_token
         self.books_last_created = books_last_created
         self.books_last_modified = books_last_modified
@@ -124,7 +124,7 @@ class SyncToken:
             data_json = sync_token_json["data"]
             validate(sync_token_json, SyncToken.data_schema_v1)
         except (exceptions.ValidationError, ValueError):
-            log.error("Sync token contents do not follow the expected json schema.")
+            log.exception("Sync token contents do not follow the expected json schema.")
             return SyncToken()
 
         raw_kobo_store_token = data_json["raw_kobo_store_token"]
@@ -135,7 +135,7 @@ class SyncToken:
             reading_state_last_modified = get_datetime_from_json(data_json, "reading_state_last_modified")
             tags_last_modified = get_datetime_from_json(data_json, "tags_last_modified")
         except TypeError:
-            log.error("SyncToken timestamps don't parse to a datetime.")
+            log.exception("SyncToken timestamps don't parse to a datetime.")
             return SyncToken(raw_kobo_store_token=raw_kobo_store_token)
 
         return SyncToken(
@@ -147,15 +147,15 @@ class SyncToken:
             tags_last_modified=tags_last_modified,
         )
 
-    def set_kobo_store_header(self, store_headers):
+    def set_kobo_store_header(self, store_headers) -> None:
         store_headers.set(SyncToken.SYNC_TOKEN_HEADER, self.raw_kobo_store_token)
 
-    def merge_from_store_response(self, store_response):
+    def merge_from_store_response(self, store_response) -> None:
         self.raw_kobo_store_token = store_response.headers.get(
             SyncToken.SYNC_TOKEN_HEADER, ""
         )
 
-    def to_headers(self, headers):
+    def to_headers(self, headers) -> None:
         headers[SyncToken.SYNC_TOKEN_HEADER] = self.build_sync_token()
 
     def build_sync_token(self):
@@ -172,7 +172,7 @@ class SyncToken:
         }
         return b64encode_json(token)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "{},{},{},{},{},{}".format(self.books_last_created,
                                        self.books_last_modified,
                                        self.archive_last_modified,

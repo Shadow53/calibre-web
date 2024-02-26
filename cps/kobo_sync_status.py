@@ -26,7 +26,7 @@ from . import ub
 
 # Add the current book id to kobo_synced_books table for current user, if entry is already present,
 # do nothing (safety precaution)
-def add_synced_books(book_id):
+def add_synced_books(book_id) -> None:
     is_present = ub.session.query(ub.KoboSyncedBooks).filter(ub.KoboSyncedBooks.book_id == book_id)\
         .filter(ub.KoboSyncedBooks.user_id == current_user.id).count()
     if not is_present:
@@ -38,11 +38,8 @@ def add_synced_books(book_id):
 
 
 # Select all entries of current book in kobo_synced_books table, which are from current user and delete them
-def remove_synced_book(book_id, all=False, session=None):
-    if not all:
-        user = ub.KoboSyncedBooks.user_id == current_user.id
-    else:
-        user = true()
+def remove_synced_book(book_id, all=False, session=None) -> None:
+    user = ub.KoboSyncedBooks.user_id == current_user.id if not all else true()
     if not session:
         ub.session.query(ub.KoboSyncedBooks).filter(ub.KoboSyncedBooks.book_id == book_id).filter(user).delete()
         ub.session_commit()
@@ -68,11 +65,11 @@ def change_archived_books(book_id, state=None, message=None):
 
 # select all books which are synced by the current user and do not belong to a synced shelf and set them to archive
 # select all shelves from current user which are synced and do not belong to the "only sync" shelves
-def update_on_sync_shelfs(user_id):
+def update_on_sync_shelfs(user_id) -> None:
     books_to_archive = (ub.session.query(ub.KoboSyncedBooks)
                         .join(ub.BookShelf, ub.KoboSyncedBooks.book_id == ub.BookShelf.book_id, isouter=True)
                         .join(ub.Shelf, ub.Shelf.user_id == user_id, isouter=True)
-                        .filter(or_(ub.Shelf.kobo_sync == 0, ub.Shelf.kobo_sync == None))
+                        .filter(or_(ub.Shelf.kobo_sync == 0, ub.Shelf.kobo_sync is None))
                         .filter(ub.KoboSyncedBooks.user_id == user_id).all())
     for b in books_to_archive:
         change_archived_books(b.book_id, True)

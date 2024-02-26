@@ -35,7 +35,7 @@ def get_sidebar_config(kwargs=None):
         content = isinstance(content, (User, LocalProxy)) and not content.role_anonymous()
     else:
         content = "conf" in kwargs
-    sidebar = list()
+    sidebar = []
     sidebar.append({"glyph": "glyphicon-book", "text": _("Books"), "link": "web.index", "id": "new",
                     "visibility": constants.SIDEBAR_RECENT, "public": True, "page": "root",
                     "show_text": _("Show recent books"), "config_show":False})
@@ -112,5 +112,5 @@ def render_title_template(*args, **kwargs):
                                accept=constants.EXTENSIONS_UPLOAD,
                                *args, **kwargs)
     except PermissionError:
-        log.error(f"No permission to access {args[0]} file.")
+        log.exception(f"No permission to access {args[0]} file.")
         abort(403)

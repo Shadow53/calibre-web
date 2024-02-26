@@ -86,7 +86,7 @@ def adv_search_custom_columns(cc, term, q):
                 if c.datatype == "bool":
                     q = q.filter(getattr(db.Books, "custom_column_" + str(c.id)).any(
                         db.cc_classes[c.id].value == (custom_query == "True")))
-                elif c.datatype == "int" or c.datatype == "float":
+                elif c.datatype in ("int", "float"):
                     q = q.filter(getattr(db.Books, "custom_column_" + str(c.id)).any(
                         db.cc_classes[c.id].value == custom_query))
                 elif c.datatype == "rating":
@@ -129,11 +129,11 @@ def adv_search_read_status(read_status):
     else:
         try:
             if read_status == "True":
-                db_filter = db.cc_classes[config.config_read_column].value == True
+                db_filter = db.cc_classes[config.config_read_column].value is True
             else:
-                db_filter = coalesce(db.cc_classes[config.config_read_column].value, False) != True
+                db_filter = coalesce(db.cc_classes[config.config_read_column].value, False) is not True
         except (KeyError, AttributeError, IndexError):
-            log.error(f"Custom Column No.{config.config_read_column} does not exist in calibre database")
+            log.exception(f"Custom Column No.{config.config_read_column} does not exist in calibre database")
             flash(_("Custom Column No.%(column)d does not exist in calibre database",
                     column=config.config_read_column),
                   category="error")
@@ -166,7 +166,7 @@ def adv_search_serie(q, include_series_inputs, exclude_series_inputs):
 
 def adv_search_shelf(q, include_shelf_inputs, exclude_shelf_inputs):
     q = q.outerjoin(ub.BookShelf, db.Books.id == ub.BookShelf.book_id)\
-        .filter(or_(ub.BookShelf.shelf == None, ub.BookShelf.shelf.notin_(exclude_shelf_inputs)))
+        .filter(or_(ub.BookShelf.shelf is None, ub.BookShelf.shelf.notin_(exclude_shelf_inputs)))
     if len(include_shelf_inputs) > 0:
         q = q.filter(ub.BookShelf.shelf.in_(include_shelf_inputs))
     return q
@@ -238,7 +238,7 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
         .filter(calibre_db.common_filters(True))
 
     # parse multi selects to a complete dict
-    tags = dict()
+    tags = {}
     elements = ["tag", "serie", "shelf", "language", "extension"]
     for element in elements:
         tags["include_" + element] = term.get("include_" + element)
@@ -367,10 +367,7 @@ def render_prepare_search_form(cc):
         .filter(calibre_db.common_filters()) \
         .group_by(db.Data.format)\
         .order_by(db.Data.format).all()
-    if current_user.filter_language() == "all":
-        languages = calibre_db.speaking_language()
-    else:
-        languages = None
+    languages = calibre_db.speaking_language() if current_user.filter_language() == "all" else None
     return render_title_template("search_form.html", tags=tags, languages=languages, extensions=extensions,
                                  series=series,shelves=shelves, title=_("Advanced Search"), cc=cc, page="advsearch")
 
@@ -385,7 +382,7 @@ def render_search_results(term, offset=None, order=None, limit=None):
                                                                           limit,
                                                                           *join)
     else:
-        entries = list()
+        entries = []
         order = [None, None]
         pagination = result_count = None
 

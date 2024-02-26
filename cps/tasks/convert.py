@@ -38,11 +38,12 @@ from cps.ub import init_db_thread
 
 log = logger.create()
 
-current_milli_time = lambda: int(round(time() * 1000))
+def current_milli_time():
+    return int(round(time() * 1000))
 
 class TaskConvert(CalibreTask):
-    def __init__(self, file_path, book_id, task_message, settings, ereader_mail, user=None):
-        super(TaskConvert, self).__init__(task_message)
+    def __init__(self, file_path, book_id, task_message, settings, ereader_mail, user=None) -> None:
+        super().__init__(task_message)
         self.file_path = file_path
         self.book_id = book_id
         self.title = ""
@@ -50,7 +51,7 @@ class TaskConvert(CalibreTask):
         self.ereader_mail = ereader_mail
         self.user = user
 
-        self.results = dict()
+        self.results = {}
 
     def run(self, worker_thread):
         self.worker_thread = worker_thread
@@ -110,6 +111,8 @@ class TaskConvert(CalibreTask):
                                       )
                 except Exception as ex:
                     return self._handleError(str(ex))
+            return None
+        return None
 
     def _convert_ebook_format(self):
         error_message = None
@@ -140,7 +143,7 @@ class TaskConvert(CalibreTask):
                     local_db.session.commit()
                 except SQLAlchemyError as e:
                     local_db.session.rollback()
-                    log.error("Database error: %s", e)
+                    log.exception("Database error: %s", e)
                     local_db.session.close()
                     self._handleError(N_("Oops! Database Error: %(error)s.", error=e))
                     return None
@@ -182,7 +185,7 @@ class TaskConvert(CalibreTask):
                             ub_session.close()
                     except SQLAlchemyError as e:
                         local_db.session.rollback()
-                        log.error("Database error: %s", e)
+                        log.exception("Database error: %s", e)
                         local_db.session.close()
                         self._handleError(error_message)
                         return None
@@ -309,12 +312,12 @@ class TaskConvert(CalibreTask):
     def name(self):
         return N_("Convert")
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.ereader_mail:
             return f"Convert {self.book_id} {self.ereader_mail}"
         else:
             return f"Convert {self.book_id}"
 
     @property
-    def is_cancellable(self):
+    def is_cancellable(self) -> bool:
         return False

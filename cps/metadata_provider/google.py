@@ -40,7 +40,7 @@ class Google(Metadata):
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"
     ) -> Optional[List[MetaRecord]]:
-        val = list()
+        val = []
         if self.active:
 
             title_tokens = list(self.get_title_tokens(query, strip_joiners=False))
@@ -90,8 +90,7 @@ class Google(Metadata):
         match.tags = result["volumeInfo"].get("categories", [])
 
         match.identifiers = {"google": match.id}
-        match = self._parse_isbn(result=result, match=match)
-        return match
+        return self._parse_isbn(result=result, match=match)
 
     @staticmethod
     def _parse_isbn(result: Dict, match: MetaRecord) -> MetaRecord:
@@ -119,9 +118,8 @@ class Google(Metadata):
     @staticmethod
     def _parse_languages(result: Dict, locale: str) -> List[str]:
         language_iso2 = result["volumeInfo"].get("language", "")
-        languages = (
+        return (
             [get_language_name(locale, get_lang3(language_iso2))]
             if language_iso2
             else []
         )
-        return languages

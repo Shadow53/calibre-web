@@ -53,10 +53,10 @@ class Metadata:
     __name__ = "Generic"
     __id__ = "generic"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.active = True
 
-    def set_status(self, state):
+    def set_status(self, state) -> None:
         self.active = state
 
     @abc.abstractmethod
@@ -73,7 +73,7 @@ class Metadata:
         It's a simplified (cut out what is unnecessary) version of
         https://github.com/kovidgoyal/calibre/blob/99d85b97918625d172227c8ffb7e0c71794966c0/
         src/calibre/ebooks/metadata/sources/base.py#L363-L367
-        (src/calibre/ebooks/metadata/sources/base.py - lines 363-398)
+        (src/calibre/ebooks/metadata/sources/base.py - lines 363-398).
         """
         title_patterns = [
             (re.compile(pat, re.IGNORECASE), repl)

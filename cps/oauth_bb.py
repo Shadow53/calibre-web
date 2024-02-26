@@ -19,6 +19,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>
 
+import contextlib
 import json
 from functools import wraps
 
@@ -34,10 +35,8 @@ from sqlalchemy.sql.expression import and_, func
 
 from . import app, config, constants, logger, ub
 
-try:
+with contextlib.suppress(NameError):
     from .oauth import OAuthBackend, backend_resultcode
-except NameError:
-    pass
 
 
 oauth_check = {}
@@ -58,15 +57,16 @@ def oauth_required(f):
             response.headers["Content-Type"] = "application/json; charset=utf-8"
             return response, 404
         abort(404)
+        return None
 
     return inner
 
 
-def register_oauth_blueprint(cid, show_name):
+def register_oauth_blueprint(cid, show_name) -> None:
     oauth_check[cid] = show_name
 
 
-def register_user_with_oauth(user=None):
+def register_user_with_oauth(user=None) -> None:
     all_oauth = {}
     for oauth_key in oauth_check:
         if str(oauth_key) + "_oauth_user_id" in session and session[str(oauth_key) + "_oauth_user_id"] != "":
@@ -91,7 +91,7 @@ def register_user_with_oauth(user=None):
             ub.session_commit(f"User {user.name} with OAuth for provider {oauth_key} registered")
 
 
-def logout_oauth_user():
+def logout_oauth_user() -> None:
     for oauth_key in oauth_check:
         if str(oauth_key) + "_oauth_user_id" in session:
             session.pop(str(oauth_key) + "_oauth_user_id")
@@ -218,33 +218,33 @@ def generate_oauth_blueprints():
             ub.session_commit(f"{provider} Blueprint Created")
 
     oauth_ids = ub.session.query(ub.OAuthProvider).all()
-    ele1 = dict(provider_name="github",
-                id=oauth_ids[0].id,
-                active=oauth_ids[0].active,
-                oauth_client_id=oauth_ids[0].oauth_client_id,
-                scope=None,
-                oauth_client_secret=oauth_ids[0].oauth_client_secret,
-                obtain_link="https://github.com/settings/developers")
-    ele2 = dict(provider_name="google",
-                id=oauth_ids[1].id,
-                active=oauth_ids[1].active,
-                scope=["https://www.googleapis.com/auth/userinfo.email"],
-                oauth_client_id=oauth_ids[1].oauth_client_id,
-                oauth_client_secret=oauth_ids[1].oauth_client_secret,
-                obtain_link="https://console.developers.google.com/apis/credentials")
-    ele3 = dict(provider_name="generic",
-                id=oauth_ids[2].id,
-                active=oauth_ids[2].active,
-                scope=oauth_ids[2].scope,
-                oauth_client_id=oauth_ids[2].oauth_client_id,
-                oauth_client_secret=oauth_ids[2].oauth_client_secret,
-                oauth_base_url=oauth_ids[2].oauth_base_url,
-                oauth_auth_url=oauth_ids[2].oauth_auth_url,
-                oauth_token_url=oauth_ids[2].oauth_token_url,
-                oauth_userinfo_url=oauth_ids[2].oauth_userinfo_url,
-                username_mapper=oauth_ids[2].username_mapper,
-                email_mapper=oauth_ids[2].email_mapper,
-                login_button=oauth_ids[2].login_button)
+    ele1 = {"provider_name": "github",
+                "id": oauth_ids[0].id,
+                "active": oauth_ids[0].active,
+                "oauth_client_id": oauth_ids[0].oauth_client_id,
+                "scope": None,
+                "oauth_client_secret": oauth_ids[0].oauth_client_secret,
+                "obtain_link": "https://github.com/settings/developers"}
+    ele2 = {"provider_name": "google",
+                "id": oauth_ids[1].id,
+                "active": oauth_ids[1].active,
+                "scope": ["https://www.googleapis.com/auth/userinfo.email"],
+                "oauth_client_id": oauth_ids[1].oauth_client_id,
+                "oauth_client_secret": oauth_ids[1].oauth_client_secret,
+                "obtain_link": "https://console.developers.google.com/apis/credentials"}
+    ele3 = {"provider_name": "generic",
+                "id": oauth_ids[2].id,
+                "active": oauth_ids[2].active,
+                "scope": oauth_ids[2].scope,
+                "oauth_client_id": oauth_ids[2].oauth_client_id,
+                "oauth_client_secret": oauth_ids[2].oauth_client_secret,
+                "oauth_base_url": oauth_ids[2].oauth_base_url,
+                "oauth_auth_url": oauth_ids[2].oauth_auth_url,
+                "oauth_token_url": oauth_ids[2].oauth_token_url,
+                "oauth_userinfo_url": oauth_ids[2].oauth_userinfo_url,
+                "username_mapper": oauth_ids[2].username_mapper,
+                "email_mapper": oauth_ids[2].email_mapper,
+                "login_button": oauth_ids[2].login_button}
     oauthblueprints.append(ele1)
     oauthblueprints.append(ele2)
     oauthblueprints.append(ele3)
@@ -378,7 +378,7 @@ if ub.oauth_support:
 
     # notify on OAuth provider error
     @oauth_error.connect_via(oauthblueprints[0]["blueprint"])
-    def github_error(blueprint, error, error_description=None, error_uri=None):
+    def github_error(blueprint, error, error_description=None, error_uri=None) -> None:
         msg = (
             f"OAuth error from {blueprint.name}! "
             f"error={error} description={error_description} uri={error_uri}"
@@ -386,7 +386,7 @@ if ub.oauth_support:
         flash(msg, category="error")
 
     @oauth_error.connect_via(oauthblueprints[1]["blueprint"])
-    def google_error(blueprint, error, error_description=None, error_uri=None):
+    def google_error(blueprint, error, error_description=None, error_uri=None) -> None:
         msg = (
             f"OAuth error from {blueprint.name}! "
             f"error={error} description={error_description} uri={error_uri}"
@@ -395,7 +395,7 @@ if ub.oauth_support:
 
 
     @oauth_error.connect_via(oauthblueprints[2]["blueprint"])
-    def generic_error(blueprint, error, error_description=None, error_uri=None):
+    def generic_error(blueprint, error, error_description=None, error_uri=None) -> None:
         msg = (
             f"OAuth error from {blueprint.name}! "
             f"error={error} description={error_description} uri={error_uri}"
@@ -417,7 +417,7 @@ def github_login():
         log.error("GitHub Oauth error, please retry later")
     except (InvalidGrantError, TokenExpiredError) as e:
         flash(_("GitHub Oauth error: {}").format(e), category="error")
-        log.error(e)
+        log.exception(e)
     return redirect(url_for("web.login"))
 
 
@@ -441,7 +441,7 @@ def google_login():
         log.error("Google Oauth error, please retry later")
     except (InvalidGrantError, TokenExpiredError) as e:
         flash(_("Google Oauth error: {}").format(e), category="error")
-        log.error(e)
+        log.exception(e)
     return redirect(url_for("web.login"))
 
 
@@ -479,7 +479,7 @@ def generic_login():
         flash(_("generic OAuth2 error, please retry later."), category="error")
         log.error("generic OAuth2 error, please retry later")
     except (InvalidGrantError, TokenExpiredError) as e:
-        log.error(e)
+        log.exception(e)
     return redirect(url_for("generic.login"))
 
 

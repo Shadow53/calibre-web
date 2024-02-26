@@ -36,7 +36,7 @@ _CACHE_TIMEOUT = 23 * 60 * 60  # 23 hours (in seconds)
 _AUTHORS_CACHE = {}
 
 
-def connect(key=None, secret=None, enabled=True):
+def connect(key=None, secret=None, enabled=True) -> None:
     global _client
 
     if not enabled or not key or not secret:

@@ -23,23 +23,23 @@ from cps.services.worker import CalibreTask
 
 
 class TaskDeleteTempFolder(CalibreTask):
-    def __init__(self, task_message=N_("Delete temp folder contents")):
-        super(TaskDeleteTempFolder, self).__init__(task_message)
+    def __init__(self, task_message=N_("Delete temp folder contents")) -> None:
+        super().__init__(task_message)
         self.log = logger.create()
 
-    def run(self, worker_thread):
+    def run(self, worker_thread) -> None:
         try:
             file_helper.del_temp_dir()
         except FileNotFoundError:
             pass
         except (PermissionError, OSError) as e:
-            self.log.error(f"Error deleting temp folder: {e}")
+            self.log.exception(f"Error deleting temp folder: {e}")
         self._handleSuccess()
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "Delete Temp Folder"
 
     @property
-    def is_cancellable(self):
+    def is_cancellable(self) -> bool:
         return False

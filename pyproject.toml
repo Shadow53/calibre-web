@@ -164,8 +164,9 @@ fix = true
 src = ["cps"]
 
 [tool.ruff.lint]
+# TODO: T20 disallows print statements
 select = ["E", "F", "UP", "W", "C90", "B", "I", "SIM", "N", "D", "YTT", "ANN", "ASYNC", "S", "BLE", "FBT", "A", "C4",
-"DTZ", "EM", "EXE", "FA", "ISC", "ICN", "G", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SLOT", "TCH", "ARG",
+"DTZ", "EM", "EXE", "FA", "ISC", "ICN", "G", "PIE", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SLOT", "TCH", "ARG",
 "PTH", "TD", "FIX", "ERA", "PL", "TRY", "FLY", "PERF", "FURB", "LOG", "RUF"]
 ignore = ["D211", "D213", "ISC001"]
 unfixable = []

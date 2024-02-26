@@ -27,7 +27,7 @@ from .remotelogin import remotelogin
 def request_username():
     return request.authorization.username
 
-def main():
+def main() -> None:
     app = create_app()
 
     from .about import about

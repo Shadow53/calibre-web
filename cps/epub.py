@@ -54,7 +54,7 @@ def get_epub_layout(book, book_data):
 
         layout = p.xpath('pkg:meta[@property="rendition:layout"]/text()', namespaces=default_ns)
     except (etree.XMLSyntaxError, KeyError, IndexError) as e:
-        log.error(f"Could not parse epub metadata of book {book.id} during kobo sync: {e}")
+        log.exception(f"Could not parse epub metadata of book {book.id} during kobo sync: {e}")
         layout = []
 
     if len(layout) == 0:
@@ -127,10 +127,7 @@ def get_epub_info(tmp_file_path, original_file_name, original_file_extension):
             continue
         identifiers.append([identifier_name, identifier_value])
 
-    if not epub_metadata["title"]:
-        title = original_file_name
-    else:
-        title = epub_metadata["title"]
+    title = original_file_name if not epub_metadata["title"] else epub_metadata["title"]
 
     return BookMeta(
         file_path=tmp_file_path,
@@ -167,7 +164,7 @@ def parse_epub_cover(ns, tree, epub_zip, cover_path, tmp_file_path):
 
     cover_file = None
     for cs in cover_section:
-        if cs.endswith(".xhtml") or cs.endswith(".html"):
+        if cs.endswith((".xhtml", ".html")):
             markup = epub_zip.read(os.path.join(cover_path, cs))
             markup_tree = etree.fromstring(markup)
             # no matter xhtml or html with no namespace

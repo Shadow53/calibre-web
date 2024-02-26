@@ -19,6 +19,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import contextlib
 import json
 import operator
 import os
@@ -107,14 +108,14 @@ admi = Blueprint("admin", __name__)
 
 
 def admin_required(f):
-    """Checks if current_user.role == 1
-    """
+    """Checks if current_user.role == 1."""
 
     @wraps(f)
     def inner(*args, **kwargs):
         if current_user.role_admin():
             return f(*args, **kwargs)
         abort(403)
+        return None
 
     return inner
 
@@ -145,11 +146,12 @@ def before_request():
                                  "admin.load_dialogtexts",
                                  "admin.ajax_pathchooser"):
         return redirect(url_for("admin.db_configuration"))
+    return None
 
 
 @admi.route("/admin")
 @login_required
-def admin_forbidden():
+def admin_forbidden() -> None:
     abort(403)
 
 
@@ -203,12 +205,13 @@ def reconnect():
     else:
         log.debug("'/reconnect' was accessed but is not enabled")
         abort(404)
+        return None
 
 
 @admi.route("/ajax/updateThumbnails", methods=["POST"])
 @admin_required
 @login_required
-def update_thumbnails():
+def update_thumbnails() -> str:
     content = config.get_scheduled_task_settings()
     if content["schedule_generate_book_covers"]:
         log.info("Update of Cover cache requested")
@@ -353,7 +356,7 @@ def list_users():
     state = None
     if sort == "state":
         state = json.loads(request.args.get("state", "[]"))
-    elif sort not in ub.User.__table__.columns.keys():
+    elif sort not in ub.User.__table__.columns:
         sort = "id"
     order = request.args.get("order", "").lower()
 
@@ -404,8 +407,8 @@ def delete_user():
     elif "userid" in user_ids:
         users = ub.session.query(ub.User).filter(ub.User.id == user_ids["userid"][0]).all()
     count = 0
-    errors = list()
-    success = list()
+    errors = []
+    success = []
     if not users:
         log.error("User not found")
         return Response(json.dumps({"type": "danger", "message": _("User not found")}), mimetype="application/json")
@@ -414,7 +417,7 @@ def delete_user():
             message = _delete_user(user)
             count += 1
         except Exception as ex:
-            log.error(ex)
+            log.exception(ex)
             errors.append({"type": "danger", "message": str(ex)})
 
     if count == 1:
@@ -432,7 +435,7 @@ def delete_user():
 @admin_required
 def table_get_locale():
     locale = get_available_locale()
-    ret = list()
+    ret = []
     current_locale = get_locale()
     for loc in locale:
         ret.append({"value": str(loc), "text": loc.get_language_name(current_locale)})
@@ -444,7 +447,7 @@ def table_get_locale():
 @admin_required
 def table_get_default_lang():
     languages = calibre_db.speaking_language()
-    ret = list()
+    ret = []
     ret.append({"value": "all", "text": _("Show All")})
     for lang in languages:
         ret.append({"value": lang.lang_code, "text": lang.name})
@@ -561,13 +564,11 @@ def edit_list_user(param):
 def update_table_settings():
     current_user.view_settings["useredit"] = json.loads(request.data)
     try:
-        try:
+        with contextlib.suppress(AttributeError):
             flag_modified(current_user, "view_settings")
-        except AttributeError:
-            pass
         ub.session.commit()
     except (InvalidRequestError, OperationalError):
-        log.error(f"Invalid request received: {request}")
+        log.exception(f"Invalid request received: {request}")
         return "Invalid request", 400
     return ""
 
@@ -670,7 +671,7 @@ def edit_domain(allow):
 @admi.route("/ajax/adddomain/<int:allow>", methods=["POST"])
 @login_required
 @admin_required
-def add_domain(allow):
+def add_domain(allow) -> str:
     domain_name = request.form.to_dict()["domainname"].replace("*", "%").replace("?", "_").lower()
     check = ub.session.query(ub.Registration).filter(ub.Registration.domain == domain_name) \
         .filter(ub.Registration.allow == allow).first()
@@ -684,7 +685,7 @@ def add_domain(allow):
 @admi.route("/ajax/deletedomain", methods=["POST"])
 @login_required
 @admin_required
-def delete_domain():
+def delete_domain() -> str:
     try:
         domain_id = request.form.to_dict()["domainid"].replace("*", "%").replace("?", "_").lower()
         ub.session.query(ub.Registration).filter(ub.Registration.id == domain_id).delete()
@@ -715,7 +716,7 @@ def list_domain(allow):
 @admi.route("/ajax/editrestriction/<int:res_type>/<int:user_id>", methods=["POST"])
 @login_required
 @admin_required
-def edit_restriction(res_type, user_id):
+def edit_restriction(res_type, user_id) -> str:
     element = request.form.to_dict()
     if element["id"].startswith("a"):
         if res_type == 0:  # Tags as template
@@ -788,7 +789,7 @@ def add_user_0_restriction(res_type):
 @admi.route("/ajax/addrestriction/<int:res_type>/<int:user_id>", methods=["POST"])
 @login_required
 @admin_required
-def add_restriction(res_type, user_id):
+def add_restriction(res_type, user_id) -> str:
     element = request.form.to_dict()
     if res_type == 0:  # Tags as template
         if "submit_allow" in element:
@@ -839,7 +840,7 @@ def delete_user_0_restriction(res_type):
 @admi.route("/ajax/deleterestriction/<int:res_type>/<int:user_id>", methods=["POST"])
 @login_required
 @admin_required
-def delete_restriction(res_type, user_id):
+def delete_restriction(res_type, user_id) -> str:
     element = request.form.to_dict()
     if res_type == 0:  # Tags as template
         if element["id"].startswith("a"):
@@ -953,19 +954,17 @@ def do_full_kobo_sync(userid):
     return Response(json.dumps([{"type": "success", "message": message}]), mimetype="application/json")
 
 
-def check_valid_read_column(column):
-    if column != "0":
-        if not calibre_db.session.query(db.CustomColumns).filter(db.CustomColumns.id == column) \
+def check_valid_read_column(column) -> bool:
+    if column != "0" and not calibre_db.session.query(db.CustomColumns).filter(db.CustomColumns.id == column) \
             .filter(and_(db.CustomColumns.datatype == "bool", db.CustomColumns.mark_for_delete == 0)).all():
-            return False
+        return False
     return True
 
 
-def check_valid_restricted_column(column):
-    if column != "0":
-        if not calibre_db.session.query(db.CustomColumns).filter(db.CustomColumns.id == column) \
+def check_valid_restricted_column(column) -> bool:
+    if column != "0" and not calibre_db.session.query(db.CustomColumns).filter(db.CustomColumns.id == column) \
             .filter(and_(db.CustomColumns.datatype == "text", db.CustomColumns.mark_for_delete == 0)).all():
-            return False
+        return False
     return True
 
 
@@ -1071,7 +1070,7 @@ def pathchooser():
         if os.path.isfile(os.path.join(cwd, f)):
             if folder_only:
                 continue
-            if file_filter != "" and file_filter != f:
+            if file_filter not in ("", f):
                 continue
             data["type"] = "file"
             data["size"] = os.path.getsize(os.path.join(cwd, f))
@@ -1317,17 +1316,15 @@ def update_mailsettings():
     _config_int(to_save, "mail_server_type")
     if to_save.get("invalidate"):
         config.mail_gmail_token = {}
-        try:
+        with contextlib.suppress(AttributeError):
             flag_modified(config, "mail_gmail_token")
-        except AttributeError:
-            pass
     elif to_save.get("gmail"):
         try:
             config.mail_gmail_token = services.gmail.setup_gmail(config.mail_gmail_token)
             flash(_("Success! Gmail Account Verified."), category="success")
         except Exception as ex:
             flash(str(ex), category="error")
-            log.error(ex)
+            log.exception(ex)
             return edit_mailsettings()
 
     else:
@@ -1371,8 +1368,8 @@ def update_mailsettings():
 @admin_required
 def edit_scheduledtasks():
     content = config.get_scheduled_task_settings()
-    time_field = list()
-    duration_field = list()
+    time_field = []
+    duration_field = []
 
     for n in range(24):
         time_field.append((n, format_time(datetime_time(hour=n), format="short", )))
@@ -1420,11 +1417,11 @@ def update_scheduledtasks():
             schedule.register_scheduled_tasks(config.schedule_reconnect)
         except IntegrityError:
             ub.session.rollback()
-            log.error("An unknown error occurred while saving scheduled tasks settings")
+            log.exception("An unknown error occurred while saving scheduled tasks settings")
             flash(_("Oops! An unknown error occurred. Please try again later."), category="error")
         except OperationalError:
             ub.session.rollback()
-            log.error("Settings DB is not Writeable")
+            log.exception("Settings DB is not Writeable")
             flash(_("Settings DB is not Writeable"), category="error")
 
     return edit_scheduledtasks()
@@ -1520,6 +1517,7 @@ def download_log(logtype):
     if logger.is_valid_logfile(file_name):
         return debug_info.assemble_logfiles(file_name)
     abort(404)
+    return None
 
 
 @admi.route("/admin/debug")
@@ -1585,7 +1583,7 @@ def ldap_import_create_user(user, user_data):
     try:
         username = user_data[user_login_field][0].decode("utf-8")
     except KeyError as ex:
-        log.error("Failed to extract LDAP user: %s - %s", user, ex)
+        log.exception("Failed to extract LDAP user: %s - %s", user, ex)
         message = _("Failed to extract at least One LDAP User")
         return 0, message
 
@@ -1690,7 +1688,7 @@ def import_ldap_users():
 @admi.route("/ajax/canceltask", methods=["POST"])
 @login_required
 @admin_required
-def cancel_task():
+def cancel_task() -> str:
     task_id = request.get_json().get("task_id", None)
     worker = WorkerThread.get_instance()
     worker.end_task(task_id)
@@ -1699,7 +1697,7 @@ def cancel_task():
 
 def _db_simulate_change():
     param = request.form.to_dict()
-    to_save = dict()
+    to_save = {}
     to_save["config_calibre_dir"] = re.sub(r"[\\/]metadata\.db$",
                                            "",
                                            param["config_calibre_dir"],
@@ -1965,7 +1963,7 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
         return redirect(url_for("admin.admin"))
     except IntegrityError:
         ub.session.rollback()
-        log.error(f"Found an existing account for {content.name} or {content.email}")
+        log.exception(f"Found an existing account for {content.name} or {content.email}")
         flash(_("Oops! An account already exists for this Email. or name."), category="error")
     except OperationalError as e:
         ub.session.rollback()
@@ -2010,7 +2008,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
         try:
             flash(_delete_user(content), category="success")
         except Exception as ex:
-            log.error(ex)
+            log.exception(ex)
             flash(str(ex), category="error")
         return redirect(url_for("admin.admin"))
     else:
@@ -2068,7 +2066,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             if to_save.get("kindle_mail") != content.kindle_mail:
                 content.kindle_mail = valid_email(to_save["kindle_mail"]) if to_save["kindle_mail"] else ""
         except Exception as ex:
-            log.error(ex)
+            log.exception(ex)
             flash(str(ex), category="error")
             return render_title_template("user_edit.html",
                                          translations=translations,
@@ -2086,7 +2084,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
         flash(_("User '%(nick)s' updated", nick=content.name), category="success")
     except IntegrityError as ex:
         ub.session.rollback()
-        log.error(f"An unknown error occurred while changing user: {ex!s}")
+        log.exception(f"An unknown error occurred while changing user: {ex!s}")
         flash(_("Oops! An unknown error occurred. Please try again later."), category="error")
     except OperationalError as e:
         ub.session.rollback()
@@ -2100,7 +2098,8 @@ def extract_user_data_from_field(user, field):
     if match:
         return match.group(1)
     else:
-        raise Exception(f"Could Not Parse LDAP User: {user}")
+        msg = f"Could Not Parse LDAP User: {user}"
+        raise Exception(msg)
 
 
 def extract_dynamic_field_from_filter(user, filtr):
@@ -2108,7 +2107,8 @@ def extract_dynamic_field_from_filter(user, filtr):
     if match:
         return match.group(1)
     else:
-        raise Exception("Could Not Parse LDAP Userfield: {}", user)
+        msg = "Could Not Parse LDAP Userfield: {}"
+        raise Exception(msg, user)
 
 
 def extract_user_identifier(user, filtr):

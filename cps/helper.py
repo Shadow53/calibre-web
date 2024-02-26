@@ -85,20 +85,18 @@ def convert_book_format(book_id, calibre_path, old_book_format, new_book_format,
     file_path = os.path.join(calibre_path, book.path, data.name)
     if config.config_use_google_drive:
         if not gd.getFileFromEbooksFolder(book.path, data.name + "." + old_book_format.lower()):
-            error_message = _("%(format)s not found on Google Drive: %(fn)s",
+            return _("%(format)s not found on Google Drive: %(fn)s",
                               format=old_book_format, fn=data.name + "." + old_book_format.lower())
-            return error_message
     elif not os.path.exists(file_path + "." + old_book_format.lower()):
-        error_message = _("%(format)s not found: %(fn)s",
+        return _("%(format)s not found: %(fn)s",
                           format=old_book_format, fn=data.name + "." + old_book_format.lower())
-        return error_message
     # read settings and append converter task to queue
     if ereader_mail:
         settings = config.get_mail_settings()
         settings["subject"] = _("Send to eReader")  # pretranslate Subject for Email
         settings["body"] = _("This Email has been sent via Calibre-Web.")
     else:
-        settings = dict()
+        settings = {}
     link = '<a href="{}">{}</a>'.format(url_for("web.show_book", book_id=book.id), escape(book.title))  # prevent xss
     txt = f"{old_book_format.upper()} -> {new_book_format.upper()}: {link}"
     settings["old_book_format"] = old_book_format
@@ -108,14 +106,14 @@ def convert_book_format(book_id, calibre_path, old_book_format, new_book_format,
 
 
 # Texts are not lazy translated as they are supposed to get send out as is
-def send_test_mail(ereader_mail, user_name):
+def send_test_mail(ereader_mail, user_name) -> None:
     WorkerThread.add(user_name, TaskEmail(_("Calibre-Web Test Email"), None, None,
                      config.get_mail_settings(), ereader_mail, N_("Test Email"),
                                           _("This Email has been sent via Calibre-Web.")))
 
 
 # Send registration email or password reset email, depending on parameter resend (False means welcome email)
-def send_registration_mail(e_mail, user_name, default_password, resend=False):
+def send_registration_mail(e_mail, user_name, default_password, resend=False) -> None:
     txt = "Hi %s!\r\n" % user_name
     if not resend:
         txt += "Your account at Calibre-Web has been created.\r\n"
@@ -137,7 +135,7 @@ def send_registration_mail(e_mail, user_name, default_password, resend=False):
 
 
 def check_send_to_ereader_with_converter(formats):
-    book_formats = list()
+    book_formats = []
     if "MOBI" in formats and "EPUB" not in formats:
         book_formats.append({"format": "Epub",
                              "convert": 1,
@@ -154,10 +152,9 @@ def check_send_to_ereader_with_converter(formats):
 
 
 def check_send_to_ereader(entry):
-    """Returns all available book formats for sending to eReader
-    """
-    formats = list()
-    book_formats = list()
+    """Returns all available book formats for sending to eReader."""
+    formats = []
+    book_formats = []
     if len(entry.data):
         for ele in iter(entry.data):
             if ele.uncompressed_size < config.mail_size:
@@ -186,7 +183,7 @@ def check_send_to_ereader(entry):
 # list with supported formats
 def check_read_formats(entry):
     extensions_reader = {"TXT", "PDF", "EPUB", "CBZ", "CBT", "CBR", "DJVU", "DJV"}
-    book_formats = list()
+    book_formats = []
     if len(entry.data):
         for ele in iter(entry.data):
             if ele.format.upper() in extensions_reader:
@@ -199,7 +196,7 @@ def check_read_formats(entry):
 # 2: If mobi file is existing, it's converted and send to eReader email,
 # 3: If Pdf file is existing, it's directly send to eReader email
 def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id):
-    """Send email with attachments"""
+    """Send email with attachments."""
     book = calibre_db.get_book(book_id)
 
     if convert == 1:
@@ -239,7 +236,8 @@ def get_valid_filename(value, replace_whitespace=True, chars=128):
     value = value.encode("utf-8")[:chars].decode("utf-8", errors="ignore").strip()
 
     if not value:
-        raise ValueError("Filename cannot be empty")
+        msg = "Filename cannot be empty"
+        raise ValueError(msg)
     return value
 
 
@@ -267,10 +265,7 @@ def get_sorted_author(value):
             combined = "(" + ")|(".join(regexes) + ")"
             value = value.split(" ")
             if re.match(combined, value[-1].upper()):
-                if len(value) > 1:
-                    value2 = value[-2] + ", " + " ".join(value[:-2]) + " " + value[-1]
-                else:
-                    value2 = value[0]
+                value2 = value[-2] + ", " + " ".join(value[:-2]) + " " + value[-1] if len(value) > 1 else value[0]
             elif len(value) == 1:
                 value2 = value[0]
             else:
@@ -278,11 +273,8 @@ def get_sorted_author(value):
         else:
             value2 = value
     except Exception as ex:
-        log.error("Sorting author %s failed: %s", value, ex)
-        if isinstance(list, value2):
-            value2 = value[0]
-        else:
-            value2 = value
+        log.exception("Sorting author %s failed: %s", value, ex)
+        value2 = value[0] if isinstance(list, value2) else value
     return value2
 
 
@@ -326,12 +318,12 @@ def edit_book_read_status(book_id, read_status=None):
                 calibre_db.session.add(new_cc)
                 calibre_db.session.commit()
         except (KeyError, AttributeError, IndexError):
-            log.error(
+            log.exception(
                 f"Custom Column No.{config.config_read_column} does not exist in calibre database")
             return f"Custom Column No.{config.config_read_column} does not exist in calibre database"
         except (OperationalError, InvalidRequestError) as ex:
             calibre_db.session.rollback()
-            log.error(f"Read status could not set: {ex}")
+            log.exception(f"Read status could not set: {ex}")
             return _(f"Read status could not set: {ex.orig}")
     return ""
 
@@ -358,14 +350,14 @@ def delete_book_file(book, calibrepath, book_format=None):
                                        path=book.path)
                 shutil.rmtree(path)
             except OSError as ex:
-                log.error("Deleting book %s failed: %s", book.id, ex)
+                log.exception("Deleting book %s failed: %s", book.id, ex)
                 return False, _("Deleting book %(id)s failed: %(message)s", id=book.id, message=ex)
             authorpath = os.path.join(calibrepath, os.path.split(book.path)[0])
             if not os.listdir(authorpath):
                 try:
                     shutil.rmtree(authorpath)
                 except OSError as ex:
-                    log.error("Deleting authorpath for book %s failed: %s", book.id, ex)
+                    log.exception("Deleting authorpath for book %s failed: %s", book.id, ex)
             return True, None
 
     log.error("Deleting book %s from database only, book path in database not valid: %s",
@@ -375,7 +367,7 @@ def delete_book_file(book, calibrepath, book_format=None):
                    path=book.path)
 
 
-def clean_author_database(renamed_author, calibre_path="", local_book=None, gdrive=None):
+def clean_author_database(renamed_author, calibre_path="", local_book=None, gdrive=None) -> None:
     valid_filename_authors = [get_valid_filename(r, chars=96) for r in renamed_author]
     for r in renamed_author:
         if local_book:
@@ -430,7 +422,7 @@ def rename_all_authors(first_author, renamed_author, calibre_path="", localbook=
                     new_author_path = os.path.join(calibre_path, new_author_rename_dir)
                     shutil.move(os.path.normcase(old_author_path), os.path.normcase(new_author_path))
                 except OSError as ex:
-                    log.error("Rename author from: %s to %s: %s", old_author_path, new_author_path, ex)
+                    log.exception("Rename author from: %s to %s: %s", old_author_path, new_author_path, ex)
                     log.debug(ex, exc_info=True)
                     return _("Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s",
                              src=old_author_path, dest=new_author_path, error=str(ex))
@@ -443,10 +435,7 @@ def rename_all_authors(first_author, renamed_author, calibre_path="", localbook=
 def update_dir_structure_file(book_id, calibre_path, first_author, original_filepath, db_filename, renamed_author):
     # get book database entry from id, if original path overwrite source with original_filepath
     local_book = calibre_db.get_book(book_id)
-    if original_filepath:
-        path = original_filepath
-    else:
-        path = os.path.join(calibre_path, local_book.path)
+    path = original_filepath if original_filepath else os.path.join(calibre_path, local_book.path)
 
     # Create (current) author_dir and title_dir from database
     author_dir = local_book.path.split("/")[0]
@@ -455,10 +444,9 @@ def update_dir_structure_file(book_id, calibre_path, first_author, original_file
     # Create new_author_dir from parameter or from database
     # Create new title_dir from database and add id
     new_author_dir = rename_all_authors(first_author, renamed_author, calibre_path, local_book)
-    if first_author:
-        if first_author.lower() in [r.lower() for r in renamed_author]:
-            if os.path.isdir(os.path.join(calibre_path, new_author_dir)):
-                path = os.path.join(calibre_path, new_author_dir, title_dir)
+    if first_author and first_author.lower() in [r.lower() for r in renamed_author]:
+        if os.path.isdir(os.path.join(calibre_path, new_author_dir)):
+            path = os.path.join(calibre_path, new_author_dir, title_dir)
 
     new_title_dir = get_valid_filename(local_book.title, chars=96) + " (" + str(book_id) + ")"
 
@@ -723,7 +711,7 @@ def get_cover_on_failure():
     try:
         return send_from_directory(_STATIC_DIR, "generic_cover.jpg")
     except PermissionError:
-        log.error("No permission to access generic_cover.jpg file.")
+        log.exception("No permission to access generic_cover.jpg file.")
         abort(403)
 
 
@@ -786,6 +774,7 @@ def get_book_cover_thumbnail(book, resolution):
             .filter(ub.Thumbnail.resolution == resolution) \
             .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.utcnow())) \
             .first()
+    return None
 
 
 def get_series_thumbnail_on_failure(series_id, resolution):
@@ -845,13 +834,13 @@ def save_cover_from_url(url, book_path):
             requests.exceptions.ConnectionError,
             requests.exceptions.Timeout) as ex:
         # "Invalid host" can be the result of a redirect response
-        log.error("Cover Download Error %s", ex)
+        log.exception("Cover Download Error %s", ex)
         return False, _("Error Downloading Cover")
     except MissingDelegateError as ex:
         log.info("File Format Error %s", ex)
         return False, _("Cover Format Error")
     except UnacceptableAddressException:
-        log.error("Localhost or local network was accessed for cover upload")
+        log.exception("Localhost or local network was accessed for cover upload")
         return False, _("You are not allowed to access localhost or the local network for cover uploads")
 
 
@@ -861,7 +850,7 @@ def save_cover_from_filestorage(filepath, saved_filename, img):
         try:
             os.makedirs(filepath)
         except OSError:
-            log.error("Failed to create path for cover")
+            log.exception("Failed to create path for cover")
             return False, _("Failed to create path for cover")
     try:
         # upload of jgp file without wand
@@ -876,7 +865,7 @@ def save_cover_from_filestorage(filepath, saved_filename, img):
             # upload of jpg/png... from hdd
             img.save(os.path.join(filepath, saved_filename))
     except OSError:
-        log.error("Cover-file is not a valid image file, or could not be stored")
+        log.exception("Cover-file is not a valid image file, or could not be stored")
         return False, _("Cover-file is not a valid image file, or could not be stored")
     return True, None
 
@@ -891,15 +880,12 @@ def save_cover(img, book_path):
             return False, _("Only jpg/jpeg/png/webp/bmp files are supported as coverfile")
         # convert to jpg because calibre only supports jpg
         try:
-            if hasattr(img, "stream"):
-                imgc = Image(blob=img.stream)
-            else:
-                imgc = Image(blob=io.BytesIO(img.content))
+            imgc = Image(blob=img.stream) if hasattr(img, "stream") else Image(blob=io.BytesIO(img.content))
             imgc.format = "jpeg"
             imgc.transform_colorspace("rgb")
             img = imgc
         except (BlobError, MissingDelegateError):
-            log.error("Invalid cover file content")
+            log.exception("Invalid cover file content")
             return False, _("Invalid cover file content")
     elif content_type not in ["image/jpeg", "image/jpg"]:
         log.error("Only jpg/jpeg files are supported as coverfile")
@@ -1074,7 +1060,7 @@ def check_calibre(calibre_location):
 
 
 def json_serial(obj):
-    """JSON serializer for objects not serializable by default json code"""
+    """JSON serializer for objects not serializable by default json code."""
     if isinstance(obj, datetime):
         return obj.isoformat()
     if isinstance(obj, timedelta):
@@ -1099,7 +1085,7 @@ def tags_filters():
 # example SELECT * FROM @TABLE WHERE 'abcdefg' LIKE Name;
 # from https://code.luasoftware.com/tutorials/flask/execute-raw-sql-in-flask-sqlalchemy/
 # in all calls the email address is checked for validity
-def check_valid_domain(domain_text):
+def check_valid_domain(domain_text) -> bool:
     sql = "SELECT * FROM registration WHERE (:domain LIKE domain and allow = 1);"
     if not len(ub.session.query(ub.Registration).from_statement(text(sql)).params(domain=domain_text).all()):
         return False
@@ -1122,12 +1108,13 @@ def get_download_link(book_id, book_format, client):
             file_name = get_valid_filename(file_name, replace_whitespace=False)
             headers = Headers()
             headers["Content-Type"] = mimetypes.types_map.get("." + book_format, "application/octet-stream")
-            headers["Content-Disposition"] = "attachment; filename=%s.%s; filename*=UTF-8''%s.%s" % (
+            headers["Content-Disposition"] = "attachment; filename={}.{}; filename*=UTF-8''{}.{}".format(
                 quote(file_name), book_format, quote(file_name), book_format)
             return do_download_file(book, book_format, client, data1, headers)
     else:
         log.error(f"Book id {book_id} not found for downloading")
     abort(404)
+    return None
 
 
 def get_calibre_binarypath(binary):
@@ -1136,36 +1123,36 @@ def get_calibre_binarypath(binary):
             try:
                 return os.path.join(binariesdir, SUPPORTED_CALIBRE_BINARIES[binary])
             except KeyError:
-                log.error("Binary not supported by Calibre-Web: %s", SUPPORTED_CALIBRE_BINARIES[binary])
+                log.exception("Binary not supported by Calibre-Web: %s", SUPPORTED_CALIBRE_BINARIES[binary])
         return ""
 
 
-def clear_cover_thumbnail_cache(book_id):
+def clear_cover_thumbnail_cache(book_id) -> None:
     if config.schedule_generate_book_covers:
         WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
 
 
-def replace_cover_thumbnail_cache(book_id):
+def replace_cover_thumbnail_cache(book_id) -> None:
     if config.schedule_generate_book_covers:
         WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
         WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
 
 
-def delete_thumbnail_cache():
+def delete_thumbnail_cache() -> None:
     WorkerThread.add(None, TaskClearCoverThumbnailCache(-1))
 
 
-def add_book_to_thumbnail_cache(book_id):
+def add_book_to_thumbnail_cache(book_id) -> None:
     if config.schedule_generate_book_covers:
         WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
 
 
-def update_thumbnail_cache():
+def update_thumbnail_cache() -> None:
     if config.schedule_generate_book_covers:
         WorkerThread.add(None, TaskGenerateCoverThumbnails())
 
 
-def set_all_metadata_dirty():
+def set_all_metadata_dirty() -> None:
     WorkerThread.add(None, TaskBackupMetadata(export_language=get_locale(),
                                               translated_title=_("Cover"),
                                               set_dirty=True,

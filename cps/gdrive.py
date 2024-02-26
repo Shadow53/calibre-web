@@ -19,6 +19,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import contextlib
 import hashlib
 import json
 import os
@@ -42,7 +43,8 @@ try:
 except ImportError as err:
     log.debug("Cannot import googleapiclient, using GDrive will not work: %s", err)
 
-current_milli_time = lambda: int(round(time() * 1000))
+def current_milli_time():
+    return int(round(time() * 1000))
 
 gdrive_watch_callback_token = "target=calibreweb-watch_files"  #nosec
 
@@ -70,7 +72,7 @@ def google_drive_callback():
         with open(gdriveutils.CREDENTIALS, "w") as f:
             f.write(credentials.to_json())
     except (ValueError, AttributeError) as error:
-        log.error(error)
+        log.exception(error)
     return redirect(url_for("admin.db_configuration"))
 
 
@@ -105,11 +107,9 @@ def watch_gdrive():
 def revoke_watch_gdrive():
     last_watch_response = config.config_google_drive_watch_changes_response
     if last_watch_response:
-        try:
+        with contextlib.suppress(HttpError, AttributeError):
             gdriveutils.stopChannel(gdriveutils.Gdrive.Instance().drive, last_watch_response["id"],
                                     last_watch_response["resourceId"])
-        except (HttpError, AttributeError):
-            pass
         config.config_google_drive_watch_changes_response = {}
         config.save()
     return redirect(url_for("admin.db_configuration"))
@@ -117,7 +117,7 @@ def revoke_watch_gdrive():
 try:
     @csrf.exempt
     @gdrive.route("/watch/callback", methods=["GET", "POST"])
-    def on_received_watch_confirmation():
+    def on_received_watch_confirmation() -> str:
         if not config.config_google_drive_watch_changes_response:
             return ""
         if request.headers.get("X-Goog-Channel-Token") != gdrive_watch_callback_token \

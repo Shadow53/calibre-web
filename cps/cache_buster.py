@@ -26,7 +26,7 @@ from . import logger
 log = logger.create()
 
 
-def init_cache_busting(app):
+def init_cache_busting(app) -> None:
     """Configure `app` to so that `url_for` adds a unique query string to URLs generated
     for the `'static'` endpoint.
 
@@ -51,7 +51,7 @@ def init_cache_busting(app):
                 file_path = file_path.replace("\\", "/")  # Convert Windows path to web path
                 hash_table[file_path] = file_hash
             except PermissionError:
-                log.error(f"No permission to access {rooted_filename} file.")
+                log.exception(f"No permission to access {rooted_filename} file.")
 
     log.debug("Finished computing cache-busting values")
 
@@ -63,17 +63,15 @@ def init_cache_busting(app):
 
     @app.url_defaults
     # pylint: disable=unused-variable
-    def reverse_to_cache_busted_url(endpoint, values):
-        """Make `url_for` produce busted filenames when using the 'static' endpoint.
-        """
+    def reverse_to_cache_busted_url(endpoint, values) -> None:
+        """Make `url_for` produce busted filenames when using the 'static' endpoint."""
         if endpoint == "static":
             file_hash = bust_filename(values["filename"])
             if file_hash:
                 values["q"] = file_hash
 
     def debusting_static_view(filename):
-        """Serve a request for a static file having a busted name.
-        """
+        """Serve a request for a static file having a busted name."""
         return original_static_view(filename=unbust_filename(filename))
 
     # Replace the default static file view with our debusting view.

@@ -26,18 +26,18 @@ from .constants import NIGHTLY_VERSION as _NIGHTLY_VERSION
 from .constants import STABLE_VERSION as _STABLE_VERSION
 
 
-def version_info():
+def version_info() -> str:
     if _NIGHTLY_VERSION[1].startswith("$Format"):
         return "Calibre-Web version: %s - unknown git-clone" % _STABLE_VERSION["version"].replace("b", " Beta")
-    return "Calibre-Web version: %s -%s" % (_STABLE_VERSION["version"].replace("b", " Beta"), _NIGHTLY_VERSION[1])
+    return "Calibre-Web version: {} -{}".format(_STABLE_VERSION["version"].replace("b", " Beta"), _NIGHTLY_VERSION[1])
 
 
 class CliParameter:
 
-    def init(self):
+    def init(self) -> None:
         self.arg_parser()
 
-    def arg_parser(self):
+    def arg_parser(self) -> None:
         parser = argparse.ArgumentParser(description="Calibre Web is a web app providing "
                                                      "a interface for browsing, reading and downloading eBooks\n",
                                          prog="cps.py")

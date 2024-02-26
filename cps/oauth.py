@@ -36,9 +36,9 @@ class OAuthBackend(SQLAlchemyBackend):
 
     def __init__(self, model, session, provider_id,
                  user=None, user_id=None, user_required=None, anon_user=None,
-                 cache=None):
+                 cache=None) -> None:
         self.provider_id = provider_id
-        super(OAuthBackend, self).__init__(model, session, user, user_id, user_required, anon_user, cache)
+        super().__init__(model, session, user, user_id, user_required, anon_user, cache)
 
     def get(self, blueprint, user=None, user_id=None):
         if self.provider_id + "_oauth_token" in session and session[self.provider_id + "_oauth_token"] != "":
@@ -86,13 +86,14 @@ class OAuthBackend(SQLAlchemyBackend):
 
         return token
 
-    def set(self, blueprint, token, user=None, user_id=None):
+    def set(self, blueprint, token, user=None, user_id=None) -> None:
         uid = first([user_id, self.user_id, blueprint.config.get("user_id")])
         u = first(_get_real_user(ref, self.anon_user)
                   for ref in (user, self.user, blueprint.config.get("user")))
 
         if self.user_required and not u and not uid:
-            raise ValueError("Cannot set OAuth token without an associated user")
+            msg = "Cannot set OAuth token without an associated user"
+            raise ValueError(msg)
 
         # if there was an existing model, delete it
         existing_query = (
@@ -126,7 +127,7 @@ class OAuthBackend(SQLAlchemyBackend):
             blueprint=blueprint, user=user, user_id=user_id
         ))
 
-    def delete(self, blueprint, user=None, user_id=None):
+    def delete(self, blueprint, user=None, user_id=None) -> None:
         query = (
             self.session.query(self.model)
             .filter_by(provider=self.provider_id)
@@ -136,7 +137,8 @@ class OAuthBackend(SQLAlchemyBackend):
                   for ref in (user, self.user, blueprint.config.get("user")))
 
         if self.user_required and not u and not uid:
-            raise ValueError("Cannot delete OAuth token without an associated user")
+            msg = "Cannot delete OAuth token without an associated user"
+            raise ValueError(msg)
 
         # check for user ID
         if hasattr(self.model, "user_id") and uid:

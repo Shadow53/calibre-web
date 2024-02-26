@@ -31,21 +31,21 @@ class TaskBackupMetadata(CalibreTask):
     def __init__(self, export_language="en",
                  translated_title="Cover",
                  set_dirty=False,
-                 task_message=N_("Backing up Metadata")):
-        super(TaskBackupMetadata, self).__init__(task_message)
+                 task_message=N_("Backing up Metadata")) -> None:
+        super().__init__(task_message)
         self.log = logger.create()
         self.calibre_db = db.CalibreDB(expire_on_commit=False, init=True)
         self.export_language = export_language
         self.translated_title = translated_title
         self.set_dirty = set_dirty
 
-    def run(self, worker_thread):
+    def run(self, worker_thread) -> None:
         if self.set_dirty:
             self.set_all_books_dirty()
         else:
             self.backup_metadata()
 
-    def set_all_books_dirty(self):
+    def set_all_books_dirty(self) -> None:
         try:
             books = self.calibre_db.session.query(db.Books).all()
             for book in books:
@@ -58,7 +58,7 @@ class TaskBackupMetadata(CalibreTask):
             self.calibre_db.session.rollback()
         self.calibre_db.session.close()
 
-    def backup_metadata(self):
+    def backup_metadata(self) -> None:
         try:
             metadata_backup = self.calibre_db.session.query(db.Metadata_Dirtied).all()
             custom_columns = (self.calibre_db.session.query(db.CustomColumns)
@@ -88,12 +88,13 @@ class TaskBackupMetadata(CalibreTask):
             self.calibre_db.session.rollback()
             self.calibre_db.session.close()
 
-    def open_metadata(self, book, custom_columns):
+    def open_metadata(self, book, custom_columns) -> None:
         # package = self.create_new_metadata_backup(book, custom_columns)
         package = create_new_metadata_backup(book, custom_columns, self.export_language, self.translated_title)
         if config.config_use_google_drive:
             if not gdriveutils.is_gdrive_ready():
-                raise Exception("Google Drive is configured but not ready")
+                msg = "Google Drive is configured but not ready"
+                raise Exception(msg)
 
             gdriveutils.uploadFileToEbooksFolder(os.path.join(book.path, "metadata.opf").replace("\\", "/"),
                                                  etree.tostring(package,
@@ -110,19 +111,20 @@ class TaskBackupMetadata(CalibreTask):
                 with open(book_metadata_filepath, "wb") as f:
                     doc.write(f, xml_declaration=True, encoding="utf-8", pretty_print=True)
             except Exception as ex:
-                raise Exception(f"Writing Metadata failed with error: {ex} ")
+                msg = f"Writing Metadata failed with error: {ex} "
+                raise Exception(msg)
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "Metadata backup"
 
     # needed for logging
-    def __str__(self):
+    def __str__(self) -> str:
         if self.set_dirty:
             return "Queue all books for metadata backup"
         else:
             return "Perform metadata backup"
 
     @property
-    def is_cancellable(self):
+    def is_cancellable(self) -> bool:
         return True

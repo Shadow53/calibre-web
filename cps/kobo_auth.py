@@ -81,11 +81,8 @@ kobo_auth = Blueprint("kobo_auth", __name__, url_prefix="/kobo_auth")
 def generate_auth_token(user_id):
     warning = False
     host_list = request.host.rsplit(":")
-    if len(host_list) == 1:
-        host = ":".join(host_list)
-    else:
-        host = ":".join(host_list[0:-1])
-    if host.startswith("127.") or host.lower() == "localhost" or host.startswith("[::ffff:7f") or host == "[::1]":
+    host = ":".join(host_list) if len(host_list) == 1 else ":".join(host_list[0:-1])
+    if host.startswith(("127.", "[::ffff:7f")) or host.lower() == "localhost" or host == "[::1]":
         warning = _("Please access Calibre-Web from non localhost to get valid api_endpoint for kobo device")
 
     # Generate auth token if none is existing for this user
@@ -128,7 +125,7 @@ def delete_auth_token(user_id):
     return ub.session_commit()
 
 
-def disable_failed_auth_redirect_for_blueprint(bp):
+def disable_failed_auth_redirect_for_blueprint(bp) -> None:
     lm.blueprint_login_views[bp.name] = None
 
 
@@ -139,10 +136,10 @@ def get_auth_token():
         return None
 
 
-def register_url_value_preprocessor(kobo):
+def register_url_value_preprocessor(kobo) -> None:
     @kobo.url_value_preprocessor
     # pylint: disable=unused-variable
-    def pop_auth_token(__, values):
+    def pop_auth_token(__, values) -> None:
         g.auth_token = values.pop("auth_token")
 
 

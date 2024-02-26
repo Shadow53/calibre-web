@@ -36,7 +36,7 @@ log = logger.create()
 _REPOSITORY_API_URL = "https://api.github.com/repos/janeczku/calibre-web"
 
 
-def is_sha1(sha1):
+def is_sha1(sha1) -> bool:
     if len(sha1) != 40:
         return False
     try:
@@ -48,7 +48,7 @@ def is_sha1(sha1):
 
 class Updater(threading.Thread):
 
-    def __init__(self):
+    def __init__(self) -> None:
         threading.Thread.__init__(self)
         self.paused = False
         self.can_run = threading.Event()
@@ -56,7 +56,7 @@ class Updater(threading.Thread):
         self.status = -1
         self.updateIndex = None
 
-    def init_updater(self, config, web_server):
+    def init_updater(self, config, web_server) -> None:
         self.config = config
         self.web_server = web_server
 
@@ -70,7 +70,7 @@ class Updater(threading.Thread):
             return self._stable_available_updates(request_method)
         return self._nightly_available_updates(request_method)
 
-    def do_work(self):
+    def do_work(self) -> bool:
         try:
             self.status = 1
             log.debug("Download update file")
@@ -105,25 +105,25 @@ class Updater(threading.Thread):
                 self.status = 13
 
         except requests.exceptions.HTTPError as ex:
-            log.error("HTTP Error %s", ex)
+            log.exception("HTTP Error %s", ex)
             self.status = 8
         except requests.exceptions.ConnectionError:
-            log.error("Connection error")
+            log.exception("Connection error")
             self.status = 9
         except requests.exceptions.Timeout:
-            log.error("Timeout while establishing connection")
+            log.exception("Timeout while establishing connection")
             self.status = 10
         except (requests.exceptions.RequestException, zipfile.BadZipFile):
             self.status = 11
-            log.error("General error")
+            log.exception("General error")
         except OSError as ex:
             self.status = 12
-            log.error("Possible Reason for error: update file could not be saved in temp dir")
+            log.exception("Possible Reason for error: update file could not be saved in temp dir")
             log.error_or_exception(ex)
         self.pause()
         return False
 
-    def run(self):
+    def run(self) -> None:
         while True:
             self.can_run.wait()
             if self.status > -1:
@@ -132,14 +132,14 @@ class Updater(threading.Thread):
             else:
                 break
 
-    def pause(self):
+    def pause(self) -> None:
         self.can_run.clear()
 
     # should just resume the thread
-    def resume(self):
+    def resume(self) -> None:
         self.can_run.set()
 
-    def stop(self):
+    def stop(self) -> None:
         self.status = -2
         self.can_run.set()
 
@@ -206,11 +206,11 @@ class Updater(threading.Thread):
         return access
 
     @classmethod
-    def move_all_files(cls, root_src_dir, root_dst_dir):
+    def move_all_files(cls, root_src_dir, root_dst_dir) -> None:
         permission = None
         new_permissions = os.stat(root_dst_dir)
         log.debug("Performing Update on OS-System: %s", sys.platform)
-        change_permissions = not (sys.platform == "win32" or sys.platform == "darwin")
+        change_permissions = sys.platform not in ("win32", "darwin")
         for src_dir, __, files in os.walk(root_src_dir):
             dst_dir = src_dir.replace(root_src_dir, root_dst_dir, 1)
             if not os.path.exists(dst_dir):
@@ -218,13 +218,13 @@ class Updater(threading.Thread):
                     os.makedirs(dst_dir)
                     log.debug(f"Create directory: {dst_dir}")
                 except OSError as e:
-                    log.error(f"Failed creating folder: {dst_dir} with error {e}")
+                    log.exception(f"Failed creating folder: {dst_dir} with error {e}")
                 if change_permissions:
                     try:
                         os.chown(dst_dir, new_permissions.st_uid, new_permissions.st_gid)
                     except OSError as e:
                         old_permissions = os.stat(dst_dir)
-                        log.error("Failed changing permissions of %s. Before: %s:%s After %s:%s error: %s",
+                        log.exception("Failed changing permissions of %s. Before: %s:%s After %s:%s error: %s",
                                   dst_dir, old_permissions.st_uid, old_permissions.st_gid,
                                   new_permissions.st_uid, new_permissions.st_gid, e)
             for file_ in files:
@@ -237,26 +237,26 @@ class Updater(threading.Thread):
                         os.remove(dst_file)
                         log.debug(f"Remove file before copy: {dst_file}")
                     except OSError as e:
-                        log.error(f"Failed removing file: {dst_file} with error {e}")
+                        log.exception(f"Failed removing file: {dst_file} with error {e}")
                 elif change_permissions:
                     permission = new_permissions
                 try:
                     shutil.move(src_file, dst_dir)
                     log.debug("Move File %s to %s", src_file, dst_dir)
                 except OSError as ex:
-                    log.error(f"Failed moving file from {src_file} to {dst_dir} with error {ex}")
+                    log.exception(f"Failed moving file from {src_file} to {dst_dir} with error {ex}")
                 if change_permissions:
                     try:
                         os.chown(dst_file, permission.st_uid, permission.st_gid)
                     except OSError as e:
                         old_permissions = os.stat(dst_file)
-                        log.error("Failed changing permissions of %s. Before: %s:%s After %s:%s error: %s",
+                        log.exception("Failed changing permissions of %s. Before: %s:%s After %s:%s error: %s",
                                   dst_file, old_permissions.st_uid, old_permissions.st_gid,
                                   permission.st_uid, permission.st_gid, e)
 
-    def update_source(self, source, destination):
+    def update_source(self, source, destination) -> bool:
         # destination files
-        old_list = list()
+        old_list = []
         exclude = self._add_excluded_files(log.info)
         additional_path = self.is_venv()
         if additional_path:
@@ -273,7 +273,7 @@ class Updater(threading.Thread):
             for name in dirs:
                 old_list.append(os.path.join(root, name).replace(destination, ""))
         # source files
-        new_list = list()
+        new_list = []
         for root, dirs, files in os.walk(source, topdown=True):
             for name in files:
                 new_list.append(os.path.join(root, name).replace(source, ""))
@@ -326,7 +326,7 @@ class Updater(threading.Thread):
         return constants.STABLE_VERSION  # Current Version
 
     @classmethod
-    def dry_run(cls):
+    def dry_run(cls) -> None:
         cls._add_excluded_files(print)
         cls.check_permissions(constants.BASE_DIR, constants.BASE_DIR, print)
         print("\n*** Finished ***")
@@ -373,7 +373,7 @@ class Updater(threading.Thread):
 
     @staticmethod
     def _load_nightly_data(repository_url, commit, status):
-        update_data = dict()
+        update_data = {}
         try:
             headers = {"Accept": "application/vnd.github.v3+json"}
             r = requests.get(repository_url + "/git/commits/" + commit["object"]["sha"],
@@ -468,7 +468,7 @@ class Updater(threading.Thread):
             except (IndexError, KeyError):
                 status["success"] = False
                 status["message"] = _("Could not fetch update information")
-                log.error("Could not fetch update information")
+                log.exception("Could not fetch update information")
             return json.dumps(status)
         return ""
 

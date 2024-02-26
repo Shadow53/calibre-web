@@ -49,7 +49,7 @@ class EmailBase:
         self.progress = 0
         return (code, resp)
 
-    def send(self, strg):
+    def send(self, strg) -> None:
         """Send `strg' to the server."""
         log.debug_no_auth(f"send: {strg[:300]}")
         if hasattr(self, "sock") and self.sock:
@@ -71,12 +71,14 @@ class EmailBase:
                     self.sock.sendall(strg.encode("utf-8"))
             except OSError:
                 self.close()
-                raise smtplib.SMTPServerDisconnected("Server not connected")
+                msg = "Server not connected"
+                raise smtplib.SMTPServerDisconnected(msg)
         else:
-            raise smtplib.SMTPServerDisconnected("please run connect() first")
+            msg = "please run connect() first"
+            raise smtplib.SMTPServerDisconnected(msg)
 
     @classmethod
-    def _print_debug(cls, *args):
+    def _print_debug(cls, *args) -> None:
         log.debug(args)
 
     def getTransferStatus(self):
@@ -93,20 +95,20 @@ class EmailBase:
 # Class for sending email with ability to get current progress, derived from emailbase class
 class Email(EmailBase, smtplib.SMTP):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         smtplib.SMTP.__init__(self, *args, **kwargs)
 
 
 # Class for sending ssl encrypted email with ability to get current progress, , derived from emailbase class
 class EmailSSL(EmailBase, smtplib.SMTP_SSL):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         smtplib.SMTP_SSL.__init__(self, *args, **kwargs)
 
 
 class TaskEmail(CalibreTask):
-    def __init__(self, subject, filepath, attachment, settings, recipient, task_message, text, internal=False):
-        super(TaskEmail, self).__init__(task_message)
+    def __init__(self, subject, filepath, attachment, settings, recipient, task_message, text, internal=False) -> None:
+        super().__init__(task_message)
         self.subject = subject
         self.attachment = attachment
         self.settings = settings
@@ -114,7 +116,7 @@ class TaskEmail(CalibreTask):
         self.recipient = recipient
         self.text = text
         self.asyncSMTP = None
-        self.results = dict()
+        self.results = {}
 
     # from calibre code:
     # https://github.com/kovidgoyal/calibre/blob/731ccd92a99868de3e2738f65949f19768d9104c/src/calibre/utils/smtp.py#L60
@@ -152,7 +154,7 @@ class TaskEmail(CalibreTask):
                 return None
         return message
 
-    def run(self, worker_thread):
+    def run(self, worker_thread) -> None:
         try:
             # create MIME message
             msg = self.prepare_message()
@@ -181,7 +183,7 @@ class TaskEmail(CalibreTask):
             log.error_or_exception(ex, stacklevel=3)
             self._handleError(f"Error sending e-mail: {ex}")
 
-    def send_standard_email(self, msg):
+    def send_standard_email(self, msg) -> None:
         use_ssl = int(self.settings.get("mail_use_ssl", 0))
         timeout = 600  # set timeout to 5mins
 
@@ -213,7 +215,7 @@ class TaskEmail(CalibreTask):
         self._handleSuccess()
         log.debug("E-mail send successfully")
 
-    def send_gmail_email(self, message):
+    def send_gmail_email(self, message) -> None:
         gmail.send_messsage(self.settings.get("mail_gmail_token", None), message)
         self._handleSuccess()
 
@@ -225,15 +227,15 @@ class TaskEmail(CalibreTask):
             return self._progress
 
     @progress.setter
-    def progress(self, x):
-        """This gets explicitly set when handle(Success|Error) are called. In this case, remove the SMTP connection"""
+    def progress(self, x) -> None:
+        """This gets explicitly set when handle(Success|Error) are called. In this case, remove the SMTP connection."""
         if x == 1:
             self.asyncSMTP = None
             self._progress = x
 
     @classmethod
     def _get_attachment(cls, book_path, filename):
-        """Get file as MIMEBase message"""
+        """Get file as MIMEBase message."""
         calibre_path = config.get_book_path()
         if config.config_use_google_drive:
             df = gdriveutils.getFileFromEbooksFolder(book_path, filename)
@@ -255,7 +257,7 @@ class TaskEmail(CalibreTask):
                 file_.close()
             except OSError as e:
                 log.error_or_exception(e, stacklevel=3)
-                log.error("The requested file could not be read. Maybe wrong permissions?")
+                log.exception("The requested file could not be read. Maybe wrong permissions?")
                 return None
         return data
 
@@ -264,8 +266,8 @@ class TaskEmail(CalibreTask):
         return N_("E-mail")
 
     @property
-    def is_cancellable(self):
+    def is_cancellable(self) -> bool:
         return False
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"E-mail {self.name}, {self.subject}"

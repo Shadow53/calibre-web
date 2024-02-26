@@ -23,7 +23,7 @@ if not importlib:
 
 
 def load_dependencies(optional=False):
-    deps = list()
+    deps = []
     if getattr(sys, "frozen", False):
         pip_installed = os.path.join(BASE_DIR, ".pip_installed")
         if os.path.exists(pip_installed):
@@ -57,7 +57,7 @@ def load_dependencies(optional=False):
 
 
 def dependency_check(optional=False):
-    d = list()
+    d = []
     deps = load_dependencies(optional)
     for dep in deps:
         try:
@@ -85,12 +85,11 @@ def dependency_check(optional=False):
                           "found": dep[0],
                           "target": dep[2] + dep[3]})
                 continue
-        elif dep[2].strip() == ">":
-            if dep_version_int <= low_check:
-                d.append({"name": dep[1],
-                          "found": dep[0],
-                          "target": dep[2] + dep[3]})
-                continue
+        elif dep[2].strip() == ">" and dep_version_int <= low_check:
+            d.append({"name": dep[1],
+                      "found": dep[0],
+                      "target": dep[2] + dep[3]})
+            continue
         if dep[4] and dep[5]:
             if dep[4].strip() == "<":
                 if dep_version_int >= high_check:
@@ -99,11 +98,10 @@ def dependency_check(optional=False):
                          "found": dep[0],
                          "target": dep[4] + dep[5]})
                     continue
-            elif dep[4].strip() == "<=":
-                if dep_version_int > high_check:
-                    d.append(
-                        {"name": dep[1],
-                         "found": dep[0],
-                         "target": dep[4] + dep[5]})
-                    continue
+            elif dep[4].strip() == "<=" and dep_version_int > high_check:
+                d.append(
+                    {"name": dep[1],
+                     "found": dep[0],
+                     "target": dep[4] + dep[5]})
+                continue
     return d
