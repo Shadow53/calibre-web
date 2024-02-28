@@ -17,11 +17,10 @@
 
 import os
 
-from flask_babel import lazy_gettext as N_
-from lxml import etree
-
 from calibre_web import config, db, gdriveutils, logger
 from calibre_web.services.worker import CalibreTask
+from flask_babel import lazy_gettext as N_
+from lxml import etree
 
 from ..epub_helper import create_new_metadata_backup
 

@@ -16,10 +16,9 @@
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-from flask_babel import lazy_gettext as N_
-
 from calibre_web import file_helper, logger
 from calibre_web.services.worker import CalibreTask
+from flask_babel import lazy_gettext as N_
 
 
 class TaskDeleteTempFolder(CalibreTask):

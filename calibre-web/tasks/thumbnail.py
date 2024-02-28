@@ -20,11 +20,10 @@ from datetime import datetime
 from shutil import copyfile, copyfileobj
 from urllib.request import urlopen
 
-from flask_babel import lazy_gettext as N_
-from sqlalchemy import func, or_, text
-
 from calibre_web import config, db, fs, gdriveutils, logger, ub
 from calibre_web.services.worker import STAT_CANCELLED, STAT_ENDED, CalibreTask
+from flask_babel import lazy_gettext as N_
+from sqlalchemy import func, or_, text
 
 from .. import constants
 

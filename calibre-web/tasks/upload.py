@@ -17,9 +17,8 @@
 
 from datetime import datetime
 
-from flask_babel import lazy_gettext as N_
-
 from calibre_web.services.worker import STAT_FINISH_SUCCESS, CalibreTask
+from flask_babel import lazy_gettext as N_
 
 
 class TaskUpload(CalibreTask):
