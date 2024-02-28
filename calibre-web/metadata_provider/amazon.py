@@ -28,8 +28,8 @@ except ImportError:
 #from time import time
 from operator import itemgetter
 
-from cps import logger
-from cps.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
+from calibre_web import logger
+from calibre_web.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
 
 log = logger.create()
 

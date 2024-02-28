@@ -19,8 +19,8 @@ from concurrent import futures
 from typing import List, Optional
 
 import requests
-from cps import logger
-from cps.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
+from calibre_web import logger
+from calibre_web.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
 from html2text import HTML2Text
 from lxml import etree
 

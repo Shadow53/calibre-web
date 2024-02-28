@@ -23,8 +23,8 @@ from urllib.request import urlopen
 from flask_babel import lazy_gettext as N_
 from sqlalchemy import func, or_, text
 
-from cps import config, db, fs, gdriveutils, logger, ub
-from cps.services.worker import STAT_CANCELLED, STAT_ENDED, CalibreTask
+from calibre_web import config, db, fs, gdriveutils, logger, ub
+from calibre_web.services.worker import STAT_CANCELLED, STAT_ENDED, CalibreTask
 
 from .. import constants
 

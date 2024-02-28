@@ -28,9 +28,9 @@ from io import StringIO
 
 from flask_babel import lazy_gettext as N_
 
-from cps import config, gdriveutils, logger
-from cps.services import gmail
-from cps.services.worker import CalibreTask
+from calibre_web import config, gdriveutils, logger
+from calibre_web.services import gmail
+from calibre_web.services.worker import CalibreTask
 
 log = logger.create()
 

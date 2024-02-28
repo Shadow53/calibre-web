@@ -29,7 +29,7 @@ from flask_login import current_user, login_required
 from sqlalchemy.exc import InvalidRequestError, OperationalError
 from sqlalchemy.orm.attributes import flag_modified
 
-from cps.services.Metadata import Metadata
+from calibre_web.services.Metadata import Metadata
 
 from . import constants, logger, ub, web_server
 
@@ -48,13 +48,13 @@ except ImportError:
     sys.exit(6)
 
 new_list = []
-meta_dir = os.path.join(constants.BASE_DIR, "cps", "metadata_provider")
-modules = os.listdir(os.path.join(constants.BASE_DIR, "cps", "metadata_provider"))
+meta_dir = os.path.join(constants.BASE_DIR, "calibre-web", "metadata_provider")
+modules = os.listdir(os.path.join(constants.BASE_DIR, "calibre-web", "metadata_provider"))
 for f in modules:
     if os.path.isfile(os.path.join(meta_dir, f)) and not f.endswith("__init__.py"):
         a = os.path.basename(f)[:-3]
         try:
-            importlib.import_module("cps.metadata_provider." + a)
+            importlib.import_module("calibre_web.metadata_provider." + a)
             new_list.append(a)
         except (IndentationError, SyntaxError) as e:
             log.exception(f"Syntax error for metadata source: {a} - {e}")
@@ -66,7 +66,7 @@ def list_classes(provider_list):
     classes = []
     for element in provider_list:
         for name, obj in inspect.getmembers(
-            sys.modules["cps.metadata_provider." + element]
+            sys.modules["calibre_web.metadata_provider." + element]
         ):
             if (
                 inspect.isclass(obj)

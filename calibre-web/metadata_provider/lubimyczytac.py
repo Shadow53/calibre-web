@@ -21,9 +21,9 @@ from typing import List, Optional, Tuple, Union
 from urllib.parse import quote
 
 import requests
-from cps import logger
-from cps.isoLanguages import get_language_name
-from cps.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
+from calibre_web import logger
+from calibre_web.isoLanguages import get_language_name
+from calibre_web.services.Metadata import Metadata, MetaRecord, MetaSourceInfo
 from dateutil import parser
 from html2text import HTML2Text
 from lxml.html import HtmlElement, fromstring, tostring

@@ -19,11 +19,11 @@
 import os
 import sys
 
-# Add local path to sys.path, so we can import cps
+# Add local path to sys.path, so we can import calibre_web
 path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, path)
 
-from cps.main import main
+from calibre_web.main import main
 
 if __name__ == "__main__":
     main()

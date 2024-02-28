@@ -21,12 +21,12 @@ from tempfile import gettempdir
 
 
 def get_temp_dir():
-    tmp_dir = os.path.join(gettempdir(), "calibre_web")
+    tmp_dir = os.path.join(gettempdir(), "calibre-web")
     if not os.path.isdir(tmp_dir):
         os.mkdir(tmp_dir)
     return tmp_dir
 
 
 def del_temp_dir() -> None:
-    tmp_dir = os.path.join(gettempdir(), "calibre_web")
+    tmp_dir = os.path.join(gettempdir(), "calibre-web")
     shutil.rmtree(tmp_dir)

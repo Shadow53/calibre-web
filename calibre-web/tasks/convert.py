@@ -27,14 +27,14 @@ from flask_babel import lazy_gettext as N_
 from markupsafe import escape
 from sqlalchemy.exc import SQLAlchemyError
 
-from cps import config, db, gdriveutils, helper, logger
-from cps.constants import SUPPORTED_CALIBRE_BINARIES
-from cps.file_helper import get_temp_dir
-from cps.kobo_sync_status import remove_synced_book
-from cps.services.worker import CalibreTask
-from cps.subproc_wrapper import process_open
-from cps.tasks.mail import TaskEmail
-from cps.ub import init_db_thread
+from calibre_web import config, db, gdriveutils, helper, logger
+from calibre_web.constants import SUPPORTED_CALIBRE_BINARIES
+from calibre_web.file_helper import get_temp_dir
+from calibre_web.kobo_sync_status import remove_synced_book
+from calibre_web.services.worker import CalibreTask
+from calibre_web.subproc_wrapper import process_open
+from calibre_web.tasks.mail import TaskEmail
+from calibre_web.ub import init_db_thread
 
 log = logger.create()
 

@@ -68,7 +68,7 @@ Calibre-Web is a web app that offers a clean and intuitive interface for browsin
 1. Create a virtual environment for Calibre-Web to avoid conflicts with existing Python dependencies
 2. Install Calibre-Web via pip: `pip install calibreweb` (or `pip3` depending on your OS/distro)
 3. Install optional features via pip as needed, see [this page](https://github.com/janeczku/calibre-web/wiki/Dependencies-in-Calibre-Web-Linux-and-Windows) for details
-4. Start Calibre-Web by typing `cps`
+4. Start Calibre-Web by typing `calibre-web`
 
 *Note: Raspberry Pi OS users may encounter issues during installation. If so, please update pip (`./venv/bin/python3 -m pip install --upgrade pip`) and/or install cargo (`sudo apt install cargo`) before retrying the installation.*
 

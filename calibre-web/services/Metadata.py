@@ -20,7 +20,7 @@ import os
 import re
 from typing import Dict, Generator, List, Optional, Union
 
-from cps import constants
+from calibre_web import constants
 
 
 @dataclasses.dataclass

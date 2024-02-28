@@ -28,7 +28,7 @@ from collections import namedtuple
 from datetime import datetime
 from typing import NoReturn
 
-from cps import logger
+from calibre_web import logger
 
 log = logger.create()
 

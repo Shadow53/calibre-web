@@ -25,7 +25,7 @@ classifiers = [
 ]
 keywords = ["calibre", "calibre-web", "library"]
 packages = [
-  { include = "cps" }
+  { include = "calibre-web" }
 ]
 
 [build-system]
@@ -134,7 +134,7 @@ kobo = [
 ]
 
 [tool.poetry.scripts]
-cps = "calibreweb:main"
+calibre-web = "calibre_web:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.2"
@@ -161,7 +161,7 @@ report_progress = true
 line-length = 120
 indent-width = 4
 fix = true
-src = ["cps"]
+src = ["calibre-web"]
 
 [tool.ruff.lint]
 # TODO: T20 disallows print statements

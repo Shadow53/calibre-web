@@ -18,8 +18,8 @@
 
 from flask_babel import lazy_gettext as N_
 
-from cps import file_helper, logger
-from cps.services.worker import CalibreTask
+from calibre_web import file_helper, logger
+from calibre_web.services.worker import CalibreTask
 
 
 class TaskDeleteTempFolder(CalibreTask):

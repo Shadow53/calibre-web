@@ -33,3574 +33,3574 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.13.1\n"
 
-#: cps/about.py:84
+#: calibre-web/about.py:84
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: cps/admin.py:149
+#: calibre-web/admin.py:149
 #, fuzzy
 msgid "Server restarted, please reload page."
 msgstr "Serveur redémarré, merci de rafraîchir la page"
 
-#: cps/admin.py:151
+#: calibre-web/admin.py:151
 #, fuzzy
 msgid "Performing Server shutdown, please close window."
 msgstr "Arrêt du serveur en cours, merci de fermer la fenêtre"
 
-#: cps/admin.py:159
+#: calibre-web/admin.py:159
 msgid "Success! Database Reconnected"
 msgstr ""
 
-#: cps/admin.py:162
+#: calibre-web/admin.py:162
 msgid "Unknown command"
 msgstr "Commande inconnue"
 
-#: cps/admin.py:173
+#: calibre-web/admin.py:173
 #, fuzzy
 msgid "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr "Teste les courriels en file d’attente pour l’envoi à %(email)s, veuillez vérifier le résultat des tâches"
 
-#: cps/admin.py:206 cps/editbooks.py:589 cps/editbooks.py:591
-#: cps/editbooks.py:629 cps/editbooks.py:646 cps/editbooks.py:1262
-#: cps/updater.py:613 cps/uploader.py:93 cps/uploader.py:102
+#: calibre-web/admin.py:206 calibre-web/editbooks.py:589 calibre-web/editbooks.py:591
+#: calibre-web/editbooks.py:629 calibre-web/editbooks.py:646 calibre-web/editbooks.py:1262
+#: calibre-web/updater.py:613 calibre-web/uploader.py:93 calibre-web/uploader.py:102
 msgid "Unknown"
 msgstr "Inconnu"
 
-#: cps/admin.py:231
+#: calibre-web/admin.py:231
 msgid "Admin page"
 msgstr "Page admin"
 
-#: cps/admin.py:251
+#: calibre-web/admin.py:251
 msgid "Basic Configuration"
 msgstr "Configuration principale"
 
-#: cps/admin.py:289
+#: calibre-web/admin.py:289
 msgid "UI Configuration"
 msgstr "Configuration de l’interface utilisateur"
 
-#: cps/admin.py:323 cps/templates/admin.html:51
+#: calibre-web/admin.py:323 calibre-web/templates/admin.html:51
 #, fuzzy
 msgid "Edit Users"
 msgstr "Éditer les utilisateurs"
 
-#: cps/admin.py:367 cps/opds.py:506 cps/templates/grid.html:14
-#: cps/templates/list.html:13
+#: calibre-web/admin.py:367 calibre-web/opds.py:506 calibre-web/templates/grid.html:14
+#: calibre-web/templates/list.html:13
 msgid "All"
 msgstr "Tout"
 
-#: cps/admin.py:394 cps/admin.py:1405
+#: calibre-web/admin.py:394 calibre-web/admin.py:1405
 msgid "User not found"
 msgstr "L'utilisateur n'a pas été trouvé"
 
-#: cps/admin.py:408
+#: calibre-web/admin.py:408
 msgid "{} users deleted successfully"
 msgstr "{} utilisateurs supprimés avec succès"
 
-#: cps/admin.py:431 cps/templates/config_view_edit.html:133
-#: cps/templates/user_edit.html:45 cps/templates/user_table.html:81
+#: calibre-web/admin.py:431 calibre-web/templates/config_view_edit.html:133
+#: calibre-web/templates/user_edit.html:45 calibre-web/templates/user_table.html:81
 msgid "Show All"
 msgstr "Montrer tout"
 
-#: cps/admin.py:452 cps/admin.py:458
+#: calibre-web/admin.py:452 calibre-web/admin.py:458
 msgid "Malformed request"
 msgstr "Demande malformée"
 
-#: cps/admin.py:470 cps/admin.py:2033
+#: calibre-web/admin.py:470 calibre-web/admin.py:2033
 msgid "Guest Name can't be changed"
 msgstr "Le nom de l’invité ne peut pas être modifié"
 
-#: cps/admin.py:482
+#: calibre-web/admin.py:482
 msgid "Guest can't have this role"
 msgstr "L’invité ne peut pas avoir ce rôle"
 
-#: cps/admin.py:494 cps/admin.py:1987
+#: calibre-web/admin.py:494 calibre-web/admin.py:1987
 msgid "No admin user remaining, can't remove admin role"
 msgstr "Aucun utilisateur admin restant, impossible de supprimer le rôle admin"
 
-#: cps/admin.py:498 cps/admin.py:512
+#: calibre-web/admin.py:498 calibre-web/admin.py:512
 msgid "Value has to be true or false"
 msgstr "La valeur doit être vraie ou fausse"
 
-#: cps/admin.py:500
+#: calibre-web/admin.py:500
 msgid "Invalid role"
 msgstr "Rôle invalide"
 
-#: cps/admin.py:504
+#: calibre-web/admin.py:504
 msgid "Guest can't have this view"
 msgstr "L’invité ne peut pas avoir cette vue"
 
-#: cps/admin.py:514
+#: calibre-web/admin.py:514
 msgid "Invalid view"
 msgstr "Vue invalide"
 
-#: cps/admin.py:517
+#: calibre-web/admin.py:517
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr "Les paramètres régionaux de l’invité sont déterminés automatiquement et ne peuvent pas être définis"
 
-#: cps/admin.py:521
+#: calibre-web/admin.py:521
 msgid "No Valid Locale Given"
 msgstr "Aucun paramètre régional valide n’est donné"
 
-#: cps/admin.py:532
+#: calibre-web/admin.py:532
 msgid "No Valid Book Language Given"
 msgstr "Aucune langue de livre valide donnée"
 
-#: cps/admin.py:534 cps/editbooks.py:455
+#: calibre-web/admin.py:534 calibre-web/editbooks.py:455
 msgid "Parameter not found"
 msgstr "Paramètre non trouvé"
 
-#: cps/admin.py:571
+#: calibre-web/admin.py:571
 msgid "Invalid Read Column"
 msgstr "Colonne de lecture non valide"
 
-#: cps/admin.py:577
+#: calibre-web/admin.py:577
 msgid "Invalid Restricted Column"
 msgstr "Colonne restreinte non valide"
 
-#: cps/admin.py:597 cps/admin.py:1858
+#: calibre-web/admin.py:597 calibre-web/admin.py:1858
 msgid "Calibre-Web configuration updated"
 msgstr "Configuration de Calibre-Web mise à jour"
 
-#: cps/admin.py:609
+#: calibre-web/admin.py:609
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Voulez-vous vraiment supprimer le jeton Kobo ?"
 
-#: cps/admin.py:611
+#: calibre-web/admin.py:611
 msgid "Do you really want to delete this domain?"
 msgstr "Voulez-vous vraiment supprimer ce domaine ?"
 
-#: cps/admin.py:613
+#: calibre-web/admin.py:613
 msgid "Do you really want to delete this user?"
 msgstr "Voulez-vous vraiment supprimer cet utilisateur ?"
 
-#: cps/admin.py:615
+#: calibre-web/admin.py:615
 msgid "Are you sure you want to delete this shelf?"
 msgstr "Voulez-vous vraiment supprimer l’étagère ?"
 
-#: cps/admin.py:617
+#: calibre-web/admin.py:617
 #, fuzzy
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr "Voulez-vous vraiment supprimer l’étagère ?"
 
-#: cps/admin.py:619
+#: calibre-web/admin.py:619
 msgid "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr "Voulez-vous vraiment modifier les langues de livre visibles pour le ou les utilisateurs sélectionnés ?"
 
-#: cps/admin.py:621
+#: calibre-web/admin.py:621
 msgid "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr "Voulez-vous vraiment modifier le rôle sélectionné pour le ou les utilisateurs sélectionnés ?"
 
-#: cps/admin.py:623
+#: calibre-web/admin.py:623
 #, fuzzy
 msgid "Are you sure you want to change the selected restrictions for the selected user(s)?"
 msgstr "Voulez-vous vraiment modifier les restrictions sélectionnées pour le ou les utilisateurs sélectionnés ?"
 
-#: cps/admin.py:625
+#: calibre-web/admin.py:625
 msgid "Are you sure you want to change the selected visibility restrictions for the selected user(s)?"
 msgstr "Voulez-vous vraiment modifier les restrictions de visibilité sélectionnées pour le ou les utilisateurs sélectionnés ?"
 
-#: cps/admin.py:628
+#: calibre-web/admin.py:628
 #, fuzzy
 msgid "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr "Voulez-vous vraiment supprimer l’étagère?"
 
-#: cps/admin.py:630
+#: calibre-web/admin.py:630
 #, fuzzy
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Voulez-vous vraiment arrêter Calibre-Web ?"
 
-#: cps/admin.py:632
+#: calibre-web/admin.py:632
 msgid "Calibre-Web will search for updated Covers and update Cover Thumbnails, this may take a while?"
 msgstr ""
 
-#: cps/admin.py:635
+#: calibre-web/admin.py:635
 msgid "Are you sure you want delete Calibre-Web's sync database to force a full sync with your Kobo Reader?"
 msgstr "Êtes-vous certain de vouloir supprimer la base de données de synchronisation de Calibre-Web pour forcer une synchronisation complète avec votre liseuse Kobo ?"
 
-#: cps/admin.py:878 cps/admin.py:884 cps/admin.py:894 cps/admin.py:904
-#: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
-#: cps/templates/user_table.html:58
+#: calibre-web/admin.py:878 calibre-web/admin.py:884 calibre-web/admin.py:894 calibre-web/admin.py:904
+#: calibre-web/templates/modal_dialogs.html:29 calibre-web/templates/user_table.html:41
+#: calibre-web/templates/user_table.html:58
 msgid "Deny"
 msgstr "Refuser"
 
-#: cps/admin.py:880 cps/admin.py:886 cps/admin.py:896 cps/admin.py:906
-#: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
-#: cps/templates/user_table.html:61
+#: calibre-web/admin.py:880 calibre-web/admin.py:886 calibre-web/admin.py:896 calibre-web/admin.py:906
+#: calibre-web/templates/modal_dialogs.html:28 calibre-web/templates/user_table.html:44
+#: calibre-web/templates/user_table.html:61
 msgid "Allow"
 msgstr "Autoriser"
 
-#: cps/admin.py:921
+#: calibre-web/admin.py:921
 msgid "{} sync entries deleted"
 msgstr "{} entrées de synchronisation supprimées"
 
-#: cps/admin.py:969
+#: calibre-web/admin.py:969
 msgid "Tag not found"
 msgstr "Étiquette introuvable"
 
-#: cps/admin.py:981
+#: calibre-web/admin.py:981
 msgid "Invalid Action"
 msgstr "Action invalide"
 
-#: cps/admin.py:1111
+#: calibre-web/admin.py:1111
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.json n'est pas configuré pour l'application Web"
 
-#: cps/admin.py:1156
+#: calibre-web/admin.py:1156
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "L'emplacement du fichier logfile est incorrect, veuillez saisir un chemin valide"
 
-#: cps/admin.py:1162
+#: calibre-web/admin.py:1162
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "L'emplacement du fichier Access Logfile est incorrect, veuillez saisir un chemin valide"
 
-#: cps/admin.py:1196
+#: calibre-web/admin.py:1196
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr "Veuillez saisir un fournisseur LDAP, Port, DN et l'identifiant objet de l'utilisateur"
 
-#: cps/admin.py:1202
+#: calibre-web/admin.py:1202
 #, fuzzy
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Veuillez entrer un nom d'utilisateur valide pour réinitialiser le mot de passe"
 
-#: cps/admin.py:1205
+#: calibre-web/admin.py:1205
 msgid "Please Enter a LDAP Service Account"
 msgstr "Veuillez entrer un compte de service LDAP"
 
-#: cps/admin.py:1210
+#: calibre-web/admin.py:1210
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr "Le filtre objet du groupe LDAP a besoin d'un identifiant de format \"%s\""
 
-#: cps/admin.py:1212
+#: calibre-web/admin.py:1212
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "Le filtre objet du groupe LDAP a une parenthèse non gérée"
 
-#: cps/admin.py:1216
+#: calibre-web/admin.py:1216
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr "Le filtre objet de l'utilisateur LDAP a besoin d'un identifiant de format \"%s\""
 
-#: cps/admin.py:1218
+#: calibre-web/admin.py:1218
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "Le filtre objet de l'utilisateur LDAP a une parenthèse non gérée"
 
-#: cps/admin.py:1225
+#: calibre-web/admin.py:1225
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr "Le filtre utilisateur des membres LDAP doit avoir un identificateur de format \"%s\\ »"
 
-#: cps/admin.py:1227
+#: calibre-web/admin.py:1227
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "Le filtre utilisateur de membre LDAP a des parenthèses non appariées"
 
-#: cps/admin.py:1234
+#: calibre-web/admin.py:1234
 msgid "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter Correct Path"
 msgstr "LDAP CACertificat, certificat ou emplacement de clé non valide, veuillez entrer le chemin correct"
 
-#: cps/admin.py:1265 cps/templates/admin.html:53
+#: calibre-web/admin.py:1265 calibre-web/templates/admin.html:53
 msgid "Add New User"
 msgstr "Ajouter un nouvel utilisateur"
 
-#: cps/admin.py:1274 cps/templates/admin.html:100
+#: calibre-web/admin.py:1274 calibre-web/templates/admin.html:100
 msgid "Edit Email Server Settings"
 msgstr "Modifier les paramètres du serveur de courriels"
 
-#: cps/admin.py:1293
+#: calibre-web/admin.py:1293
 msgid "Success! Gmail Account Verified."
 msgstr ""
 
-#: cps/admin.py:1313 cps/admin.py:1316 cps/admin.py:1698 cps/admin.py:1842
-#: cps/admin.py:1940 cps/admin.py:2061 cps/editbooks.py:241
-#: cps/editbooks.py:317 cps/editbooks.py:1224 cps/shelf.py:90 cps/shelf.py:150
-#: cps/shelf.py:193 cps/shelf.py:243 cps/shelf.py:280 cps/shelf.py:354
-#: cps/shelf.py:468 cps/tasks/convert.py:149 cps/web.py:1496
+#: calibre-web/admin.py:1313 calibre-web/admin.py:1316 calibre-web/admin.py:1698 calibre-web/admin.py:1842
+#: calibre-web/admin.py:1940 calibre-web/admin.py:2061 calibre-web/editbooks.py:241
+#: calibre-web/editbooks.py:317 calibre-web/editbooks.py:1224 calibre-web/shelf.py:90 calibre-web/shelf.py:150
+#: calibre-web/shelf.py:193 calibre-web/shelf.py:243 calibre-web/shelf.py:280 calibre-web/shelf.py:354
+#: calibre-web/shelf.py:468 calibre-web/tasks/convert.py:149 calibre-web/web.py:1496
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Erreur de la base de données: %(error)s."
 
-#: cps/admin.py:1323
+#: calibre-web/admin.py:1323
 #, python-format
 msgid "Test e-mail queued for sending to %(email)s, please check Tasks for result"
 msgstr "Teste les courriels en file d’attente pour l’envoi à %(email)s, veuillez vérifier le résultat des tâches"
 
-#: cps/admin.py:1326
+#: calibre-web/admin.py:1326
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "Il y a eu une erreur pendant l’envoi du courriel de test : %(res)s"
 
-#: cps/admin.py:1328
+#: calibre-web/admin.py:1328
 msgid "Please configure your e-mail address first..."
 msgstr "Veuillez d'abord configurer votre adresse de courriel..."
 
-#: cps/admin.py:1330
+#: calibre-web/admin.py:1330
 msgid "Email Server Settings updated"
 msgstr "Les paramètres du serveur de courriels ont été mis à jour"
 
-#: cps/admin.py:1353 cps/templates/admin.html:195
+#: calibre-web/admin.py:1353 calibre-web/templates/admin.html:195
 msgid "Edit Scheduled Tasks Settings"
 msgstr ""
 
-#: cps/admin.py:1365
+#: calibre-web/admin.py:1365
 msgid "Invalid start time for task specified"
 msgstr ""
 
-#: cps/admin.py:1370
+#: calibre-web/admin.py:1370
 msgid "Invalid duration for task specified"
 msgstr ""
 
-#: cps/admin.py:1380
+#: calibre-web/admin.py:1380
 msgid "Scheduled tasks settings updated"
 msgstr ""
 
-#: cps/admin.py:1390 cps/admin.py:1439 cps/admin.py:2057 cps/web.py:1296
+#: calibre-web/admin.py:1390 calibre-web/admin.py:1439 calibre-web/admin.py:2057 calibre-web/web.py:1296
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Une erreur inconnue est survenue. Veuillez réessayer plus tard."
 
-#: cps/admin.py:1394
+#: calibre-web/admin.py:1394
 msgid "Settings DB is not Writeable"
 msgstr ""
 
-#: cps/admin.py:1424 cps/admin.py:2049
+#: calibre-web/admin.py:1424 calibre-web/admin.py:2049
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Éditer l'utilisateur %(nick)s"
 
-#: cps/admin.py:1436
+#: calibre-web/admin.py:1436
 #, fuzzy, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "Le mot de passe de l’utilisateur %(user)s a été réinitialisé"
 
-#: cps/admin.py:1442
+#: calibre-web/admin.py:1442
 #, fuzzy
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Veuillez configurer les paramètres SMTP au préalable..."
 
-#: cps/admin.py:1453
+#: calibre-web/admin.py:1453
 msgid "Logfile viewer"
 msgstr "Visualiseur de fichier journal"
 
-#: cps/admin.py:1519
+#: calibre-web/admin.py:1519
 msgid "Requesting update package"
 msgstr "Demande de mise à jour"
 
-#: cps/admin.py:1520
+#: calibre-web/admin.py:1520
 msgid "Downloading update package"
 msgstr "Téléchargement de la mise à jour"
 
-#: cps/admin.py:1521
+#: calibre-web/admin.py:1521
 msgid "Unzipping update package"
 msgstr "Décompression de la mise à jour"
 
-#: cps/admin.py:1522
+#: calibre-web/admin.py:1522
 msgid "Replacing files"
 msgstr "Remplacement des fichiers"
 
-#: cps/admin.py:1523
+#: calibre-web/admin.py:1523
 msgid "Database connections are closed"
 msgstr "Les connexions à la base de données ont été fermées"
 
-#: cps/admin.py:1524
+#: calibre-web/admin.py:1524
 msgid "Stopping server"
 msgstr "Arrêt du serveur"
 
-#: cps/admin.py:1525
+#: calibre-web/admin.py:1525
 msgid "Update finished, please press okay and reload page"
 msgstr "Mise à jour terminée, merci d’appuyer sur okay et de rafraîchir la page"
 
-#: cps/admin.py:1526 cps/admin.py:1527 cps/admin.py:1528 cps/admin.py:1529
-#: cps/admin.py:1530 cps/admin.py:1531
+#: calibre-web/admin.py:1526 calibre-web/admin.py:1527 calibre-web/admin.py:1528 calibre-web/admin.py:1529
+#: calibre-web/admin.py:1530 calibre-web/admin.py:1531
 msgid "Update failed:"
 msgstr "La mise à jour a échoué :"
 
-#: cps/admin.py:1526 cps/updater.py:389 cps/updater.py:624 cps/updater.py:626
+#: calibre-web/admin.py:1526 calibre-web/updater.py:389 calibre-web/updater.py:624 calibre-web/updater.py:626
 msgid "HTTP Error"
 msgstr "Erreur HTTP"
 
-#: cps/admin.py:1527 cps/updater.py:391 cps/updater.py:628
+#: calibre-web/admin.py:1527 calibre-web/updater.py:391 calibre-web/updater.py:628
 msgid "Connection error"
 msgstr "Erreur de connexion"
 
-#: cps/admin.py:1528 cps/updater.py:393 cps/updater.py:630
+#: calibre-web/admin.py:1528 calibre-web/updater.py:393 calibre-web/updater.py:630
 msgid "Timeout while establishing connection"
 msgstr "Délai d'attente dépassé lors de l'établissement de connexion"
 
-#: cps/admin.py:1529 cps/updater.py:395 cps/updater.py:632
+#: calibre-web/admin.py:1529 calibre-web/updater.py:395 calibre-web/updater.py:632
 msgid "General error"
 msgstr "Erreur générale"
 
-#: cps/admin.py:1530
+#: calibre-web/admin.py:1530
 #, fuzzy
 msgid "Update file could not be saved in temp dir"
 msgstr "Le fichier de mise à jour ne peut pas être sauvegardé dans le répertoire temporaire"
 
-#: cps/admin.py:1531
+#: calibre-web/admin.py:1531
 msgid "Files could not be replaced during update"
 msgstr "Les fichiers n’ont pas pu être remplacés pendant la mise à jour"
 
-#: cps/admin.py:1555
+#: calibre-web/admin.py:1555
 #, fuzzy
 msgid "Failed to extract at least One LDAP User"
 msgstr "Impossible de créer au moins un utilisateur LDAP"
 
-#: cps/admin.py:1600
+#: calibre-web/admin.py:1600
 msgid "Failed to Create at Least One LDAP User"
 msgstr "Impossible de créer au moins un utilisateur LDAP"
 
-#: cps/admin.py:1613
+#: calibre-web/admin.py:1613
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "Erreur : %(ldaperror)s"
 
-#: cps/admin.py:1617
+#: calibre-web/admin.py:1617
 msgid "Error: No user returned in response of LDAP server"
 msgstr "Erreur : Aucun utilisateur renvoyé dans la réponse LDAP du serveur"
 
-#: cps/admin.py:1650
+#: calibre-web/admin.py:1650
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "Au moins un utilisateur LDAP n'a pas été trouvé dans la base de données"
 
-#: cps/admin.py:1652
+#: calibre-web/admin.py:1652
 msgid "{} User Successfully Imported"
 msgstr "{} utilisateur importé avec succès"
 
-#: cps/admin.py:1710
+#: calibre-web/admin.py:1710
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "L'emplacement de la base de données est incorrect, veuillez saisir un chemin valide"
 
-#: cps/admin.py:1730
+#: calibre-web/admin.py:1730
 msgid "DB is not Writeable"
 msgstr "La base de données n'est pas accessible en écriture"
 
-#: cps/admin.py:1746
+#: calibre-web/admin.py:1746
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "L'emplacement du fichier Keyfile est incorrect, veuillez saisir un chemin valide"
 
-#: cps/admin.py:1750
+#: calibre-web/admin.py:1750
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "L'emplacement du fichier Certfile est incorrect, veuillez saisir un chemin valide"
 
-#: cps/admin.py:1829
+#: calibre-web/admin.py:1829
 msgid "Password length has to be between 1 and 40"
 msgstr ""
 
-#: cps/admin.py:1881
+#: calibre-web/admin.py:1881
 #, fuzzy
 msgid "Database Settings updated"
 msgstr "Les paramètres du serveur de courriels ont été mis à jour"
 
-#: cps/admin.py:1889
+#: calibre-web/admin.py:1889
 #, fuzzy
 msgid "Database Configuration"
 msgstr "Configuration des options"
 
-#: cps/admin.py:1904 cps/web.py:1270
+#: calibre-web/admin.py:1904 calibre-web/web.py:1270
 msgid "Oops! Please complete all fields."
 msgstr "Veuillez compléter tous les champs !"
 
-#: cps/admin.py:1913
+#: calibre-web/admin.py:1913
 msgid "E-mail is not from valid domain"
 msgstr "Cette adresse de courriel n’appartient pas à un domaine valide"
 
-#: cps/admin.py:1919
+#: calibre-web/admin.py:1919
 msgid "Add new user"
 msgstr "Ajouter un nouvel utilisateur"
 
-#: cps/admin.py:1930
+#: calibre-web/admin.py:1930
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "Utilisateur '%(user)s' créé"
 
-#: cps/admin.py:1936
+#: calibre-web/admin.py:1936
 #, fuzzy
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "Un compte existant a été trouvé pour cette adresse de courriel ou pour ce surnom."
 
-#: cps/admin.py:1966
+#: calibre-web/admin.py:1966
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "Utilisateur '%(nick)s' supprimé"
 
-#: cps/admin.py:1969
+#: calibre-web/admin.py:1969
 msgid "Can't delete Guest User"
 msgstr "Impossible de supprimer l’utilisateur Invité"
 
-#: cps/admin.py:1972
+#: calibre-web/admin.py:1972
 msgid "No admin user remaining, can't delete user"
 msgstr "Aucun utilisateur admin restant, impossible de supprimer l’utilisateur"
 
-#: cps/admin.py:2027 cps/web.py:1445
+#: calibre-web/admin.py:2027 calibre-web/web.py:1445
 msgid "Email can't be empty and has to be a valid Email"
 msgstr ""
 
-#: cps/admin.py:2053
+#: calibre-web/admin.py:2053
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Utilisateur '%(nick)s'  mis à jour"
 
-#: cps/converter.py:31
+#: calibre-web/converter.py:31
 msgid "not installed"
 msgstr "non installé"
 
-#: cps/converter.py:32
+#: calibre-web/converter.py:32
 msgid "Execution permissions missing"
 msgstr "Les permissions d'exécutions manquantes"
 
-#: cps/db.py:752 cps/search.py:137 cps/web.py:731
+#: calibre-web/db.py:752 calibre-web/search.py:137 calibre-web/web.py:731
 #, fuzzy, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "La colonne personnalisée No.%(column)d n'existe pas dans la base de données calibre"
 
-#: cps/db.py:993 cps/templates/config_edit.html:208
-#: cps/templates/config_view_edit.html:62 cps/templates/email_edit.html:41
-#: cps/web.py:558 cps/web.py:592 cps/web.py:665 cps/web.py:692 cps/web.py:973
-#: cps/web.py:1003 cps/web.py:1048 cps/web.py:1076 cps/web.py:1115
+#: calibre-web/db.py:993 calibre-web/templates/config_edit.html:208
+#: calibre-web/templates/config_view_edit.html:62 calibre-web/templates/email_edit.html:41
+#: calibre-web/web.py:558 calibre-web/web.py:592 calibre-web/web.py:665 calibre-web/web.py:692 calibre-web/web.py:973
+#: calibre-web/web.py:1003 calibre-web/web.py:1048 calibre-web/web.py:1076 calibre-web/web.py:1115
 msgid "None"
 msgstr "Aucun"
 
-#: cps/editbooks.py:122 cps/editbooks.py:910 cps/web.py:525 cps/web.py:1537
-#: cps/web.py:1581 cps/web.py:1626
+#: calibre-web/editbooks.py:122 calibre-web/editbooks.py:910 calibre-web/web.py:525 calibre-web/web.py:1537
+#: calibre-web/web.py:1581 calibre-web/web.py:1626
 msgid "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "Erreur d'ouverture du livre numérique. Le fichier n'existe pas ou n'est pas accessible"
 
-#: cps/editbooks.py:166 cps/editbooks.py:1245
+#: calibre-web/editbooks.py:166 calibre-web/editbooks.py:1245
 msgid "User has no rights to upload cover"
 msgstr ""
 
-#: cps/editbooks.py:186 cps/editbooks.py:731
+#: calibre-web/editbooks.py:186 calibre-web/editbooks.py:731
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "Les identificateurs ne sont pas sensibles à la casse, écrasant l’ancien identificateur"
 
-#: cps/editbooks.py:228
+#: calibre-web/editbooks.py:228
 msgid "Metadata successfully updated"
 msgstr "Les métadonnées ont bien été mises à jour"
 
-#: cps/editbooks.py:246
+#: calibre-web/editbooks.py:246
 msgid "Error editing book: {}"
 msgstr ""
 
-#: cps/editbooks.py:303
+#: calibre-web/editbooks.py:303
 #, python-format
 msgid "File %(file)s uploaded"
 msgstr "Le fichier %(file)s a été téléchargé"
 
-#: cps/editbooks.py:331
+#: calibre-web/editbooks.py:331
 msgid "Source or destination format for conversion missing"
 msgstr "Le format de conversion de la source ou de la destination est manquant"
 
-#: cps/editbooks.py:339
+#: calibre-web/editbooks.py:339
 #, python-format
 msgid "Book successfully queued for converting to %(book_format)s"
 msgstr "Le livre a été mis avec succès en file de traitement pour conversion vers %(book_format)s"
 
-#: cps/editbooks.py:343
+#: calibre-web/editbooks.py:343
 #, python-format
 msgid "There was an error converting this book: %(res)s"
 msgstr "Une erreur est survenue au cours de la conversion du livre : %(res)s"
 
-#: cps/editbooks.py:650
+#: calibre-web/editbooks.py:650
 msgid "Uploaded book probably exists in the library, consider to change before upload new: "
 msgstr "Le fichier téléchargé existe probablement dans la librairie, veuillez le modifier avant de le télécharger de nouveau: "
 
-#: cps/editbooks.py:705 cps/editbooks.py:1037
+#: calibre-web/editbooks.py:705 calibre-web/editbooks.py:1037
 #, fuzzy, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s n'est pas une langue valide"
 
-#: cps/editbooks.py:743 cps/editbooks.py:1185
+#: calibre-web/editbooks.py:743 calibre-web/editbooks.py:1185
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "L’extension de fichier '%(ext)s' n’est pas autorisée pour être déposée sur ce serveur"
 
-#: cps/editbooks.py:747 cps/editbooks.py:1189
+#: calibre-web/editbooks.py:747 calibre-web/editbooks.py:1189
 msgid "File to be uploaded must have an extension"
 msgstr "Pour être déposé le fichier doit avoir une extension"
 
-#: cps/editbooks.py:755
+#: calibre-web/editbooks.py:755
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Le fichier %(filename)s ne peut pas être sauvegardé dans le répertoire temporaire"
 
-#: cps/editbooks.py:775
+#: calibre-web/editbooks.py:775
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Impossible de déplacer le fichier de couverture %(file)s: %(error)s"
 
-#: cps/editbooks.py:832 cps/editbooks.py:834
+#: calibre-web/editbooks.py:832 calibre-web/editbooks.py:834
 msgid "Book Format Successfully Deleted"
 msgstr "Le format du livre a été supprimé avec succès"
 
-#: cps/editbooks.py:841 cps/editbooks.py:843
+#: calibre-web/editbooks.py:841 calibre-web/editbooks.py:843
 msgid "Book Successfully Deleted"
 msgstr "Le livre a été supprimé avec succès"
 
-#: cps/editbooks.py:895
+#: calibre-web/editbooks.py:895
 msgid "You are missing permissions to delete books"
 msgstr "Vous n’avez par les permissions pour supprimer les livres"
 
-#: cps/editbooks.py:945
+#: calibre-web/editbooks.py:945
 msgid "edit metadata"
 msgstr "modifier les métadonnées"
 
-#: cps/editbooks.py:994
+#: calibre-web/editbooks.py:994
 #, python-format
 msgid "%(seriesindex)s is not a valid number, skipping"
 msgstr "%(seriesindex)s n’est pas un nombre valide, ignoré"
 
-#: cps/editbooks.py:1180
+#: calibre-web/editbooks.py:1180
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 
-#: cps/editbooks.py:1201
+#: calibre-web/editbooks.py:1201
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Impossible de créer le chemin %(path)s (Permission refusée)."
 
-#: cps/editbooks.py:1206
+#: calibre-web/editbooks.py:1206
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Échec de la sauvegarde du fichier %(file)s."
 
-#: cps/editbooks.py:1230
+#: calibre-web/editbooks.py:1230
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Le format de fichier %(ext)s a été ajouté à %(book)s"
 
-#: cps/gdrive.py:58
+#: calibre-web/gdrive.py:58
 msgid "Google Drive setup not completed, try to deactivate and activate Google Drive again"
 msgstr "La configuration de Google Drive n’est pas terminée, essayez de désactiver et d’activer à nouveau Google Drive"
 
-#: cps/gdrive.py:95
+#: calibre-web/gdrive.py:95
 msgid "Callback domain is not verified, please follow steps to verify domain in google developer console"
 msgstr "Le domaine de retour d’appel (Callback domain) est non vérifié, veuillez suivre les étapes nécessaires pour vérifier le domaine dans la console de développement de Google"
 
-#: cps/helper.py:84
+#: calibre-web/helper.py:84
 #, python-format
 msgid "%(format)s format not found for book id: %(book)d"
 msgstr "le format %(format)s est introuvable pour le livre : %(book)d"
 
-#: cps/helper.py:91 cps/tasks/convert.py:86
+#: calibre-web/helper.py:91 calibre-web/tasks/convert.py:86
 #, python-format
 msgid "%(format)s not found on Google Drive: %(fn)s"
 msgstr "le %(format)s est introuvable sur Google Drive : %(fn)s"
 
-#: cps/helper.py:96
+#: calibre-web/helper.py:96
 #, python-format
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s introuvable : %(fn)s"
 
-#: cps/helper.py:101 cps/helper.py:226 cps/templates/detail.html:58
+#: calibre-web/helper.py:101 calibre-web/helper.py:226 calibre-web/templates/detail.html:58
 #, fuzzy
 msgid "Send to eReader"
 msgstr "Envoyer vers Kindle"
 
-#: cps/helper.py:102 cps/helper.py:120 cps/helper.py:228
+#: calibre-web/helper.py:102 calibre-web/helper.py:120 calibre-web/helper.py:228
 #, fuzzy
 msgid "This Email has been sent via Calibre-Web."
 msgstr "Ce courriel a été envoyé depuis Calibre-Web."
 
-#: cps/helper.py:118
+#: calibre-web/helper.py:118
 #, fuzzy
 msgid "Calibre-Web Test Email"
 msgstr "Courriel de test de Calibre-Web"
 
-#: cps/helper.py:119
+#: calibre-web/helper.py:119
 #, fuzzy
 msgid "Test Email"
 msgstr "Courriel de test"
 
-#: cps/helper.py:136
+#: calibre-web/helper.py:136
 msgid "Get Started with Calibre-Web"
 msgstr "Bien démarrer avec Calibre-Web"
 
-#: cps/helper.py:141
+#: calibre-web/helper.py:141
 #, fuzzy, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "Courriel d’inscription pour l’utilisateur : %(name)s"
 
-#: cps/helper.py:152 cps/helper.py:158
+#: calibre-web/helper.py:152 calibre-web/helper.py:158
 #, fuzzy, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
 msgstr "Convertir de %(orig)s vers %(format)s et envoyer au Kindle"
 
-#: cps/helper.py:177 cps/helper.py:181 cps/helper.py:185
+#: calibre-web/helper.py:177 calibre-web/helper.py:181 calibre-web/helper.py:185
 #, fuzzy, python-format
 msgid "Send %(format)s to eReader"
 msgstr "Envoyer %(format)s vers le Kindle"
 
-#: cps/helper.py:225
+#: calibre-web/helper.py:225
 #, fuzzy, python-format
 msgid "%(book)s send to eReader"
 msgstr "Envoyer vers Kindle"
 
-#: cps/helper.py:230
+#: calibre-web/helper.py:230
 msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr "Le fichier demandé n’a pu être lu. Problème de permission d’accès ?"
 
-#: cps/helper.py:345
+#: calibre-web/helper.py:345
 msgid "Read status could not set: {}"
 msgstr ""
 
-#: cps/helper.py:368
+#: calibre-web/helper.py:368
 #, python-format
 msgid "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
 msgstr "Échec de la suppression du dossier de livre pour le livre %(id)s, le chemin d’accès comporte des sous-dossiers : %(path)s"
 
-#: cps/helper.py:374
+#: calibre-web/helper.py:374
 #, python-format
 msgid "Deleting book %(id)s failed: %(message)s"
 msgstr "La suppression du livre %(id)s a échoué: %(message)s"
 
-#: cps/helper.py:385
+#: calibre-web/helper.py:385
 #, fuzzy, python-format
 msgid "Deleting book %(id)s from database only, book path in database not valid: %(path)s"
 msgstr "Suppression du livre %(id)s, le chemin du livre est invalide : %(path)s"
 
-#: cps/helper.py:450
+#: calibre-web/helper.py:450
 #, fuzzy, python-format
 msgid "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr "Renommer le titre de : '%(src)s' à '%(dest)s' a échoué avec l’erreur : %(error)s"
 
-#: cps/helper.py:522 cps/helper.py:531
+#: calibre-web/helper.py:522 calibre-web/helper.py:531
 #, python-format
 msgid "File %(file)s not found on Google Drive"
 msgstr "Le fichier %(file)s n'a pas été trouvé dans Google Drive"
 
-#: cps/helper.py:565
+#: calibre-web/helper.py:565
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr "Renommer le titre de : '%(src)s' à '%(dest)s' a échoué avec l’erreur : %(error)s"
 
-#: cps/helper.py:585
+#: calibre-web/helper.py:585
 msgid "Error in rename file in path: {}"
 msgstr ""
 
-#: cps/helper.py:603
+#: calibre-web/helper.py:603
 #, python-format
 msgid "Book path %(path)s not found on Google Drive"
 msgstr "Le chemin du livre %(path)s n'a pas été trouvé dans Google Drive"
 
-#: cps/helper.py:668
+#: calibre-web/helper.py:668
 msgid "Found an existing account for this Email address"
 msgstr ""
 
-#: cps/helper.py:676
+#: calibre-web/helper.py:676
 msgid "This username is already taken"
 msgstr "Cet utilisateur est déjà pris"
 
-#: cps/helper.py:688
+#: calibre-web/helper.py:688
 #, fuzzy
 msgid "Invalid Email address format"
 msgstr "Format de l’adresse courriel invalide"
 
-#: cps/helper.py:706
+#: calibre-web/helper.py:706
 msgid "Password doesn't comply with password validation rules"
 msgstr ""
 
-#: cps/helper.py:855
+#: calibre-web/helper.py:855
 msgid "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
 
-#: cps/helper.py:865
+#: calibre-web/helper.py:865
 msgid "Error Downloading Cover"
 msgstr "Erreur lors du téléchargement de la couverture"
 
-#: cps/helper.py:868
+#: calibre-web/helper.py:868
 msgid "Cover Format Error"
 msgstr "Erreur de format de couverture"
 
-#: cps/helper.py:871
+#: calibre-web/helper.py:871
 msgid "You are not allowed to access localhost or the local network for cover uploads"
 msgstr ""
 
-#: cps/helper.py:881
+#: calibre-web/helper.py:881
 msgid "Failed to create path for cover"
 msgstr "Impossible de créer le chemin pour la couverture"
 
-#: cps/helper.py:897
+#: calibre-web/helper.py:897
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr "Le fichier couverture n'est pas un fichier image valide, ou ne peut pas être stocké"
 
-#: cps/helper.py:908
+#: calibre-web/helper.py:908
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr "Seuls les fichiers jpg/jpeg/png/webp/bmp sont supportés comme fichier de couverture"
 
-#: cps/helper.py:920
+#: calibre-web/helper.py:920
 msgid "Invalid cover file content"
 msgstr "Contenu du fichier de couverture invalide"
 
-#: cps/helper.py:924
+#: calibre-web/helper.py:924
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Seuls les fichiers jpg/jpeg sont supportés comme fichier de couverture"
 
-#: cps/helper.py:995 cps/helper.py:1183
+#: calibre-web/helper.py:995 calibre-web/helper.py:1183
 #, fuzzy
 msgid "Cover"
 msgstr "Découvrir"
 
-#: cps/helper.py:1032
+#: calibre-web/helper.py:1032
 msgid "Unrar binary file not found"
 msgstr "Fichier binaire Unrar non trouvé"
 
-#: cps/helper.py:1043
+#: calibre-web/helper.py:1043
 #, fuzzy
 msgid "Error executing UnRar"
 msgstr "Une erreur est survenue lors de l'exécution d'UnRar"
 
-#: cps/helper.py:1051
+#: calibre-web/helper.py:1051
 msgid "Could not find the specified directory"
 msgstr ""
 
-#: cps/helper.py:1054
+#: calibre-web/helper.py:1054
 msgid "Please specify a directory, not a file"
 msgstr ""
 
-#: cps/helper.py:1068
+#: calibre-web/helper.py:1068
 #, fuzzy
 msgid "Calibre binaries not viable"
 msgstr "La base de données n'est pas accessible en écriture"
 
-#: cps/helper.py:1077
+#: calibre-web/helper.py:1077
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr ""
 
-#: cps/helper.py:1079
+#: calibre-web/helper.py:1079
 #, fuzzy, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Les permissions d'exécutions manquantes"
 
-#: cps/helper.py:1084
+#: calibre-web/helper.py:1084
 #, fuzzy
 msgid "Error excecuting Calibre"
 msgstr "Une erreur est survenue lors de l'exécution d'UnRar"
 
-#: cps/helper.py:1185 cps/templates/admin.html:216
+#: calibre-web/helper.py:1185 calibre-web/templates/admin.html:216
 msgid "Queue all books for metadata backup"
 msgstr ""
 
-#: cps/kobo_auth.py:90
+#: calibre-web/kobo_auth.py:90
 #, fuzzy
 msgid "Please access Calibre-Web from non localhost to get valid api_endpoint for kobo device"
 msgstr "Veuilllez ne pas accéder à calibre-web par localhost pour obtenir un api_endpoint valide pour un appareil kobo"
 
-#: cps/kobo_auth.py:116
+#: calibre-web/kobo_auth.py:116
 msgid "Kobo Setup"
 msgstr "Configuration Kobo"
 
-#: cps/oauth_bb.py:77
+#: calibre-web/oauth_bb.py:77
 #, python-format
 msgid "Register with %(provider)s"
 msgstr "Enregistrer avec %(provider)s"
 
-#: cps/oauth_bb.py:138 cps/remotelogin.py:130
+#: calibre-web/oauth_bb.py:138 calibre-web/remotelogin.py:130
 #, python-format
 msgid "Success! You are now logged in as: %(nickname)s"
 msgstr "vous êtes maintenant connecté comme : '%(nickname)s'"
 
-#: cps/oauth_bb.py:148
+#: calibre-web/oauth_bb.py:148
 #, python-format
 msgid "Link to %(oauth)s Succeeded"
 msgstr "Lien vers %(oauth)s effectué avec succès"
 
-#: cps/oauth_bb.py:155
+#: calibre-web/oauth_bb.py:155
 msgid "Login failed, No User Linked With OAuth Account"
 msgstr "La connexion a échoué, aucun utilisateur lié au compte OAuth"
 
-#: cps/oauth_bb.py:197
+#: calibre-web/oauth_bb.py:197
 #, python-format
 msgid "Unlink to %(oauth)s Succeeded"
 msgstr "Suppression de la liaison vers %(oauth)s effectuée avec succès"
 
-#: cps/oauth_bb.py:202
+#: calibre-web/oauth_bb.py:202
 #, python-format
 msgid "Unlink to %(oauth)s Failed"
 msgstr "Suppression de la liaison vers %(oauth)s a échoué"
 
-#: cps/oauth_bb.py:205
+#: calibre-web/oauth_bb.py:205
 #, python-format
 msgid "Not Linked to %(oauth)s"
 msgstr "Non lié à %(oauth)s"
 
-#: cps/oauth_bb.py:261
+#: calibre-web/oauth_bb.py:261
 msgid "Failed to log in with GitHub."
 msgstr "Échec de la connexion avec GitHub."
 
-#: cps/oauth_bb.py:267
+#: calibre-web/oauth_bb.py:267
 msgid "Failed to fetch user info from GitHub."
 msgstr "Impossible d’obtenir les informations d’utilisateur à partir de GitHub."
 
-#: cps/oauth_bb.py:279
+#: calibre-web/oauth_bb.py:279
 msgid "Failed to log in with Google."
 msgstr "Échec de la connexion avec Google."
 
-#: cps/oauth_bb.py:285
+#: calibre-web/oauth_bb.py:285
 msgid "Failed to fetch user info from Google."
 msgstr "Impossible d’obtenir les informations d’utilisateur avec Google."
 
-#: cps/oauth_bb.py:332
+#: calibre-web/oauth_bb.py:332
 msgid "GitHub Oauth error, please retry later."
 msgstr "Erreur Oauth GitHub, veuillez réessayer plus tard."
 
-#: cps/oauth_bb.py:335
+#: calibre-web/oauth_bb.py:335
 msgid "GitHub Oauth error: {}"
 msgstr "Erreur Oauth Github : {}"
 
-#: cps/oauth_bb.py:356
+#: calibre-web/oauth_bb.py:356
 msgid "Google Oauth error, please retry later."
 msgstr "Erreur Oauth Google, veuillez réessayer plus tard."
 
-#: cps/oauth_bb.py:359
+#: calibre-web/oauth_bb.py:359
 msgid "Google Oauth error: {}"
 msgstr "Erreur Oauth Google : {}"
 
-#: cps/opds.py:274
+#: calibre-web/opds.py:274
 msgid "{} Stars"
 msgstr "{} Étoiles"
 
-#: cps/remotelogin.py:62 cps/templates/layout.html:67
-#: cps/templates/layout.html:101 cps/templates/login.html:4
-#: cps/templates/login.html:21 cps/web.py:1333
+#: calibre-web/remotelogin.py:62 calibre-web/templates/layout.html:67
+#: calibre-web/templates/layout.html:101 calibre-web/templates/login.html:4
+#: calibre-web/templates/login.html:21 calibre-web/web.py:1333
 msgid "Login"
 msgstr "Connexion"
 
-#: cps/remotelogin.py:74 cps/remotelogin.py:108
+#: calibre-web/remotelogin.py:74 calibre-web/remotelogin.py:108
 msgid "Token not found"
 msgstr "Jeton non trouvé"
 
-#: cps/remotelogin.py:83 cps/remotelogin.py:116
+#: calibre-web/remotelogin.py:83 calibre-web/remotelogin.py:116
 msgid "Token has expired"
 msgstr "Jeton expiré"
 
-#: cps/remotelogin.py:92
+#: calibre-web/remotelogin.py:92
 msgid "Success! Please return to your device"
 msgstr "Réussite! Merci de vous tourner vers votre appareil"
 
-#: cps/render_template.py:42 cps/web.py:414
+#: calibre-web/render_template.py:42 calibre-web/web.py:414
 msgid "Books"
 msgstr "Livres"
 
-#: cps/render_template.py:44
+#: calibre-web/render_template.py:44
 msgid "Show recent books"
 msgstr "Afficher les livres récents"
 
-#: cps/render_template.py:45 cps/templates/index.xml:26
+#: calibre-web/render_template.py:45 calibre-web/templates/index.xml:26
 msgid "Hot Books"
 msgstr "Livres populaires"
 
-#: cps/render_template.py:47
+#: calibre-web/render_template.py:47
 msgid "Show Hot Books"
 msgstr "Montrer les livres populaires"
 
-#: cps/render_template.py:49 cps/render_template.py:54
+#: calibre-web/render_template.py:49 calibre-web/render_template.py:54
 msgid "Downloaded Books"
 msgstr "Livres téléchargés"
 
-#: cps/render_template.py:51 cps/render_template.py:56
-#: cps/templates/user_table.html:167
+#: calibre-web/render_template.py:51 calibre-web/render_template.py:56
+#: calibre-web/templates/user_table.html:167
 msgid "Show Downloaded Books"
 msgstr "Montrer les livres téléchargés"
 
-#: cps/render_template.py:59 cps/templates/index.xml:33 cps/web.py:429
+#: calibre-web/render_template.py:59 calibre-web/templates/index.xml:33 calibre-web/web.py:429
 msgid "Top Rated Books"
 msgstr "Livres les mieux notés"
 
-#: cps/render_template.py:61 cps/templates/user_table.html:161
+#: calibre-web/render_template.py:61 calibre-web/templates/user_table.html:161
 msgid "Show Top Rated Books"
 msgstr "Montrer les livres les mieux notés"
 
-#: cps/render_template.py:62 cps/templates/index.xml:55
-#: cps/templates/index.xml:59 cps/web.py:750
+#: calibre-web/render_template.py:62 calibre-web/templates/index.xml:55
+#: calibre-web/templates/index.xml:59 calibre-web/web.py:750
 msgid "Read Books"
 msgstr "Livres lus"
 
-#: cps/render_template.py:64
+#: calibre-web/render_template.py:64
 #, fuzzy
 msgid "Show Read and Unread"
 msgstr "Montrer lus et non-lus"
 
-#: cps/render_template.py:66 cps/templates/index.xml:62
-#: cps/templates/index.xml:66 cps/web.py:753
+#: calibre-web/render_template.py:66 calibre-web/templates/index.xml:62
+#: calibre-web/templates/index.xml:66 calibre-web/web.py:753
 msgid "Unread Books"
 msgstr "Livres non-lus"
 
-#: cps/render_template.py:68
+#: calibre-web/render_template.py:68
 msgid "Show unread"
 msgstr "Afficher non-lus"
 
-#: cps/render_template.py:69
+#: calibre-web/render_template.py:69
 msgid "Discover"
 msgstr "Découvrir"
 
-#: cps/render_template.py:71 cps/templates/index.xml:51
-#: cps/templates/user_table.html:159 cps/templates/user_table.html:162
+#: calibre-web/render_template.py:71 calibre-web/templates/index.xml:51
+#: calibre-web/templates/user_table.html:159 calibre-web/templates/user_table.html:162
 msgid "Show Random Books"
 msgstr "Montrer des livres au hasard"
 
-#: cps/render_template.py:72 cps/templates/book_table.html:67
-#: cps/templates/index.xml:84 cps/web.py:1119
+#: calibre-web/render_template.py:72 calibre-web/templates/book_table.html:67
+#: calibre-web/templates/index.xml:84 calibre-web/web.py:1119
 msgid "Categories"
 msgstr "Catégories"
 
-#: cps/render_template.py:74 cps/templates/user_table.html:158
+#: calibre-web/render_template.py:74 calibre-web/templates/user_table.html:158
 #, fuzzy
 msgid "Show Category Section"
 msgstr "Montrer la sélection par catégories"
 
-#: cps/render_template.py:75 cps/templates/book_edit.html:91
-#: cps/templates/book_table.html:68 cps/templates/index.xml:91
-#: cps/templates/search_form.html:70 cps/web.py:1009 cps/web.py:1021
+#: calibre-web/render_template.py:75 calibre-web/templates/book_edit.html:91
+#: calibre-web/templates/book_table.html:68 calibre-web/templates/index.xml:91
+#: calibre-web/templates/search_form.html:70 calibre-web/web.py:1009 calibre-web/web.py:1021
 msgid "Series"
 msgstr "Séries"
 
-#: cps/render_template.py:77 cps/templates/user_table.html:157
+#: calibre-web/render_template.py:77 calibre-web/templates/user_table.html:157
 #, fuzzy
 msgid "Show Series Section"
 msgstr "Montrer la sélection par séries"
 
-#: cps/render_template.py:78 cps/templates/book_table.html:66
-#: cps/templates/index.xml:70
+#: calibre-web/render_template.py:78 calibre-web/templates/book_table.html:66
+#: calibre-web/templates/index.xml:70
 msgid "Authors"
 msgstr "Auteurs"
 
-#: cps/render_template.py:80 cps/templates/user_table.html:160
+#: calibre-web/render_template.py:80 calibre-web/templates/user_table.html:160
 #, fuzzy
 msgid "Show Author Section"
 msgstr "Montrer la sélection par auteur"
 
-#: cps/render_template.py:82 cps/templates/book_table.html:72
-#: cps/templates/index.xml:77 cps/web.py:977
+#: calibre-web/render_template.py:82 calibre-web/templates/book_table.html:72
+#: calibre-web/templates/index.xml:77 calibre-web/web.py:977
 msgid "Publishers"
 msgstr "Éditeurs"
 
-#: cps/render_template.py:84 cps/templates/user_table.html:163
+#: calibre-web/render_template.py:84 calibre-web/templates/user_table.html:163
 #, fuzzy
 msgid "Show Publisher Section"
 msgstr "Montrer la sélection par éditeur"
 
-#: cps/render_template.py:85 cps/templates/book_table.html:70
-#: cps/templates/index.xml:98 cps/templates/search_form.html:108
-#: cps/web.py:1091
+#: calibre-web/render_template.py:85 calibre-web/templates/book_table.html:70
+#: calibre-web/templates/index.xml:98 calibre-web/templates/search_form.html:108
+#: calibre-web/web.py:1091
 msgid "Languages"
 msgstr "Langues"
 
-#: cps/render_template.py:88 cps/templates/user_table.html:155
+#: calibre-web/render_template.py:88 calibre-web/templates/user_table.html:155
 #, fuzzy
 msgid "Show Language Section"
 msgstr "Montrer la sélection par langue"
 
-#: cps/render_template.py:89 cps/templates/index.xml:105
+#: calibre-web/render_template.py:89 calibre-web/templates/index.xml:105
 msgid "Ratings"
 msgstr "Notes"
 
-#: cps/render_template.py:91 cps/templates/user_table.html:164
+#: calibre-web/render_template.py:91 calibre-web/templates/user_table.html:164
 #, fuzzy
 msgid "Show Ratings Section"
 msgstr "Afficher la sélection des évaluations"
 
-#: cps/render_template.py:92 cps/templates/index.xml:113
+#: calibre-web/render_template.py:92 calibre-web/templates/index.xml:113
 msgid "File formats"
 msgstr "Formats de fichier"
 
-#: cps/render_template.py:94 cps/templates/user_table.html:165
+#: calibre-web/render_template.py:94 calibre-web/templates/user_table.html:165
 #, fuzzy
 msgid "Show File Formats Section"
 msgstr "Afficher la sélection des formats de fichiers"
 
-#: cps/render_template.py:96 cps/web.py:776
+#: calibre-web/render_template.py:96 calibre-web/web.py:776
 msgid "Archived Books"
 msgstr "Livres archivés"
 
-#: cps/render_template.py:98 cps/templates/user_table.html:166
+#: calibre-web/render_template.py:98 calibre-web/templates/user_table.html:166
 #, fuzzy
 msgid "Show Archived Books"
 msgstr "Afficher les livres archivés"
 
-#: cps/render_template.py:101 cps/web.py:807
+#: calibre-web/render_template.py:101 calibre-web/web.py:807
 msgid "Books List"
 msgstr "Liste des livres"
 
-#: cps/render_template.py:103 cps/templates/user_table.html:168
+#: calibre-web/render_template.py:103 calibre-web/templates/user_table.html:168
 msgid "Show Books List"
 msgstr "Montrer la liste des livres"
 
-#: cps/search.py:48 cps/search.py:399 cps/templates/book_edit.html:236
-#: cps/templates/feed.xml:34 cps/templates/index.xml:12
-#: cps/templates/layout.html:46 cps/templates/layout.html:49
-#: cps/templates/search_form.html:227
+#: calibre-web/search.py:48 calibre-web/search.py:399 calibre-web/templates/book_edit.html:236
+#: calibre-web/templates/feed.xml:34 calibre-web/templates/index.xml:12
+#: calibre-web/templates/layout.html:46 calibre-web/templates/layout.html:49
+#: calibre-web/templates/search_form.html:227
 msgid "Search"
 msgstr "Chercher"
 
-#: cps/search.py:188
+#: calibre-web/search.py:188
 msgid "Published after "
 msgstr "Publié après le "
 
-#: cps/search.py:195
+#: calibre-web/search.py:195
 msgid "Published before "
 msgstr "Publié avant le "
 
-#: cps/search.py:217
+#: calibre-web/search.py:217
 #, python-format
 msgid "Rating <= %(rating)s"
 msgstr "Évaluation <= %(rating)s"
 
-#: cps/search.py:219
+#: calibre-web/search.py:219
 #, python-format
 msgid "Rating >= %(rating)s"
 msgstr "Évaluation >= %(rating)s"
 
-#: cps/search.py:221
+#: calibre-web/search.py:221
 #, fuzzy, python-format
 msgid "Read Status = '%(status)s'"
 msgstr "Status de lecture = %(status)s"
 
-#: cps/search.py:324
+#: calibre-web/search.py:324
 msgid "Error on search for custom columns, please restart Calibre-Web"
 msgstr "Erreur lors de la recherche de colonnes personnalisées, veuillez redémarrer Calibre-Web"
 
-#: cps/search.py:343 cps/search.py:375 cps/templates/layout.html:57
+#: calibre-web/search.py:343 calibre-web/search.py:375 calibre-web/templates/layout.html:57
 msgid "Advanced Search"
 msgstr "Recherche avancée"
 
-#: cps/shelf.py:49 cps/shelf.py:111
+#: calibre-web/shelf.py:49 calibre-web/shelf.py:111
 msgid "Invalid shelf specified"
 msgstr "L’étagère indiquée est invalide"
 
-#: cps/shelf.py:55
+#: calibre-web/shelf.py:55
 #, fuzzy
 msgid "Sorry you are not allowed to add a book to that shelf"
 msgstr "Désolé, vous n’êtes pas autorisé à ajouter un livre dans l’étagère: %(shelfname)s"
 
-#: cps/shelf.py:64
+#: calibre-web/shelf.py:64
 #, python-format
 msgid "Book is already part of the shelf: %(shelfname)s"
 msgstr "Ce livre est déjà sur l’étagère : %(shelfname)s"
 
-#: cps/shelf.py:77
+#: calibre-web/shelf.py:77
 #, python-format
 msgid "%(book_id)s is a invalid Book Id. Could not be added to Shelf"
 msgstr ""
 
-#: cps/shelf.py:97
+#: calibre-web/shelf.py:97
 #, python-format
 msgid "Book has been added to shelf: %(sname)s"
 msgstr "Le livre a bien été ajouté à l'étagère : %(sname)s"
 
-#: cps/shelf.py:116
+#: calibre-web/shelf.py:116
 msgid "You are not allowed to add a book to the shelf"
 msgstr "Vous n’êtes pas autorisé à ajouter un livre à l’étagère"
 
-#: cps/shelf.py:134
+#: calibre-web/shelf.py:134
 #, python-format
 msgid "Books are already part of the shelf: %(name)s"
 msgstr "Ces livres sont déjà sur l’étagère : %(name)s"
 
-#: cps/shelf.py:146
+#: calibre-web/shelf.py:146
 #, python-format
 msgid "Books have been added to shelf: %(sname)s"
 msgstr "Les livres ont été ajoutés à l’étagère : %(sname)s"
 
-#: cps/shelf.py:153
+#: calibre-web/shelf.py:153
 #, python-format
 msgid "Could not add books to shelf: %(sname)s"
 msgstr "Impossible d’ajouter les livres à l’étagère : %(sname)s"
 
-#: cps/shelf.py:199
+#: calibre-web/shelf.py:199
 #, python-format
 msgid "Book has been removed from shelf: %(sname)s"
 msgstr "Le livre a été supprimé de l'étagère %(sname)s"
 
-#: cps/shelf.py:208
+#: calibre-web/shelf.py:208
 msgid "Sorry you are not allowed to remove a book from this shelf"
 msgstr "Désolé, vous n’êtes pas autorisé à supprimer un livre de cette étagère"
 
-#: cps/shelf.py:218 cps/templates/layout.html:157
+#: calibre-web/shelf.py:218 calibre-web/templates/layout.html:157
 msgid "Create a Shelf"
 msgstr "Créer une étagère"
 
-#: cps/shelf.py:226
+#: calibre-web/shelf.py:226
 #, fuzzy
 msgid "Sorry you are not allowed to edit this shelf"
 msgstr "Désolé, vous n’êtes pas autorisé à enlever un livre de cette étagère : %(sname)s"
 
-#: cps/shelf.py:228
+#: calibre-web/shelf.py:228
 msgid "Edit a shelf"
 msgstr "Modifier une étagère"
 
-#: cps/shelf.py:237
+#: calibre-web/shelf.py:237
 msgid "Error deleting Shelf"
 msgstr ""
 
-#: cps/shelf.py:239
+#: calibre-web/shelf.py:239
 #, fuzzy
 msgid "Shelf successfully deleted"
 msgstr "Le livre a été supprimé avec succès"
 
-#: cps/shelf.py:289
+#: calibre-web/shelf.py:289
 #, python-format
 msgid "Change order of Shelf: '%(name)s'"
 msgstr "Modifier l’arrangement de l’étagère : ‘%(name)s’"
 
-#: cps/shelf.py:324
+#: calibre-web/shelf.py:324
 msgid "Sorry you are not allowed to create a public shelf"
 msgstr "Désolé, vous n’êtes pas autorisé à créer une étagère publique"
 
-#: cps/shelf.py:341
+#: calibre-web/shelf.py:341
 #, python-format
 msgid "Shelf %(title)s created"
 msgstr "Étagère %(title)s créée"
 
-#: cps/shelf.py:344
+#: calibre-web/shelf.py:344
 #, python-format
 msgid "Shelf %(title)s changed"
 msgstr "L’étagère %(title)s a été modifiée"
 
-#: cps/shelf.py:358
+#: calibre-web/shelf.py:358
 msgid "There was an error"
 msgstr "Il y a eu une erreur"
 
-#: cps/shelf.py:380
+#: calibre-web/shelf.py:380
 #, python-format
 msgid "A public shelf with the name '%(title)s' already exists."
 msgstr "Une étagère publique avec le nom '%(title)s' existe déjà."
 
-#: cps/shelf.py:391
+#: calibre-web/shelf.py:391
 #, python-format
 msgid "A private shelf with the name '%(title)s' already exists."
 msgstr "Une étagère privée avec le nom '%(title)s' existe déjà."
 
-#: cps/shelf.py:473
+#: calibre-web/shelf.py:473
 #, python-format
 msgid "Shelf: '%(name)s'"
 msgstr "Étagère : '%(name)s'"
 
-#: cps/shelf.py:477
+#: calibre-web/shelf.py:477
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "Erreur à l’ouverture de l’étagère. Elle n’existe plus ou n’est plus accessible"
 
-#: cps/tasks_status.py:46 cps/templates/layout.html:88
-#: cps/templates/tasks.html:7
+#: calibre-web/tasks_status.py:46 calibre-web/templates/layout.html:88
+#: calibre-web/templates/tasks.html:7
 msgid "Tasks"
 msgstr "Tâches"
 
-#: cps/tasks_status.py:62
+#: calibre-web/tasks_status.py:62
 msgid "Waiting"
 msgstr "En attente"
 
-#: cps/tasks_status.py:64
+#: calibre-web/tasks_status.py:64
 msgid "Failed"
 msgstr "Echoué"
 
-#: cps/tasks_status.py:66
+#: calibre-web/tasks_status.py:66
 msgid "Started"
 msgstr "Débuté"
 
-#: cps/tasks_status.py:68
+#: calibre-web/tasks_status.py:68
 msgid "Finished"
 msgstr "Terminé"
 
-#: cps/tasks_status.py:70
+#: calibre-web/tasks_status.py:70
 msgid "Ended"
 msgstr ""
 
-#: cps/tasks_status.py:72
+#: calibre-web/tasks_status.py:72
 msgid "Cancelled"
 msgstr ""
 
-#: cps/tasks_status.py:74
+#: calibre-web/tasks_status.py:74
 msgid "Unknown Status"
 msgstr "Statut inconnu"
 
-#: cps/updater.py:431 cps/updater.py:442 cps/updater.py:543 cps/updater.py:558
+#: calibre-web/updater.py:431 calibre-web/updater.py:442 calibre-web/updater.py:543 calibre-web/updater.py:558
 msgid "Unexpected data while reading update information"
 msgstr "Données inattendues lors de la lecture des informations de mise à jour"
 
-#: cps/updater.py:438 cps/updater.py:550
+#: calibre-web/updater.py:438 calibre-web/updater.py:550
 msgid "No update available. You already have the latest version installed"
 msgstr "Aucune mise à jour disponible. Vous avez déjà la dernière version installée"
 
-#: cps/updater.py:456
+#: calibre-web/updater.py:456
 msgid "A new update is available. Click on the button below to update to the latest version."
 msgstr "Une nouvelle mise à jour est disponible. Cliquez sur le bouton ci-dessous pour charger la dernière version."
 
-#: cps/updater.py:474
+#: calibre-web/updater.py:474
 msgid "Could not fetch update information"
 msgstr "Impossible d'extraire les informations de mise à jour"
 
-#: cps/updater.py:484
+#: calibre-web/updater.py:484
 msgid "Click on the button below to update to the latest stable version."
 msgstr "Téléchargez la dernière version en cliquant sur le bouton ci-dessous."
 
-#: cps/updater.py:493 cps/updater.py:507 cps/updater.py:518
+#: calibre-web/updater.py:493 calibre-web/updater.py:507 calibre-web/updater.py:518
 #, python-format
 msgid "A new update is available. Click on the button below to update to version: %(version)s"
 msgstr "Une nouvelle mise à jour est disponible. Cliquez sur le bouton ci-dessous pour charger la version: %(version)s"
 
-#: cps/updater.py:536
+#: calibre-web/updater.py:536
 msgid "No release information available"
 msgstr "Aucune information concernant cette version n’est disponible"
 
-#: cps/templates/index.html:6 cps/web.py:441
+#: calibre-web/templates/index.html:6 calibre-web/web.py:441
 msgid "Discover (Random Books)"
 msgstr "Découvrir (Livres au hasard)"
 
-#: cps/web.py:477
+#: calibre-web/web.py:477
 msgid "Hot Books (Most Downloaded)"
 msgstr "Livres populaires (les plus téléchargés)"
 
-#: cps/web.py:508
+#: calibre-web/web.py:508
 #, python-format
 msgid "Downloaded books by %(user)s"
 msgstr "Livres téléchargés par %(user)s"
 
-#: cps/web.py:541
+#: calibre-web/web.py:541
 #, python-format
 msgid "Author: %(name)s"
 msgstr "Auteur : %(name)s"
 
-#: cps/web.py:577
+#: calibre-web/web.py:577
 #, python-format
 msgid "Publisher: %(name)s"
 msgstr "Éditeur : '%(name)s'"
 
-#: cps/web.py:605
+#: calibre-web/web.py:605
 #, python-format
 msgid "Series: %(serie)s"
 msgstr "Séries : %(serie)s"
 
-#: cps/web.py:620
+#: calibre-web/web.py:620
 msgid "Rating: None"
 msgstr ""
 
-#: cps/web.py:629
+#: calibre-web/web.py:629
 #, python-format
 msgid "Rating: %(rating)s stars"
 msgstr "Évaluation : %(rating)s étoiles"
 
-#: cps/web.py:645
+#: calibre-web/web.py:645
 #, python-format
 msgid "File format: %(format)s"
 msgstr "Format de fichier : %(format)s"
 
-#: cps/web.py:682
+#: calibre-web/web.py:682
 #, python-format
 msgid "Category: %(name)s"
 msgstr "Catégorie : %(name)s"
 
-#: cps/web.py:711
+#: calibre-web/web.py:711
 #, python-format
 msgid "Language: %(name)s"
 msgstr "Langue : %(name)s"
 
-#: cps/templates/admin.html:16 cps/web.py:949
+#: calibre-web/templates/admin.html:16 calibre-web/web.py:949
 msgid "Downloads"
 msgstr "Téléchargements"
 
-#: cps/web.py:1051
+#: calibre-web/web.py:1051
 msgid "Ratings list"
 msgstr "Liste des évaluations"
 
-#: cps/web.py:1078
+#: calibre-web/web.py:1078
 msgid "File formats list"
 msgstr "Liste de formats de fichiers"
 
-#: cps/web.py:1233
+#: calibre-web/web.py:1233
 #, fuzzy
 msgid "Please configure the SMTP mail settings first..."
 msgstr "Veuillez configurer les paramètres SMTP au préalable..."
 
-#: cps/web.py:1240
+#: calibre-web/web.py:1240
 #, python-format
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr "Le livre a été mis en file de traitement avec succès pour un envoi vers %(eReadermail)s"
 
-#: cps/web.py:1243
+#: calibre-web/web.py:1243
 #, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "Il y a eu une erreur en envoyant ce livre : %(res)s"
 
-#: cps/web.py:1245
+#: calibre-web/web.py:1245
 #, fuzzy
 msgid "Oops! Please update your profile with a valid eReader Email."
 msgstr "Veuillez mettre à jour votre profil avec une adresse de courriel Kindle valide."
 
-#: cps/web.py:1261
+#: calibre-web/web.py:1261
 msgid "Please wait one minute to register next user"
 msgstr ""
 
-#: cps/templates/layout.html:68 cps/templates/layout.html:102
-#: cps/templates/login.html:27 cps/templates/register.html:17 cps/web.py:1262
-#: cps/web.py:1267 cps/web.py:1271 cps/web.py:1277 cps/web.py:1297
-#: cps/web.py:1301 cps/web.py:1314 cps/web.py:1317
+#: calibre-web/templates/layout.html:68 calibre-web/templates/layout.html:102
+#: calibre-web/templates/login.html:27 calibre-web/templates/register.html:17 calibre-web/web.py:1262
+#: calibre-web/web.py:1267 calibre-web/web.py:1271 calibre-web/web.py:1277 calibre-web/web.py:1297
+#: calibre-web/web.py:1301 calibre-web/web.py:1314 calibre-web/web.py:1317
 msgid "Register"
 msgstr "Créer un compte"
 
-#: cps/web.py:1266 cps/web.py:1313
+#: calibre-web/web.py:1266 calibre-web/web.py:1313
 msgid "Oops! Email server is not configured, please contact your administrator."
 msgstr "Le serveur de courriel n'est pas configuré, veuillez contacter votre administrateur!"
 
-#: cps/web.py:1299
+#: calibre-web/web.py:1299
 msgid "Oops! Your Email is not allowed."
 msgstr "Votre adresse de courriel n’est pas autorisé pour une inscription"
 
-#: cps/web.py:1302
+#: calibre-web/web.py:1302
 msgid "Success! Confirmation Email has been sent."
 msgstr "Le courriel de confirmation a été envoyé à votre adresse."
 
-#: cps/web.py:1348 cps/web.py:1367
+#: calibre-web/web.py:1348 calibre-web/web.py:1367
 #, fuzzy
 msgid "Cannot activate LDAP authentication"
 msgstr "Impossible d’activer l’authentification LDAP"
 
-#: cps/web.py:1361
+#: calibre-web/web.py:1361
 msgid "Please wait one minute before next login"
 msgstr ""
 
-#: cps/web.py:1376
+#: calibre-web/web.py:1376
 #, fuzzy, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "vous êtes maintenant connecté comme : '%(nickname)s'"
 
-#: cps/web.py:1383
+#: calibre-web/web.py:1383
 #, fuzzy, python-format
 msgid "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not known"
 msgstr "Connexion de secours comme: '%(nickname)s', le serveur LDAP est indisponible, ou l'utilisateur est inconnu"
 
-#: cps/web.py:1388
+#: calibre-web/web.py:1388
 #, fuzzy, python-format
 msgid "Could not login: %(message)s"
 msgstr "Impossible de se connecter: %(message)s"
 
-#: cps/web.py:1392 cps/web.py:1417
+#: calibre-web/web.py:1392 calibre-web/web.py:1417
 #, fuzzy
 msgid "Wrong Username or Password"
 msgstr "Mauvais nom d'utilisateur ou mot de passe"
 
-#: cps/web.py:1399
+#: calibre-web/web.py:1399
 #, fuzzy
 msgid "New Password was sent to your email address"
 msgstr "Le nouveau mot de passe a été envoyé vers votre adresse de courriel"
 
-#: cps/web.py:1403
+#: calibre-web/web.py:1403
 #, fuzzy
 msgid "An unknown error occurred. Please try again later."
 msgstr "Une erreur inconnue est survenue. Veuillez réessayer plus tard."
 
-#: cps/web.py:1405
+#: calibre-web/web.py:1405
 #, fuzzy
 msgid "Please enter valid username to reset password"
 msgstr "Veuillez entrer un nom d'utilisateur valide pour réinitialiser le mot de passe"
 
-#: cps/web.py:1413
+#: calibre-web/web.py:1413
 #, fuzzy, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "vous êtes maintenant connecté comme : '%(nickname)s'"
 
-#: cps/web.py:1471 cps/web.py:1521
+#: calibre-web/web.py:1471 calibre-web/web.py:1521
 #, python-format
 msgid "%(name)s's Profile"
 msgstr "Profil de %(name)s"
 
-#: cps/web.py:1487
+#: calibre-web/web.py:1487
 #, fuzzy
 msgid "Success! Profile Updated"
 msgstr "Profil mis à jour"
 
-#: cps/web.py:1491
+#: calibre-web/web.py:1491
 #, fuzzy
 msgid "Oops! An account already exists for this Email."
 msgstr "Un compte existant a été trouvé pour cette adresse de courriel."
 
-#: cps/services/gmail.py:58
+#: calibre-web/services/gmail.py:58
 msgid "Found no valid gmail.json file with OAuth information"
 msgstr "Aucun fichier gmail.json avec information OAuth valide trouvé"
 
-#: cps/tasks/convert.py:105
+#: calibre-web/tasks/convert.py:105
 #, fuzzy, python-format
 msgid "%(book)s send to E-Reader"
 msgstr "Envoyer vers Kindle"
 
-#: cps/tasks/convert.py:166
+#: calibre-web/tasks/convert.py:166
 #, python-format
 msgid "Calibre ebook-convert %(tool)s not found"
 msgstr "ebook-convert calibre %(tool)s non trouvé"
 
-#: cps/tasks/convert.py:200
+#: calibre-web/tasks/convert.py:200
 #, python-format
 msgid "%(format)s format not found on disk"
 msgstr "Format %(format)s non trouvé sur le disque"
 
-#: cps/tasks/convert.py:204
+#: calibre-web/tasks/convert.py:204
 msgid "Ebook converter failed with unknown error"
 msgstr "Le convertisseur Ebook a échoué avec une erreur inconnue"
 
-#: cps/tasks/convert.py:223
+#: calibre-web/tasks/convert.py:223
 #, python-format
 msgid "Kepubify-converter failed: %(error)s"
 msgstr "La commande Kepubify-converter a échouée : %(error)s"
 
-#: cps/tasks/convert.py:244
+#: calibre-web/tasks/convert.py:244
 #, python-format
 msgid "Converted file not found or more than one file in folder %(folder)s"
 msgstr "Fichier converti non trouvé ou plus d'un fichier dans le chemin %(folder)s"
 
-#: cps/tasks/convert.py:279
+#: calibre-web/tasks/convert.py:279
 #, python-format
 msgid "Ebook-converter failed: %(error)s"
 msgstr "La commande ebook-convert a échouée : %(error)s"
 
-#: cps/tasks/convert.py:302
+#: calibre-web/tasks/convert.py:302
 #, python-format
 msgid "Calibre failed with error: %(error)s"
 msgstr "Calibre a échoué avec l’erreur : %(error)s"
 
-#: cps/tasks/convert.py:307
+#: calibre-web/tasks/convert.py:307
 msgid "Convert"
 msgstr ""
 
-#: cps/tasks/database.py:28
+#: calibre-web/tasks/database.py:28
 msgid "Reconnecting Calibre database"
 msgstr ""
 
-#: cps/tasks/mail.py:269
+#: calibre-web/tasks/mail.py:269
 msgid "E-mail"
 msgstr ""
 
-#: cps/tasks/metadata_backup.py:33
+#: calibre-web/tasks/metadata_backup.py:33
 #, fuzzy
 msgid "Backing up Metadata"
 msgstr "modifier les métadonnées"
 
-#: cps/tasks/tempFolder.py:28
+#: calibre-web/tasks/tempFolder.py:28
 msgid "Delete temp folder contents"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:96
+#: calibre-web/tasks/thumbnail.py:96
 #, python-format
 msgid "Generated %(count)s cover thumbnails"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:230 cps/tasks/thumbnail.py:443
-#: cps/tasks/thumbnail.py:511
+#: calibre-web/tasks/thumbnail.py:230 calibre-web/tasks/thumbnail.py:443
+#: calibre-web/tasks/thumbnail.py:511
 msgid "Cover Thumbnails"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:289
+#: calibre-web/tasks/thumbnail.py:289
 msgid "Generated {0} series thumbnails"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:454
+#: calibre-web/tasks/thumbnail.py:454
 msgid "Clearing cover thumbnail cache"
 msgstr ""
 
-#: cps/tasks/upload.py:38 cps/templates/admin.html:20
-#: cps/templates/layout.html:81 cps/templates/user_table.html:145
+#: calibre-web/tasks/upload.py:38 calibre-web/templates/admin.html:20
+#: calibre-web/templates/layout.html:81 calibre-web/templates/user_table.html:145
 msgid "Upload"
 msgstr "Téléverser"
 
-#: cps/templates/admin.html:9
+#: calibre-web/templates/admin.html:9
 msgid "Users"
 msgstr "Liste des utilisateurs"
 
-#: cps/templates/admin.html:13 cps/templates/login.html:9
-#: cps/templates/login.html:10 cps/templates/register.html:9
-#: cps/templates/user_edit.html:10 cps/templates/user_table.html:134
+#: calibre-web/templates/admin.html:13 calibre-web/templates/login.html:9
+#: calibre-web/templates/login.html:10 calibre-web/templates/register.html:9
+#: calibre-web/templates/user_edit.html:10 calibre-web/templates/user_table.html:134
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: cps/templates/admin.html:14 cps/templates/register.html:14
-#: cps/templates/user_edit.html:15 cps/templates/user_table.html:135
+#: calibre-web/templates/admin.html:14 calibre-web/templates/register.html:14
+#: calibre-web/templates/user_edit.html:15 calibre-web/templates/user_table.html:135
 msgid "Email"
 msgstr "Adresse de courriel"
 
-#: cps/templates/admin.html:15 cps/templates/user_edit.html:28
+#: calibre-web/templates/admin.html:15 calibre-web/templates/user_edit.html:28
 #, fuzzy
 msgid "Send to eReader Email"
 msgstr "Envoyer vers une adresse de courriel Kindle"
 
-#: cps/templates/admin.html:17 cps/templates/layout.html:91
-#: cps/templates/user_table.html:143
+#: calibre-web/templates/admin.html:17 calibre-web/templates/layout.html:91
+#: calibre-web/templates/user_table.html:143
 msgid "Admin"
 msgstr "Administration"
 
-#: cps/templates/admin.html:18 cps/templates/login.html:13
-#: cps/templates/login.html:14 cps/templates/user_edit.html:23
+#: calibre-web/templates/admin.html:18 calibre-web/templates/login.html:13
+#: calibre-web/templates/login.html:14 calibre-web/templates/user_edit.html:23
 msgid "Password"
 msgstr "Mot de passe"
 
-#: cps/templates/admin.html:22 cps/templates/detail.html:20
-#: cps/templates/detail.html:33 cps/templates/shelf.html:8
-#: cps/templates/user_table.html:146
+#: calibre-web/templates/admin.html:22 calibre-web/templates/detail.html:20
+#: calibre-web/templates/detail.html:33 calibre-web/templates/shelf.html:8
+#: calibre-web/templates/user_table.html:146
 msgid "Download"
 msgstr "Télécharger"
 
-#: cps/templates/admin.html:23
+#: calibre-web/templates/admin.html:23
 msgid "View Books"
 msgstr "Afficher les livres"
 
-#: cps/templates/admin.html:24 cps/templates/user_table.html:131
-#: cps/templates/user_table.html:148
+#: calibre-web/templates/admin.html:24 calibre-web/templates/user_table.html:131
+#: calibre-web/templates/user_table.html:148
 msgid "Edit"
 msgstr "Éditer"
 
-#: cps/templates/admin.html:25 cps/templates/book_edit.html:17
-#: cps/templates/book_table.html:100 cps/templates/modal_dialogs.html:63
-#: cps/templates/modal_dialogs.html:116 cps/templates/user_edit.html:67
-#: cps/templates/user_table.html:149
+#: calibre-web/templates/admin.html:25 calibre-web/templates/book_edit.html:17
+#: calibre-web/templates/book_table.html:100 calibre-web/templates/modal_dialogs.html:63
+#: calibre-web/templates/modal_dialogs.html:116 calibre-web/templates/user_edit.html:67
+#: calibre-web/templates/user_table.html:149
 msgid "Delete"
 msgstr "Supprimer"
 
-#: cps/templates/admin.html:26
+#: calibre-web/templates/admin.html:26
 msgid "Public Shelf"
 msgstr "Étagère publique"
 
-#: cps/templates/admin.html:55
+#: calibre-web/templates/admin.html:55
 msgid "Import LDAP Users"
 msgstr "Importer des utilisateurs LDAP"
 
-#: cps/templates/admin.html:62
+#: calibre-web/templates/admin.html:62
 msgid "Email Server Settings"
 msgstr "Paramètres du serveur de courriels"
 
-#: cps/templates/admin.html:67 cps/templates/email_edit.html:31
+#: calibre-web/templates/admin.html:67 calibre-web/templates/email_edit.html:31
 msgid "SMTP Hostname"
 msgstr "Nom d'hôte du serveur SMTP"
 
-#: cps/templates/admin.html:71 cps/templates/email_edit.html:35
+#: calibre-web/templates/admin.html:71 calibre-web/templates/email_edit.html:35
 msgid "SMTP Port"
 msgstr "Port du serveur SMTP"
 
-#: cps/templates/admin.html:75 cps/templates/email_edit.html:39
+#: calibre-web/templates/admin.html:75 calibre-web/templates/email_edit.html:39
 msgid "Encryption"
 msgstr "Chiffrement"
 
-#: cps/templates/admin.html:79 cps/templates/email_edit.html:47
+#: calibre-web/templates/admin.html:79 calibre-web/templates/email_edit.html:47
 msgid "SMTP Login"
 msgstr "Compte utilisateur SMTP"
 
-#: cps/templates/admin.html:83 cps/templates/admin.html:94
-#: cps/templates/email_edit.html:55
+#: calibre-web/templates/admin.html:83 calibre-web/templates/admin.html:94
+#: calibre-web/templates/email_edit.html:55
 msgid "From Email"
 msgstr "Expéditeur des courriels"
 
-#: cps/templates/admin.html:90
+#: calibre-web/templates/admin.html:90
 #, fuzzy
 msgid "Email Service"
 msgstr "Service courriel"
 
-#: cps/templates/admin.html:91
+#: calibre-web/templates/admin.html:91
 msgid "Gmail via Oauth2"
 msgstr "Gmail via Oauth2"
 
-#: cps/templates/admin.html:106
+#: calibre-web/templates/admin.html:106
 msgid "Configuration"
 msgstr "Configuration"
 
-#: cps/templates/admin.html:109
+#: calibre-web/templates/admin.html:109
 msgid "Calibre Database Directory"
 msgstr "Répertoire de la base de données Calibre"
 
-#: cps/templates/admin.html:113 cps/templates/config_edit.html:68
+#: calibre-web/templates/admin.html:113 calibre-web/templates/config_edit.html:68
 msgid "Log Level"
 msgstr "Niveau de journalisation"
 
-#: cps/templates/admin.html:117
+#: calibre-web/templates/admin.html:117
 msgid "Port"
 msgstr "Port"
 
-#: cps/templates/admin.html:122
+#: calibre-web/templates/admin.html:122
 msgid "External Port"
 msgstr "Port exeterne"
 
-#: cps/templates/admin.html:129 cps/templates/config_view_edit.html:28
+#: calibre-web/templates/admin.html:129 calibre-web/templates/config_view_edit.html:28
 msgid "Books per Page"
 msgstr "Livres par page"
 
-#: cps/templates/admin.html:133
+#: calibre-web/templates/admin.html:133
 msgid "Uploads"
 msgstr "Téléversements"
 
-#: cps/templates/admin.html:137
+#: calibre-web/templates/admin.html:137
 msgid "Anonymous Browsing"
 msgstr "Navigation anonyme"
 
-#: cps/templates/admin.html:141
+#: calibre-web/templates/admin.html:141
 msgid "Public Registration"
 msgstr "Inscription publique"
 
-#: cps/templates/admin.html:145
+#: calibre-web/templates/admin.html:145
 msgid "Magic Link Remote Login"
 msgstr "Connexion à distance Magic Link"
 
-#: cps/templates/admin.html:149
+#: calibre-web/templates/admin.html:149
 msgid "Reverse Proxy Login"
 msgstr "Compte du Reverse Proxy"
 
-#: cps/templates/admin.html:154 cps/templates/config_edit.html:177
+#: calibre-web/templates/admin.html:154 calibre-web/templates/config_edit.html:177
 msgid "Reverse Proxy Header Name"
 msgstr "Nom de l'en-tête du Reverse Proxy"
 
-#: cps/templates/admin.html:159
+#: calibre-web/templates/admin.html:159
 #, fuzzy
 msgid "Edit Calibre Database Configuration"
 msgstr "Éditer la configuration de la base de données Calibre"
 
-#: cps/templates/admin.html:160
+#: calibre-web/templates/admin.html:160
 msgid "Edit Basic Configuration"
 msgstr "Éditer la configuration principale"
 
-#: cps/templates/admin.html:161
+#: calibre-web/templates/admin.html:161
 msgid "Edit UI Configuration"
 msgstr "Éditer la configuration de l’interface utilisateur"
 
-#: cps/templates/admin.html:167
+#: calibre-web/templates/admin.html:167
 msgid "Scheduled Tasks"
 msgstr ""
 
-#: cps/templates/admin.html:170 cps/templates/schedule_edit.html:12
-#: cps/templates/tasks.html:18
+#: calibre-web/templates/admin.html:170 calibre-web/templates/schedule_edit.html:12
+#: calibre-web/templates/tasks.html:18
 msgid "Start Time"
 msgstr ""
 
-#: cps/templates/admin.html:174 cps/templates/schedule_edit.html:20
+#: calibre-web/templates/admin.html:174 calibre-web/templates/schedule_edit.html:20
 msgid "Maximum Duration"
 msgstr ""
 
-#: cps/templates/admin.html:178 cps/templates/schedule_edit.html:29
+#: calibre-web/templates/admin.html:178 calibre-web/templates/schedule_edit.html:29
 msgid "Generate Thumbnails"
 msgstr ""
 
-#: cps/templates/admin.html:182
+#: calibre-web/templates/admin.html:182
 msgid "Generate series cover thumbnails"
 msgstr ""
 
-#: cps/templates/admin.html:186 cps/templates/admin.html:208
-#: cps/templates/schedule_edit.html:37
+#: calibre-web/templates/admin.html:186 calibre-web/templates/admin.html:208
+#: calibre-web/templates/schedule_edit.html:37
 msgid "Reconnect Calibre Database"
 msgstr ""
 
-#: cps/templates/admin.html:190 cps/templates/schedule_edit.html:41
+#: calibre-web/templates/admin.html:190 calibre-web/templates/schedule_edit.html:41
 msgid "Generate Metadata Backup Files"
 msgstr ""
 
-#: cps/templates/admin.html:197
+#: calibre-web/templates/admin.html:197
 msgid "Refresh Thumbnail Cache"
 msgstr ""
 
-#: cps/templates/admin.html:203
+#: calibre-web/templates/admin.html:203
 msgid "Administration"
 msgstr "Administration"
 
-#: cps/templates/admin.html:204
+#: calibre-web/templates/admin.html:204
 msgid "Download Debug Package"
 msgstr "Télécharger le package de débogage"
 
-#: cps/templates/admin.html:205
+#: calibre-web/templates/admin.html:205
 msgid "View Logs"
 msgstr "Afficher les fichiers journaux"
 
-#: cps/templates/admin.html:211
+#: calibre-web/templates/admin.html:211
 msgid "Restart"
 msgstr "Redémarrer Calibre-Web"
 
-#: cps/templates/admin.html:212
+#: calibre-web/templates/admin.html:212
 msgid "Shutdown"
 msgstr "Arrêter Calibre-Web"
 
-#: cps/templates/admin.html:221
+#: calibre-web/templates/admin.html:221
 msgid "Version Information"
 msgstr ""
 
-#: cps/templates/admin.html:225
+#: calibre-web/templates/admin.html:225
 msgid "Version"
 msgstr "Version"
 
-#: cps/templates/admin.html:226
+#: calibre-web/templates/admin.html:226
 msgid "Details"
 msgstr "Détails"
 
-#: cps/templates/admin.html:232
+#: calibre-web/templates/admin.html:232
 msgid "Current Version"
 msgstr "Version actuelle"
 
-#: cps/templates/admin.html:239
+#: calibre-web/templates/admin.html:239
 msgid "Check for Update"
 msgstr "Rechercher les mises à jour"
 
-#: cps/templates/admin.html:240
+#: calibre-web/templates/admin.html:240
 msgid "Perform Update"
 msgstr "Effectuer la mise à jour"
 
-#: cps/templates/admin.html:253
+#: calibre-web/templates/admin.html:253
 msgid "Are you sure you want to restart?"
 msgstr "Voulez-vous vraiment redémarrer Calibre-Web?"
 
-#: cps/templates/admin.html:258 cps/templates/admin.html:272
-#: cps/templates/admin.html:292 cps/templates/config_db.html:82
+#: calibre-web/templates/admin.html:258 calibre-web/templates/admin.html:272
+#: calibre-web/templates/admin.html:292 calibre-web/templates/config_db.html:82
 msgid "OK"
 msgstr "OK"
 
-#: cps/templates/admin.html:259 cps/templates/admin.html:273
-#: cps/templates/book_edit.html:214 cps/templates/book_table.html:127
-#: cps/templates/config_db.html:66 cps/templates/config_edit.html:414
-#: cps/templates/config_view_edit.html:175 cps/templates/modal_dialogs.html:64
-#: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
-#: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:45
-#: cps/templates/shelf_edit.html:27 cps/templates/tasks.html:46
-#: cps/templates/user_edit.html:144
+#: calibre-web/templates/admin.html:259 calibre-web/templates/admin.html:273
+#: calibre-web/templates/book_edit.html:214 calibre-web/templates/book_table.html:127
+#: calibre-web/templates/config_db.html:66 calibre-web/templates/config_edit.html:414
+#: calibre-web/templates/config_view_edit.html:175 calibre-web/templates/modal_dialogs.html:64
+#: calibre-web/templates/modal_dialogs.html:99 calibre-web/templates/modal_dialogs.html:117
+#: calibre-web/templates/modal_dialogs.html:135 calibre-web/templates/schedule_edit.html:45
+#: calibre-web/templates/shelf_edit.html:27 calibre-web/templates/tasks.html:46
+#: calibre-web/templates/user_edit.html:144
 msgid "Cancel"
 msgstr "Annuler"
 
-#: cps/templates/admin.html:271
+#: calibre-web/templates/admin.html:271
 msgid "Are you sure you want to shutdown?"
 msgstr "Voulez-vous vraiment arrêter Calibre-Web?"
 
-#: cps/templates/admin.html:283
+#: calibre-web/templates/admin.html:283
 msgid "Updating, please do not reload this page"
 msgstr "Mise à jour en cours, ne pas rafraîchir la page"
 
-#: cps/templates/author.html:15
+#: calibre-web/templates/author.html:15
 msgid "via"
 msgstr "via"
 
-#: cps/templates/author.html:23
+#: calibre-web/templates/author.html:23
 msgid "In Library"
 msgstr "Dans la librairie"
 
-#: cps/templates/author.html:26 cps/templates/index.html:74
-#: cps/templates/search.html:31 cps/templates/shelf.html:20
+#: calibre-web/templates/author.html:26 calibre-web/templates/index.html:74
+#: calibre-web/templates/search.html:31 calibre-web/templates/shelf.html:20
 msgid "Sort according to book date, newest first"
 msgstr "Trier en fonction de la date du livre, le plus récent en premier"
 
-#: cps/templates/author.html:27 cps/templates/index.html:75
-#: cps/templates/search.html:32 cps/templates/shelf.html:21
+#: calibre-web/templates/author.html:27 calibre-web/templates/index.html:75
+#: calibre-web/templates/search.html:32 calibre-web/templates/shelf.html:21
 msgid "Sort according to book date, oldest first"
 msgstr "Trier en fonction de la date du livre, le plus ancien en premier"
 
-#: cps/templates/author.html:28 cps/templates/index.html:76
-#: cps/templates/search.html:33 cps/templates/shelf.html:22
+#: calibre-web/templates/author.html:28 calibre-web/templates/index.html:76
+#: calibre-web/templates/search.html:33 calibre-web/templates/shelf.html:22
 msgid "Sort title in alphabetical order"
 msgstr "Trier les titres dans l’ordre alphabétique"
 
-#: cps/templates/author.html:29 cps/templates/index.html:77
-#: cps/templates/search.html:34 cps/templates/shelf.html:23
+#: calibre-web/templates/author.html:29 calibre-web/templates/index.html:77
+#: calibre-web/templates/search.html:34 calibre-web/templates/shelf.html:23
 msgid "Sort title in reverse alphabetical order"
 msgstr "Trier le titre dans l’ordre alphabétique inverse"
 
-#: cps/templates/author.html:30 cps/templates/index.html:80
-#: cps/templates/search.html:37 cps/templates/shelf.html:26
+#: calibre-web/templates/author.html:30 calibre-web/templates/index.html:80
+#: calibre-web/templates/search.html:37 calibre-web/templates/shelf.html:26
 msgid "Sort according to publishing date, newest first"
 msgstr "Trier en fonction de la date de publication, le plus récent en premier"
 
-#: cps/templates/author.html:31 cps/templates/index.html:81
-#: cps/templates/search.html:38 cps/templates/shelf.html:27
+#: calibre-web/templates/author.html:31 calibre-web/templates/index.html:81
+#: calibre-web/templates/search.html:38 calibre-web/templates/shelf.html:27
 msgid "Sort according to publishing date, oldest first"
 msgstr "Trier en fonction de la date de publication, le plus ancien en premier"
 
-#: cps/templates/author.html:56 cps/templates/author.html:115
-#: cps/templates/index.html:30 cps/templates/index.html:113
-#: cps/templates/search.html:67 cps/templates/shelf.html:55
+#: calibre-web/templates/author.html:56 calibre-web/templates/author.html:115
+#: calibre-web/templates/index.html:30 calibre-web/templates/index.html:113
+#: calibre-web/templates/search.html:67 calibre-web/templates/shelf.html:55
 msgid "reduce"
 msgstr "réduire"
 
-#: cps/templates/author.html:99
+#: calibre-web/templates/author.html:99
 msgid "More by"
 msgstr "Plus de"
 
-#: cps/templates/book_edit.html:11
+#: calibre-web/templates/book_edit.html:11
 msgid "Delete Book"
 msgstr "Supprimer le livre"
 
-#: cps/templates/book_edit.html:14
+#: calibre-web/templates/book_edit.html:14
 msgid "Delete formats:"
 msgstr "Supprimer les formats :"
 
-#: cps/templates/book_edit.html:25
+#: calibre-web/templates/book_edit.html:25
 msgid "Convert book format:"
 msgstr "Convertir le format du livre :"
 
-#: cps/templates/book_edit.html:30
+#: calibre-web/templates/book_edit.html:30
 msgid "Convert from:"
 msgstr "Convertir depuis :"
 
-#: cps/templates/book_edit.html:32 cps/templates/book_edit.html:39
+#: calibre-web/templates/book_edit.html:32 calibre-web/templates/book_edit.html:39
 msgid "select an option"
 msgstr "choisir une option"
 
-#: cps/templates/book_edit.html:37
+#: calibre-web/templates/book_edit.html:37
 msgid "Convert to:"
 msgstr "Convertir vers :"
 
-#: cps/templates/book_edit.html:46
+#: calibre-web/templates/book_edit.html:46
 msgid "Convert book"
 msgstr "Convertir le livre"
 
-#: cps/templates/book_edit.html:56 cps/templates/search_form.html:8
+#: calibre-web/templates/book_edit.html:56 calibre-web/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Titre du livre"
 
-#: cps/templates/book_edit.html:63 cps/templates/book_edit.html:271
-#: cps/templates/book_edit.html:289 cps/templates/search_form.html:12
+#: calibre-web/templates/book_edit.html:63 calibre-web/templates/book_edit.html:271
+#: calibre-web/templates/book_edit.html:289 calibre-web/templates/search_form.html:12
 msgid "Author"
 msgstr "Auteur"
 
-#: cps/templates/book_edit.html:68 cps/templates/book_edit.html:276
-#: cps/templates/book_edit.html:291 cps/templates/search_form.html:154
+#: calibre-web/templates/book_edit.html:68 calibre-web/templates/book_edit.html:276
+#: calibre-web/templates/book_edit.html:291 calibre-web/templates/search_form.html:154
 msgid "Description"
 msgstr "Description"
 
-#: cps/templates/book_edit.html:73
+#: calibre-web/templates/book_edit.html:73
 msgid "Identifiers"
 msgstr "Identifiants"
 
-#: cps/templates/book_edit.html:77 cps/templates/book_edit.html:300
+#: calibre-web/templates/book_edit.html:77 calibre-web/templates/book_edit.html:300
 msgid "Identifier Type"
 msgstr "Type d'identifiant"
 
-#: cps/templates/book_edit.html:78 cps/templates/book_edit.html:301
+#: calibre-web/templates/book_edit.html:78 calibre-web/templates/book_edit.html:301
 msgid "Identifier Value"
 msgstr "Valeur d'identifiant"
 
-#: cps/templates/book_edit.html:79 cps/templates/book_edit.html:302
-#: cps/templates/user_table.html:24
+#: calibre-web/templates/book_edit.html:79 calibre-web/templates/book_edit.html:302
+#: calibre-web/templates/user_table.html:24
 msgid "Remove"
 msgstr "Supprimer"
 
-#: cps/templates/book_edit.html:83
+#: calibre-web/templates/book_edit.html:83
 msgid "Add Identifier"
 msgstr "Ajouter un identifiant"
 
-#: cps/templates/book_edit.html:87 cps/templates/search_form.html:52
+#: calibre-web/templates/book_edit.html:87 calibre-web/templates/search_form.html:52
 msgid "Tags"
 msgstr "Étiquettes"
 
-#: cps/templates/book_edit.html:95
+#: calibre-web/templates/book_edit.html:95
 msgid "Series ID"
 msgstr "ID de séries"
 
-#: cps/templates/book_edit.html:99
+#: calibre-web/templates/book_edit.html:99
 msgid "Rating"
 msgstr "Évaluation"
 
-#: cps/templates/book_edit.html:104
+#: calibre-web/templates/book_edit.html:104
 msgid "Fetch Cover from URL (JPEG - Image will be downloaded and stored in database)"
 msgstr "Obtenir la couverture à partir d'une URL (JPEG - l'image sera téléchargée et sauvegardée dans la base de données)"
 
-#: cps/templates/book_edit.html:108
+#: calibre-web/templates/book_edit.html:108
 msgid "Upload Cover from Local Disk"
 msgstr "Téléverser la couverture depuis un fichier en local"
 
-#: cps/templates/book_edit.html:113
+#: calibre-web/templates/book_edit.html:113
 msgid "Published Date"
 msgstr "Date de publication"
 
-#: cps/templates/book_edit.html:122 cps/templates/book_edit.html:273
-#: cps/templates/book_edit.html:290 cps/templates/detail.html:192
-#: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
+#: calibre-web/templates/book_edit.html:122 calibre-web/templates/book_edit.html:273
+#: calibre-web/templates/book_edit.html:290 calibre-web/templates/detail.html:192
+#: calibre-web/templates/listenmp3.html:102 calibre-web/templates/search_form.html:16
 msgid "Publisher"
 msgstr "Éditeur"
 
-#: cps/templates/book_edit.html:126 cps/templates/detail.html:157
-#: cps/templates/listenmp3.html:69 cps/templates/user_edit.html:33
+#: calibre-web/templates/book_edit.html:126 calibre-web/templates/detail.html:157
+#: calibre-web/templates/listenmp3.html:69 calibre-web/templates/user_edit.html:33
 msgid "Language"
 msgstr "Langue"
 
-#: cps/templates/book_edit.html:136 cps/templates/search_form.html:46
-#: cps/templates/search_form.html:165
+#: calibre-web/templates/book_edit.html:136 calibre-web/templates/search_form.html:46
+#: calibre-web/templates/search_form.html:165
 msgid "Yes"
 msgstr "Oui"
 
-#: cps/templates/book_edit.html:137 cps/templates/search_form.html:47
-#: cps/templates/search_form.html:166
+#: calibre-web/templates/book_edit.html:137 calibre-web/templates/search_form.html:47
+#: calibre-web/templates/search_form.html:166
 msgid "No"
 msgstr "Non"
 
-#: cps/templates/book_edit.html:201
+#: calibre-web/templates/book_edit.html:201
 msgid "Upload Format"
 msgstr "Format du fichier téléversé"
 
-#: cps/templates/book_edit.html:209
+#: calibre-web/templates/book_edit.html:209
 msgid "View Book on Save"
 msgstr "Voir le livre lors de la sauvegarde"
 
-#: cps/templates/book_edit.html:212 cps/templates/book_edit.html:230
+#: calibre-web/templates/book_edit.html:212 calibre-web/templates/book_edit.html:230
 msgid "Fetch Metadata"
 msgstr "Obtenir les métadonnées"
 
-#: cps/templates/book_edit.html:213 cps/templates/config_db.html:65
-#: cps/templates/config_edit.html:413 cps/templates/config_view_edit.html:174
-#: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:44
-#: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
-#: cps/templates/user_edit.html:142
+#: calibre-web/templates/book_edit.html:213 calibre-web/templates/config_db.html:65
+#: calibre-web/templates/config_edit.html:413 calibre-web/templates/config_view_edit.html:174
+#: calibre-web/templates/email_edit.html:65 calibre-web/templates/schedule_edit.html:44
+#: calibre-web/templates/shelf_edit.html:25 calibre-web/templates/shelf_order.html:41
+#: calibre-web/templates/user_edit.html:142
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: cps/templates/book_edit.html:233
+#: calibre-web/templates/book_edit.html:233
 msgid "Keyword"
 msgstr "Mot-clé"
 
-#: cps/templates/book_edit.html:234
+#: calibre-web/templates/book_edit.html:234
 #, fuzzy
 msgid "Search keyword"
 msgstr " Rechercher le mot-clé "
 
-#: cps/templates/book_edit.html:240
+#: calibre-web/templates/book_edit.html:240
 msgid "Click the cover to load metadata to the form"
 msgstr "Cliquer sur la couverture pour importer les métadonnées dans le formulaire"
 
-#: cps/templates/book_edit.html:247 cps/templates/book_edit.html:286
+#: calibre-web/templates/book_edit.html:247 calibre-web/templates/book_edit.html:286
 msgid "Loading..."
 msgstr "Chargement..."
 
-#: cps/templates/book_edit.html:251 cps/templates/layout.html:78
-#: cps/templates/layout.html:203 cps/templates/modal_dialogs.html:34
-#: cps/templates/user_edit.html:163
+#: calibre-web/templates/book_edit.html:251 calibre-web/templates/layout.html:78
+#: calibre-web/templates/layout.html:203 calibre-web/templates/modal_dialogs.html:34
+#: calibre-web/templates/user_edit.html:163
 msgid "Close"
 msgstr "Fermer"
 
-#: cps/templates/book_edit.html:278 cps/templates/book_edit.html:292
+#: calibre-web/templates/book_edit.html:278 calibre-web/templates/book_edit.html:292
 msgid "Source"
 msgstr "Source"
 
-#: cps/templates/book_edit.html:287
+#: calibre-web/templates/book_edit.html:287
 msgid "Search error!"
 msgstr "Erreur lors de la recherche!"
 
-#: cps/templates/book_edit.html:288
+#: calibre-web/templates/book_edit.html:288
 msgid "No Result(s) found! Please try another keyword."
 msgstr "Aucun résultat. Veuillez essayer avec un nouveau mot clé."
 
-#: cps/templates/book_table.html:12 cps/templates/book_table.html:69
-#: cps/templates/user_table.html:14 cps/templates/user_table.html:77
-#: cps/templates/user_table.html:100
+#: calibre-web/templates/book_table.html:12 calibre-web/templates/book_table.html:69
+#: calibre-web/templates/user_table.html:14 calibre-web/templates/user_table.html:77
+#: calibre-web/templates/user_table.html:100
 msgid "This Field is Required"
 msgstr "Ce champ est requis"
 
-#: cps/templates/book_table.html:37
+#: calibre-web/templates/book_table.html:37
 msgid "Merge selected books"
 msgstr "Fusionner les livres sélectionnés"
 
-#: cps/templates/book_table.html:38 cps/templates/user_table.html:124
+#: calibre-web/templates/book_table.html:38 calibre-web/templates/user_table.html:124
 msgid "Remove Selections"
 msgstr "Supprimer la sélection"
 
-#: cps/templates/book_table.html:41
+#: calibre-web/templates/book_table.html:41
 msgid "Exchange author and title"
 msgstr "Échanger l’auteur et le titre"
 
-#: cps/templates/book_table.html:47
+#: calibre-web/templates/book_table.html:47
 msgid "Update Title Sort automatically"
 msgstr "Mettre à jour automatiquement le tri des titres"
 
-#: cps/templates/book_table.html:51
+#: calibre-web/templates/book_table.html:51
 msgid "Update Author Sort automatically"
 msgstr "Mettre à jour automatiquement le tri des auteurs"
 
-#: cps/templates/book_table.html:63 cps/templates/book_table.html:69
+#: calibre-web/templates/book_table.html:63 calibre-web/templates/book_table.html:69
 msgid "Enter Title"
 msgstr "Insérer le titre"
 
-#: cps/templates/book_table.html:63 cps/templates/config_view_edit.html:24
-#: cps/templates/shelf_edit.html:8
+#: calibre-web/templates/book_table.html:63 calibre-web/templates/config_view_edit.html:24
+#: calibre-web/templates/shelf_edit.html:8
 msgid "Title"
 msgstr "Titre"
 
-#: cps/templates/book_table.html:64
+#: calibre-web/templates/book_table.html:64
 msgid "Enter Title Sort"
 msgstr "Insérer le tri des titres"
 
-#: cps/templates/book_table.html:64
+#: calibre-web/templates/book_table.html:64
 msgid "Title Sort"
 msgstr "Tri des titres"
 
-#: cps/templates/book_table.html:65
+#: calibre-web/templates/book_table.html:65
 msgid "Enter Author Sort"
 msgstr "Insérer le tri des auteurs"
 
-#: cps/templates/book_table.html:65
+#: calibre-web/templates/book_table.html:65
 msgid "Author Sort"
 msgstr "Tri des auteurs"
 
-#: cps/templates/book_table.html:66
+#: calibre-web/templates/book_table.html:66
 msgid "Enter Authors"
 msgstr "Insérer les auteurs"
 
-#: cps/templates/book_table.html:67
+#: calibre-web/templates/book_table.html:67
 msgid "Enter Categories"
 msgstr "Insérer les catégories"
 
-#: cps/templates/book_table.html:68
+#: calibre-web/templates/book_table.html:68
 msgid "Enter Series"
 msgstr "Insérer les séries"
 
-#: cps/templates/book_table.html:69
+#: calibre-web/templates/book_table.html:69
 msgid "Series Index"
 msgstr "Index des séries"
 
-#: cps/templates/book_table.html:70
+#: calibre-web/templates/book_table.html:70
 msgid "Enter Languages"
 msgstr "Insérer les langues"
 
-#: cps/templates/book_table.html:71
+#: calibre-web/templates/book_table.html:71
 msgid "Publishing Date"
 msgstr "Date de publication"
 
-#: cps/templates/book_table.html:72
+#: calibre-web/templates/book_table.html:72
 msgid "Enter Publishers"
 msgstr "Insérer l’éditeur"
 
-#: cps/templates/book_table.html:73
+#: calibre-web/templates/book_table.html:73
 #, fuzzy
 msgid "Enter comments"
 msgstr "Saisir le nom du domaine"
 
-#: cps/templates/book_table.html:73
+#: calibre-web/templates/book_table.html:73
 msgid "Comments"
 msgstr "Commentaires"
 
-#: cps/templates/book_table.html:75
+#: calibre-web/templates/book_table.html:75
 msgid "Archive Status"
 msgstr ""
 
-#: cps/templates/book_table.html:77 cps/templates/search_form.html:42
+#: calibre-web/templates/book_table.html:77 calibre-web/templates/search_form.html:42
 msgid "Read Status"
 msgstr "Status de lecture"
 
-#: cps/templates/book_table.html:80 cps/templates/book_table.html:82
-#: cps/templates/book_table.html:84 cps/templates/book_table.html:86
-#: cps/templates/book_table.html:90 cps/templates/book_table.html:92
-#: cps/templates/book_table.html:96
+#: calibre-web/templates/book_table.html:80 calibre-web/templates/book_table.html:82
+#: calibre-web/templates/book_table.html:84 calibre-web/templates/book_table.html:86
+#: calibre-web/templates/book_table.html:90 calibre-web/templates/book_table.html:92
+#: calibre-web/templates/book_table.html:96
 #, fuzzy
 msgid "Enter "
 msgstr "Identifiants"
 
-#: cps/templates/book_table.html:113 cps/templates/modal_dialogs.html:46
-#: cps/templates/tasks.html:36
+#: calibre-web/templates/book_table.html:113 calibre-web/templates/modal_dialogs.html:46
+#: calibre-web/templates/tasks.html:36
 msgid "Are you really sure?"
 msgstr "Êtes-vous vraiment sûr?"
 
-#: cps/templates/book_table.html:117
+#: calibre-web/templates/book_table.html:117
 msgid "Books with Title will be merged from:"
 msgstr "Les livres avec titre vont être fusionnés depuis :"
 
-#: cps/templates/book_table.html:121
+#: calibre-web/templates/book_table.html:121
 msgid "Into Book with Title:"
 msgstr "Dans le livre avec le titre :"
 
-#: cps/templates/book_table.html:126
+#: calibre-web/templates/book_table.html:126
 msgid "Merge"
 msgstr "Fusionner"
 
-#: cps/templates/config_db.html:12
+#: calibre-web/templates/config_db.html:12
 msgid "Location of Calibre Database"
 msgstr "Emplacement de la base de données Calibre"
 
-#: cps/templates/config_db.html:21
+#: calibre-web/templates/config_db.html:21
 msgid "Separate Book files from Library (Highly experimental, might not work at all)"
 msgstr ""
 
-#: cps/templates/config_db.html:34
+#: calibre-web/templates/config_db.html:34
 msgid "Use Google Drive?"
 msgstr "Utiliser Google Drive ?"
 
-#: cps/templates/config_db.html:39
+#: calibre-web/templates/config_db.html:39
 msgid "Authenticate Google Drive"
 msgstr "Authentification Google Drive"
 
-#: cps/templates/config_db.html:44
+#: calibre-web/templates/config_db.html:44
 msgid "Google Drive Calibre folder"
 msgstr "Répertoire Google Drive pour Calibre"
 
-#: cps/templates/config_db.html:52
+#: calibre-web/templates/config_db.html:52
 msgid "Metadata Watch Channel ID"
 msgstr "Metadata Watch Channel ID"
 
-#: cps/templates/config_db.html:55
+#: calibre-web/templates/config_db.html:55
 msgid "Revoke"
 msgstr "Révoquer"
 
-#: cps/templates/config_db.html:80
+#: calibre-web/templates/config_db.html:80
 #, fuzzy
 msgid "New db location is invalid, please enter valid path"
 msgstr "L'emplacement DB est incorrect, veuillez saisir un chemin valide"
 
-#: cps/templates/config_edit.html:18
+#: calibre-web/templates/config_edit.html:18
 msgid "Server Configuration"
 msgstr "Configuration du serveur"
 
-#: cps/templates/config_edit.html:25
+#: calibre-web/templates/config_edit.html:25
 msgid "Server Port"
 msgstr "Numéro de port du serveur"
 
-#: cps/templates/config_edit.html:28
+#: calibre-web/templates/config_edit.html:28
 msgid "SSL certfile location (leave it empty for non-SSL Servers)"
 msgstr "Emplacement du fichier certificat SSL (laisser vide pour les serveurs non SSL)"
 
-#: cps/templates/config_edit.html:35
+#: calibre-web/templates/config_edit.html:35
 msgid "SSL Keyfile location (leave it empty for non-SSL Servers)"
 msgstr "Emplacement du fichier Keyfile de chiffrement SSL (laisser vide pour les serveurs non SSL)"
 
-#: cps/templates/config_edit.html:43
+#: calibre-web/templates/config_edit.html:43
 msgid "Update Channel"
 msgstr "Canal de mise à jour"
 
-#: cps/templates/config_edit.html:45
+#: calibre-web/templates/config_edit.html:45
 msgid "Stable"
 msgstr "Stable"
 
-#: cps/templates/config_edit.html:46
+#: calibre-web/templates/config_edit.html:46
 msgid "Nightly"
 msgstr "Nightly"
 
-#: cps/templates/config_edit.html:50
+#: calibre-web/templates/config_edit.html:50
 msgid "Trusted Hosts (Comma Separated)"
 msgstr "Hôtes de confiance (séparés par des virgules)"
 
-#: cps/templates/config_edit.html:61
+#: calibre-web/templates/config_edit.html:61
 msgid "Logfile Configuration"
 msgstr "Configuration du fichier journal"
 
-#: cps/templates/config_edit.html:77
+#: calibre-web/templates/config_edit.html:77
 msgid "Location and name of logfile (calibre-web.log for no entry)"
 msgstr "Emplacement et nom du fichier journal (sera calibre-web.log si vide)"
 
-#: cps/templates/config_edit.html:82
+#: calibre-web/templates/config_edit.html:82
 msgid "Enable Access Log"
 msgstr "Activer le journal des accès"
 
-#: cps/templates/config_edit.html:85
+#: calibre-web/templates/config_edit.html:85
 msgid "Location and name of access logfile (access.log for no entry)"
 msgstr "Emplacement et nom du fichier journal d’accès (access.log pour aucune entrée)"
 
-#: cps/templates/config_edit.html:96
+#: calibre-web/templates/config_edit.html:96
 msgid "Feature Configuration"
 msgstr "Configuration des options"
 
-#: cps/templates/config_edit.html:104
+#: calibre-web/templates/config_edit.html:104
 msgid "Convert non-English characters in title and author while saving to disk"
 msgstr "Convertir les caractères non-anglais des titre et auteur lors de l’enregistrement sur le disque"
 
-#: cps/templates/config_edit.html:108
+#: calibre-web/templates/config_edit.html:108
 msgid "Embed Metadata to Ebook File on Download and Conversion (needs Calibre/Kepubify binaries)"
 msgstr ""
 
-#: cps/templates/config_edit.html:112
+#: calibre-web/templates/config_edit.html:112
 msgid "Enable Uploads"
 msgstr "Autoriser le téléversement de fichier"
 
-#: cps/templates/config_edit.html:112
+#: calibre-web/templates/config_edit.html:112
 msgid "(Please ensure that users also have upload permissions)"
 msgstr "(Svp, vérifiez que les utilisateurs ont aussi les droits de téléchargement vers le serveur)"
 
-#: cps/templates/config_edit.html:116
+#: calibre-web/templates/config_edit.html:116
 msgid "Allowed Upload Fileformats"
 msgstr "Formats de fichiers à télécharger autorisés"
 
-#: cps/templates/config_edit.html:122
+#: calibre-web/templates/config_edit.html:122
 msgid "Enable Anonymous Browsing"
 msgstr "Autoriser la navigation anonyme"
 
-#: cps/templates/config_edit.html:126
+#: calibre-web/templates/config_edit.html:126
 msgid "Enable Public Registration"
 msgstr "Autoriser l’inscription publique"
 
-#: cps/templates/config_edit.html:131
+#: calibre-web/templates/config_edit.html:131
 msgid "Use Email as Username"
 msgstr "Utiliser l'e-mail comme nom d'utilisateur"
 
-#: cps/templates/config_edit.html:136
+#: calibre-web/templates/config_edit.html:136
 msgid "Enable Magic Link Remote Login"
 msgstr "Activer la connexion à distance Magic Link"
 
-#: cps/templates/config_edit.html:141
+#: calibre-web/templates/config_edit.html:141
 msgid "Enable Kobo sync"
 msgstr "Activer la synchro Kobo"
 
-#: cps/templates/config_edit.html:146
+#: calibre-web/templates/config_edit.html:146
 msgid "Proxy unknown requests to Kobo Store"
 msgstr "Requêtes du Proxy inconnues vers le magasin Kobo"
 
-#: cps/templates/config_edit.html:149
+#: calibre-web/templates/config_edit.html:149
 msgid "Server External Port (for port forwarded API calls)"
 msgstr "Port externe du serveur (pour les appels d’API transférés par port)"
 
-#: cps/templates/config_edit.html:157
+#: calibre-web/templates/config_edit.html:157
 msgid "Use Goodreads"
 msgstr "Utiliser Goodreads"
 
-#: cps/templates/config_edit.html:158
+#: calibre-web/templates/config_edit.html:158
 msgid "Create an API Key"
 msgstr "Obtenir la clé API"
 
-#: cps/templates/config_edit.html:162
+#: calibre-web/templates/config_edit.html:162
 msgid "Goodreads API Key"
 msgstr "Clé de l’API Goodreads"
 
-#: cps/templates/config_edit.html:166
+#: calibre-web/templates/config_edit.html:166
 msgid "Goodreads API Secret"
 msgstr "Secret de l’API Goodreads"
 
-#: cps/templates/config_edit.html:173
+#: calibre-web/templates/config_edit.html:173
 msgid "Allow Reverse Proxy Authentication"
 msgstr "Autoriser l'authentification Reverse Proxy"
 
-#: cps/templates/config_edit.html:184
+#: calibre-web/templates/config_edit.html:184
 msgid "Login type"
 msgstr "Type de connexion"
 
-#: cps/templates/config_edit.html:186
+#: calibre-web/templates/config_edit.html:186
 msgid "Use Standard Authentication"
 msgstr "Utiliser l’authentification standard"
 
-#: cps/templates/config_edit.html:188
+#: calibre-web/templates/config_edit.html:188
 msgid "Use LDAP Authentication"
 msgstr "Utiliser l’authentification LDAP"
 
-#: cps/templates/config_edit.html:191
+#: calibre-web/templates/config_edit.html:191
 msgid "Use OAuth"
 msgstr "Utiliser OAuth"
 
-#: cps/templates/config_edit.html:198
+#: calibre-web/templates/config_edit.html:198
 msgid "LDAP Server Host Name or IP Address"
 msgstr "Nom d'hôte ou Adresse IP du serveur LDAP"
 
-#: cps/templates/config_edit.html:202
+#: calibre-web/templates/config_edit.html:202
 msgid "LDAP Server Port"
 msgstr "Port du serveur LDAP"
 
-#: cps/templates/config_edit.html:206
+#: calibre-web/templates/config_edit.html:206
 msgid "LDAP Encryption"
 msgstr "Chiffrement LDAP"
 
-#: cps/templates/config_edit.html:209
+#: calibre-web/templates/config_edit.html:209
 msgid "TLS"
 msgstr "TLS"
 
-#: cps/templates/config_edit.html:210
+#: calibre-web/templates/config_edit.html:210
 msgid "SSL"
 msgstr "SSL"
 
-#: cps/templates/config_edit.html:214
+#: calibre-web/templates/config_edit.html:214
 msgid "LDAP CACertificate Path (Only needed for Client Certificate Authentication)"
 msgstr "Chemin d’accès LDAP CACertificat (uniquement requis pour l’authentification par certificat client)"
 
-#: cps/templates/config_edit.html:221
+#: calibre-web/templates/config_edit.html:221
 msgid "LDAP Certificate Path (Only needed for Client Certificate Authentication)"
 msgstr "Chemin d’accès LDAP CACertificat (requis uniquement pour l’authentification par certificat client)"
 
-#: cps/templates/config_edit.html:228
+#: calibre-web/templates/config_edit.html:228
 msgid "LDAP Keyfile Path (Only needed for Client Certificate Authentication)"
 msgstr "Chemin d’accès au fichier de clés LDAP (requis uniquement pour l’authentification par certificat client)"
 
-#: cps/templates/config_edit.html:237
+#: calibre-web/templates/config_edit.html:237
 msgid "LDAP Authentication"
 msgstr "Authentification LDAP"
 
-#: cps/templates/config_edit.html:239
+#: calibre-web/templates/config_edit.html:239
 msgid "Anonymous"
 msgstr "Anonyme"
 
-#: cps/templates/config_edit.html:240
+#: calibre-web/templates/config_edit.html:240
 msgid "Unauthenticated"
 msgstr "Non authentifié"
 
-#: cps/templates/config_edit.html:241
+#: calibre-web/templates/config_edit.html:241
 msgid "Simple"
 msgstr "Simple"
 
-#: cps/templates/config_edit.html:246
+#: calibre-web/templates/config_edit.html:246
 msgid "LDAP Administrator Username"
 msgstr "Nom d'utilisateur de l'administrateur LDAP"
 
-#: cps/templates/config_edit.html:252
+#: calibre-web/templates/config_edit.html:252
 msgid "LDAP Administrator Password"
 msgstr "Mot de passe de l'administrateur LDAP"
 
-#: cps/templates/config_edit.html:257
+#: calibre-web/templates/config_edit.html:257
 msgid "LDAP Distinguished Name (DN)"
 msgstr "LDAP Distinguished Name (DN)"
 
-#: cps/templates/config_edit.html:261
+#: calibre-web/templates/config_edit.html:261
 msgid "LDAP User Object Filter"
 msgstr "Filtre objet de l'utilisateur LDAP"
 
-#: cps/templates/config_edit.html:266
+#: calibre-web/templates/config_edit.html:266
 msgid "LDAP Server is OpenLDAP?"
 msgstr "Est-ce que le serveur LDAP est OpenLDAP?"
 
-#: cps/templates/config_edit.html:268
+#: calibre-web/templates/config_edit.html:268
 msgid "Following Settings are Needed For User Import"
 msgstr "Les paramètres suivant sont nécessaires pour importer un utilisateur"
 
-#: cps/templates/config_edit.html:270
+#: calibre-web/templates/config_edit.html:270
 msgid "LDAP Group Object Filter"
 msgstr "Filtre objet de groupe LDAP"
 
-#: cps/templates/config_edit.html:274
+#: calibre-web/templates/config_edit.html:274
 msgid "LDAP Group Name"
 msgstr "Nom de groupe LDAP"
 
-#: cps/templates/config_edit.html:278
+#: calibre-web/templates/config_edit.html:278
 msgid "LDAP Group Members Field"
 msgstr "Champ des membres de groupe LDAP"
 
-#: cps/templates/config_edit.html:282
+#: calibre-web/templates/config_edit.html:282
 msgid "LDAP Member User Filter Detection"
 msgstr "Filtre de détection des utilisateurs membres LDAP"
 
-#: cps/templates/config_edit.html:284
+#: calibre-web/templates/config_edit.html:284
 msgid "Autodetect"
 msgstr "Détecter automatiquement"
 
-#: cps/templates/config_edit.html:285
+#: calibre-web/templates/config_edit.html:285
 msgid "Custom Filter"
 msgstr "Filtre personnalisé"
 
-#: cps/templates/config_edit.html:290
+#: calibre-web/templates/config_edit.html:290
 msgid "LDAP Member User Filter"
 msgstr "Filtre utilisateur des membres LDAP"
 
-#: cps/templates/config_edit.html:301
+#: calibre-web/templates/config_edit.html:301
 #, python-format
 msgid "Obtain %(provider)s OAuth Credential"
 msgstr "Obtenir les identifiants OAuth %(provider)s"
 
-#: cps/templates/config_edit.html:304
+#: calibre-web/templates/config_edit.html:304
 #, python-format
 msgid "%(provider)s OAuth Client Id"
 msgstr "Client Id OAuth %(provider)s"
 
-#: cps/templates/config_edit.html:308
+#: calibre-web/templates/config_edit.html:308
 #, python-format
 msgid "%(provider)s OAuth Client Secret"
 msgstr "Client secret OAuth %(provider)s"
 
-#: cps/templates/config_edit.html:324
+#: calibre-web/templates/config_edit.html:324
 msgid "External binaries"
 msgstr "Configuration des outils de conversion externes"
 
-#: cps/templates/config_edit.html:330
+#: calibre-web/templates/config_edit.html:330
 #, fuzzy
 msgid "Path to Calibre Binaries"
 msgstr "Chemin vers le convertisseur de livres Calibre"
 
-#: cps/templates/config_edit.html:338
+#: calibre-web/templates/config_edit.html:338
 msgid "Calibre E-Book Converter Settings"
 msgstr "Paramètres du convertisseur de livres Calibre"
 
-#: cps/templates/config_edit.html:341
+#: calibre-web/templates/config_edit.html:341
 msgid "Path to Kepubify E-Book Converter"
 msgstr "Chemin vers le convertisseur de livres Kepubify"
 
-#: cps/templates/config_edit.html:349
+#: calibre-web/templates/config_edit.html:349
 msgid "Location of Unrar binary"
 msgstr "Chemin d’accès à la commande UnRar"
 
-#: cps/templates/config_edit.html:365
+#: calibre-web/templates/config_edit.html:365
 #, fuzzy
 msgid "Security Settings"
 msgstr "Réglages OAuth"
 
-#: cps/templates/config_edit.html:373
+#: calibre-web/templates/config_edit.html:373
 msgid "Limit failed login attempts"
 msgstr ""
 
-#: cps/templates/config_edit.html:376
+#: calibre-web/templates/config_edit.html:376
 msgid "Session protection"
 msgstr ""
 
-#: cps/templates/config_edit.html:378
+#: calibre-web/templates/config_edit.html:378
 msgid "Basic"
 msgstr ""
 
-#: cps/templates/config_edit.html:379
+#: calibre-web/templates/config_edit.html:379
 msgid "Strong"
 msgstr ""
 
-#: cps/templates/config_edit.html:384
+#: calibre-web/templates/config_edit.html:384
 #, fuzzy
 msgid "User Password policy"
 msgstr "Réinitialiser le mot de passe de l’utilisateur"
 
-#: cps/templates/config_edit.html:388
+#: calibre-web/templates/config_edit.html:388
 msgid "Minimum password length"
 msgstr ""
 
-#: cps/templates/config_edit.html:393
+#: calibre-web/templates/config_edit.html:393
 msgid "Enforce number"
 msgstr ""
 
-#: cps/templates/config_edit.html:397
+#: calibre-web/templates/config_edit.html:397
 msgid "Enforce lowercase characters"
 msgstr ""
 
-#: cps/templates/config_edit.html:401
+#: calibre-web/templates/config_edit.html:401
 msgid "Enforce uppercase characters"
 msgstr ""
 
-#: cps/templates/config_edit.html:405
+#: calibre-web/templates/config_edit.html:405
 msgid "Enforce special characters"
 msgstr ""
 
-#: cps/templates/config_view_edit.html:17
+#: calibre-web/templates/config_view_edit.html:17
 msgid "View Configuration"
 msgstr "Configuration du mode d’affichage"
 
-#: cps/templates/config_view_edit.html:32
+#: calibre-web/templates/config_view_edit.html:32
 msgid "No. of Random Books to Display"
 msgstr "Nombre de livres choisis au hasard à afficher"
 
-#: cps/templates/config_view_edit.html:36
+#: calibre-web/templates/config_view_edit.html:36
 msgid "No. of Authors to Display Before Hiding (0=Disable Hiding)"
 msgstr "Nombre d’auteurs à afficher avant de masquer (0=désactiver le masquage)"
 
-#: cps/templates/config_view_edit.html:40 cps/templates/readcbr.html:101
+#: calibre-web/templates/config_view_edit.html:40 calibre-web/templates/readcbr.html:101
 msgid "Theme"
 msgstr "Thème"
 
-#: cps/templates/config_view_edit.html:42
+#: calibre-web/templates/config_view_edit.html:42
 msgid "Standard Theme"
 msgstr "Thème par défaut"
 
-#: cps/templates/config_view_edit.html:43
+#: calibre-web/templates/config_view_edit.html:43
 msgid "caliBlur! Dark Theme"
 msgstr "Thème sombre caliBur!"
 
-#: cps/templates/config_view_edit.html:47
+#: calibre-web/templates/config_view_edit.html:47
 msgid "Regular Expression for Ignoring Columns"
 msgstr "Expression régulière à utiliser pour filtrer les colonnes"
 
-#: cps/templates/config_view_edit.html:51
+#: calibre-web/templates/config_view_edit.html:51
 msgid "Link Read/Unread Status to Calibre Column"
 msgstr "Lier le statut lu/non lu à la colonne équivalente dans Calibre"
 
-#: cps/templates/config_view_edit.html:60
+#: calibre-web/templates/config_view_edit.html:60
 msgid "View Restrictions based on Calibre column"
 msgstr "Visualiser les restrictions basées sur la colonne Calibre"
 
-#: cps/templates/config_view_edit.html:69
+#: calibre-web/templates/config_view_edit.html:69
 msgid "Regular Expression for Title Sorting"
 msgstr "Expression régulière à utiliser pour trier les titres"
 
-#: cps/templates/config_view_edit.html:80
+#: calibre-web/templates/config_view_edit.html:80
 msgid "Default Settings for New Users"
 msgstr "Réglages par défaut pour les nouveaux utilisateurs"
 
-#: cps/templates/config_view_edit.html:88 cps/templates/user_edit.html:96
+#: calibre-web/templates/config_view_edit.html:88 calibre-web/templates/user_edit.html:96
 msgid "Admin User"
 msgstr "Utilisateur admin"
 
-#: cps/templates/config_view_edit.html:92 cps/templates/user_edit.html:101
+#: calibre-web/templates/config_view_edit.html:92 calibre-web/templates/user_edit.html:101
 msgid "Allow Downloads"
 msgstr "Permettre les téléchargements"
 
-#: cps/templates/config_view_edit.html:96 cps/templates/user_edit.html:105
+#: calibre-web/templates/config_view_edit.html:96 calibre-web/templates/user_edit.html:105
 msgid "Allow eBook Viewer"
 msgstr "Autoriser le visionneur de livres"
 
-#: cps/templates/config_view_edit.html:101 cps/templates/user_edit.html:110
+#: calibre-web/templates/config_view_edit.html:101 calibre-web/templates/user_edit.html:110
 msgid "Allow Uploads"
 msgstr "Permettre le téléversement de fichiers"
 
-#: cps/templates/config_view_edit.html:106 cps/templates/user_edit.html:115
+#: calibre-web/templates/config_view_edit.html:106 calibre-web/templates/user_edit.html:115
 msgid "Allow Edit"
 msgstr "Permettre l'édition"
 
-#: cps/templates/config_view_edit.html:111 cps/templates/user_edit.html:120
+#: calibre-web/templates/config_view_edit.html:111 calibre-web/templates/user_edit.html:120
 msgid "Allow Delete Books"
 msgstr "Permettre la suppression de livres"
 
-#: cps/templates/config_view_edit.html:116 cps/templates/user_edit.html:126
+#: calibre-web/templates/config_view_edit.html:116 calibre-web/templates/user_edit.html:126
 msgid "Allow Changing Password"
 msgstr "Permettre le changement de mot de passe"
 
-#: cps/templates/config_view_edit.html:120 cps/templates/user_edit.html:130
+#: calibre-web/templates/config_view_edit.html:120 calibre-web/templates/user_edit.html:130
 msgid "Allow Editing Public Shelves"
 msgstr "Autoriser la modification d’étagères publiques"
 
-#: cps/templates/config_view_edit.html:123
+#: calibre-web/templates/config_view_edit.html:123
 #, fuzzy
 msgid "Default Language"
 msgstr "Exclure les langues"
 
-#: cps/templates/config_view_edit.html:131
+#: calibre-web/templates/config_view_edit.html:131
 #, fuzzy
 msgid "Default Visible Language of Books"
 msgstr "Montrer les livres dans la langue"
 
-#: cps/templates/config_view_edit.html:147
+#: calibre-web/templates/config_view_edit.html:147
 msgid "Default Visibilities for New Users"
 msgstr "Mode de visualisation par défaut pour les nouveaux utilisateurs"
 
-#: cps/templates/config_view_edit.html:163 cps/templates/user_edit.html:84
-#: cps/templates/user_table.html:154
+#: calibre-web/templates/config_view_edit.html:163 calibre-web/templates/user_edit.html:84
+#: calibre-web/templates/user_table.html:154
 msgid "Show Random Books in Detail View"
 msgstr "Montrer aléatoirement des livres dans la vue détaillée"
 
-#: cps/templates/config_view_edit.html:166 cps/templates/user_edit.html:87
+#: calibre-web/templates/config_view_edit.html:166 calibre-web/templates/user_edit.html:87
 msgid "Add Allowed/Denied Tags"
 msgstr "Ajouter les étiquettes autorisées/refusées"
 
-#: cps/templates/config_view_edit.html:167
+#: calibre-web/templates/config_view_edit.html:167
 msgid "Add Allowed/Denied custom column values"
 msgstr "Ajouter les valeurs de colonnes autorisées/refusées"
 
-#: cps/templates/detail.html:77 cps/templates/detail.html:91
+#: calibre-web/templates/detail.html:77 calibre-web/templates/detail.html:91
 msgid "Read in Browser"
 msgstr "Lire dans le navigateur"
 
-#: cps/templates/detail.html:100 cps/templates/detail.html:120
+#: calibre-web/templates/detail.html:100 calibre-web/templates/detail.html:120
 msgid "Listen in Browser"
 msgstr "Écouter dans le navigateur"
 
-#: cps/templates/detail.html:150 cps/templates/listenmp3.html:62
+#: calibre-web/templates/detail.html:150 calibre-web/templates/listenmp3.html:62
 #, fuzzy, python-format
 msgid "Book %(index)s of %(range)s"
 msgstr "Livre %(index)s sur %(range)s"
 
-#: cps/templates/detail.html:201 cps/templates/listenmp3.html:111
+#: calibre-web/templates/detail.html:201 calibre-web/templates/listenmp3.html:111
 msgid "Published"
 msgstr "Publié"
 
-#: cps/templates/detail.html:250 cps/templates/listenmp3.html:158
+#: calibre-web/templates/detail.html:250 calibre-web/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "Marquer comme non lu"
 
-#: cps/templates/detail.html:251 cps/templates/listenmp3.html:158
+#: calibre-web/templates/detail.html:251 calibre-web/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "Marquer comme lu"
 
-#: cps/templates/detail.html:253 cps/templates/listenmp3.html:159
+#: calibre-web/templates/detail.html:253 calibre-web/templates/listenmp3.html:159
 msgid "Read"
 msgstr "Lu"
 
-#: cps/templates/detail.html:263 cps/templates/listenmp3.html:166
+#: calibre-web/templates/detail.html:263 calibre-web/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "Restaurer à partir de l'archive"
 
-#: cps/templates/detail.html:264 cps/templates/listenmp3.html:166
+#: calibre-web/templates/detail.html:264 calibre-web/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "Ajouter comme archive"
 
-#: cps/templates/detail.html:266 cps/templates/listenmp3.html:167
+#: calibre-web/templates/detail.html:266 calibre-web/templates/listenmp3.html:167
 msgid "Archived"
 msgstr "Archivé"
 
-#: cps/templates/detail.html:277 cps/templates/listenmp3.html:177
+#: calibre-web/templates/detail.html:277 calibre-web/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Description :"
 
-#: cps/templates/detail.html:292 cps/templates/listenmp3.html:190
-#: cps/templates/search.html:16
+#: calibre-web/templates/detail.html:292 calibre-web/templates/listenmp3.html:190
+#: calibre-web/templates/search.html:16
 msgid "Add to shelf"
 msgstr "Ajouter à l'étagère"
 
-#: cps/templates/detail.html:304 cps/templates/detail.html:323
-#: cps/templates/feed.xml:81 cps/templates/layout.html:154
-#: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
-#: cps/templates/search.html:22
+#: calibre-web/templates/detail.html:304 calibre-web/templates/detail.html:323
+#: calibre-web/templates/feed.xml:81 calibre-web/templates/layout.html:154
+#: calibre-web/templates/listenmp3.html:201 calibre-web/templates/listenmp3.html:218
+#: calibre-web/templates/search.html:22
 msgid "(Public)"
 msgstr "(Public)"
 
-#: cps/templates/detail.html:339
+#: calibre-web/templates/detail.html:339
 msgid "Edit Metadata"
 msgstr "Éditer les métadonnées"
 
-#: cps/templates/email_edit.html:13
+#: calibre-web/templates/email_edit.html:13
 msgid "Email Account Type"
 msgstr "Choisissez le type de serveur"
 
-#: cps/templates/email_edit.html:15
+#: calibre-web/templates/email_edit.html:15
 #, fuzzy
 msgid "Standard Email Account"
 msgstr "Utilisez le compte courriel standard"
 
-#: cps/templates/email_edit.html:16
+#: calibre-web/templates/email_edit.html:16
 #, fuzzy
 msgid "Gmail Account"
 msgstr "Choisissez le type de serveur"
 
-#: cps/templates/email_edit.html:22
+#: calibre-web/templates/email_edit.html:22
 msgid "Setup Gmail Account"
 msgstr ""
 
-#: cps/templates/email_edit.html:24
+#: calibre-web/templates/email_edit.html:24
 msgid "Revoke Gmail Access"
 msgstr "Révoquer l’accès Gmail"
 
-#: cps/templates/email_edit.html:42
+#: calibre-web/templates/email_edit.html:42
 msgid "STARTTLS"
 msgstr "STARTTLS"
 
-#: cps/templates/email_edit.html:43
+#: calibre-web/templates/email_edit.html:43
 msgid "SSL/TLS"
 msgstr "SSL/TLS"
 
-#: cps/templates/email_edit.html:51
+#: calibre-web/templates/email_edit.html:51
 msgid "SMTP Password"
 msgstr "Mot de passe SMTP"
 
-#: cps/templates/email_edit.html:58
+#: calibre-web/templates/email_edit.html:58
 msgid "Attachment Size Limit"
 msgstr "Limite de la taille de la pièce jointe"
 
-#: cps/templates/email_edit.html:66
+#: calibre-web/templates/email_edit.html:66
 #, fuzzy
 msgid "Save and Send Test Email"
 msgstr "Sauvegarder les réglages et tester l’envoi d’un courriel"
 
-#: cps/templates/email_edit.html:70 cps/templates/layout.html:26
-#: cps/templates/shelf_order.html:42 cps/templates/user_table.html:174
+#: calibre-web/templates/email_edit.html:70 calibre-web/templates/layout.html:26
+#: calibre-web/templates/shelf_order.html:42 calibre-web/templates/user_table.html:174
 msgid "Back"
 msgstr "Retour"
 
-#: cps/templates/email_edit.html:74
+#: calibre-web/templates/email_edit.html:74
 msgid "Allowed Domains (Whitelist)"
 msgstr "Domaines autorisés (Liste blanche)"
 
-#: cps/templates/email_edit.html:78 cps/templates/email_edit.html:105
+#: calibre-web/templates/email_edit.html:78 calibre-web/templates/email_edit.html:105
 msgid "Add Domain"
 msgstr "Ajouter un domaine"
 
-#: cps/templates/email_edit.html:81 cps/templates/email_edit.html:108
-#: cps/templates/user_table.html:27
+#: calibre-web/templates/email_edit.html:81 calibre-web/templates/email_edit.html:108
+#: calibre-web/templates/user_table.html:27
 msgid "Add"
 msgstr "Ajouter"
 
-#: cps/templates/email_edit.html:86 cps/templates/email_edit.html:96
+#: calibre-web/templates/email_edit.html:86 calibre-web/templates/email_edit.html:96
 msgid "Enter domainname"
 msgstr "Saisir le nom du domaine"
 
-#: cps/templates/email_edit.html:92
+#: calibre-web/templates/email_edit.html:92
 msgid "Denied Domains (Blacklist)"
 msgstr "Domaines refusés (Liste noire)"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:187
+#: calibre-web/templates/feed.xml:22 calibre-web/templates/layout.html:187
 msgid "Next"
 msgstr "Suivant"
 
-#: cps/templates/generate_kobo_auth_url.html:6
+#: calibre-web/templates/generate_kobo_auth_url.html:6
 msgid "Open the .kobo/Kobo/Kobo eReader.conf file in a text editor and add (or edit):"
 msgstr "Ouvrir le fichier .kobo/Kobo/Kobo eReader.conf dans un éditeur de texte et ajouter (ou éditer):"
 
-#: cps/templates/generate_kobo_auth_url.html:11
+#: calibre-web/templates/generate_kobo_auth_url.html:11
 #, fuzzy
 msgid "Kobo Token:"
 msgstr "Jeton de synchro Kobo"
 
-#: cps/templates/grid.html:21
+#: calibre-web/templates/grid.html:21
 msgid "List"
 msgstr ""
 
-#: cps/templates/http_error.html:34
+#: calibre-web/templates/http_error.html:34
 #, fuzzy
 msgid "Calibre-Web Instance is unconfigured, please contact your administrator"
 msgstr "Le serveur de courriel n'est pas configuré, veuillez contacter votre administrateur!"
 
-#: cps/templates/http_error.html:44
+#: calibre-web/templates/http_error.html:44
 msgid "Create Issue"
 msgstr "Signaler un problème"
 
-#: cps/templates/http_error.html:51
+#: calibre-web/templates/http_error.html:51
 msgid "Return to Home"
 msgstr "Retour à l’accueil"
 
-#: cps/templates/http_error.html:53
+#: calibre-web/templates/http_error.html:53
 msgid "Logout User"
 msgstr "Déconnecter l’utilisateur"
 
-#: cps/templates/index.html:71
+#: calibre-web/templates/index.html:71
 msgid "Sort ascending according to download count"
 msgstr "Trier de manière ascendante selon le nombre de téléchargements"
 
-#: cps/templates/index.html:72
+#: calibre-web/templates/index.html:72
 msgid "Sort descending according to download count"
 msgstr "Trier de manière descendante selon le nombre de téléchargements"
 
-#: cps/templates/index.html:78 cps/templates/search.html:35
-#: cps/templates/shelf.html:24
+#: calibre-web/templates/index.html:78 calibre-web/templates/search.html:35
+#: calibre-web/templates/shelf.html:24
 msgid "Sort authors in alphabetical order"
 msgstr "Trier les auteurs dans l’ordre alphabétique"
 
-#: cps/templates/index.html:79 cps/templates/search.html:36
-#: cps/templates/shelf.html:25
+#: calibre-web/templates/index.html:79 calibre-web/templates/search.html:36
+#: calibre-web/templates/shelf.html:25
 msgid "Sort authors in reverse alphabetical order"
 msgstr "Trier les auteurs dans l’ordre alphabétique inverse"
 
-#: cps/templates/index.html:83
+#: calibre-web/templates/index.html:83
 msgid "Sort ascending according to series index"
 msgstr "Trier par ordre croissant en fonction de l’index de série"
 
-#: cps/templates/index.html:84
+#: calibre-web/templates/index.html:84
 msgid "Sort descending according to series index"
 msgstr "Trier par ordre décroissant en fonction de l’index de série"
 
-#: cps/templates/index.xml:7
+#: calibre-web/templates/index.xml:7
 msgid "Start"
 msgstr "Démarrer"
 
-#: cps/templates/index.xml:19
+#: calibre-web/templates/index.xml:19
 msgid "Alphabetical Books"
 msgstr "Livres alphabétiques"
 
-#: cps/templates/index.xml:23
+#: calibre-web/templates/index.xml:23
 msgid "Books sorted alphabetically"
 msgstr "Livres triés dans l’ordre alphabétique"
 
-#: cps/templates/index.xml:30
+#: calibre-web/templates/index.xml:30
 msgid "Popular publications from this catalog based on Downloads."
 msgstr "Publications populaires depuis le catalogue basées sur les téléchargements."
 
-#: cps/templates/index.xml:37
+#: calibre-web/templates/index.xml:37
 msgid "Popular publications from this catalog based on Rating."
 msgstr "Publications populaires de ce catalogue sur la base des évaluations."
 
-#: cps/templates/index.xml:40
+#: calibre-web/templates/index.xml:40
 msgid "Recently added Books"
 msgstr "Livres récents ajoutés"
 
-#: cps/templates/index.xml:44
+#: calibre-web/templates/index.xml:44
 msgid "The latest Books"
 msgstr "Les derniers livres"
 
-#: cps/templates/index.xml:47
+#: calibre-web/templates/index.xml:47
 msgid "Random Books"
 msgstr "Livres au hasard"
 
-#: cps/templates/index.xml:74
+#: calibre-web/templates/index.xml:74
 msgid "Books ordered by Author"
 msgstr "Livres classés par auteur"
 
-#: cps/templates/index.xml:81
+#: calibre-web/templates/index.xml:81
 msgid "Books ordered by publisher"
 msgstr "Livres classés par éditeur"
 
-#: cps/templates/index.xml:88
+#: calibre-web/templates/index.xml:88
 msgid "Books ordered by category"
 msgstr "Livres classés par catégorie"
 
-#: cps/templates/index.xml:95
+#: calibre-web/templates/index.xml:95
 msgid "Books ordered by series"
 msgstr "Livres classés par série"
 
-#: cps/templates/index.xml:102
+#: calibre-web/templates/index.xml:102
 msgid "Books ordered by Languages"
 msgstr "Livres classés par langue"
 
-#: cps/templates/index.xml:109
+#: calibre-web/templates/index.xml:109
 msgid "Books ordered by Rating"
 msgstr "Livres classés par évaluation"
 
-#: cps/templates/index.xml:117
+#: calibre-web/templates/index.xml:117
 msgid "Books ordered by file formats"
 msgstr "Livres classés par formats de fichiers"
 
-#: cps/templates/index.xml:120 cps/templates/layout.html:152
-#: cps/templates/search_form.html:88
+#: calibre-web/templates/index.xml:120 calibre-web/templates/layout.html:152
+#: calibre-web/templates/search_form.html:88
 msgid "Shelves"
 msgstr "Etagères"
 
-#: cps/templates/index.xml:124
+#: calibre-web/templates/index.xml:124
 msgid "Books organized in shelves"
 msgstr "Livres organisés par étagères"
 
-#: cps/templates/layout.html:26 cps/templates/login.html:30
+#: calibre-web/templates/layout.html:26 calibre-web/templates/login.html:30
 msgid "Home"
 msgstr "Accueil"
 
-#: cps/templates/layout.html:32
+#: calibre-web/templates/layout.html:32
 msgid "Toggle Navigation"
 msgstr "Basculer la navigation"
 
-#: cps/templates/layout.html:47
+#: calibre-web/templates/layout.html:47
 msgid "Search Library"
 msgstr "Chercher dans librairie"
 
-#: cps/templates/layout.html:65 cps/templates/layout.html:94
+#: calibre-web/templates/layout.html:65 calibre-web/templates/layout.html:94
 msgid "Account"
 msgstr "Compte"
 
-#: cps/templates/layout.html:71 cps/templates/layout.html:96
+#: calibre-web/templates/layout.html:71 calibre-web/templates/layout.html:96
 msgid "Logout"
 msgstr "Déconnexion"
 
-#: cps/templates/layout.html:78 cps/templates/layout.html:134
+#: calibre-web/templates/layout.html:78 calibre-web/templates/layout.html:134
 msgid "Uploading..."
 msgstr "Téléversement en cours..."
 
-#: cps/templates/layout.html:78
+#: calibre-web/templates/layout.html:78
 msgid "Error"
 msgstr "Erreur"
 
-#: cps/templates/layout.html:78
+#: calibre-web/templates/layout.html:78
 msgid "Upload done, processing, please wait..."
 msgstr "Téléversement terminé, traitement en cours, veuillez patienter…."
 
-#: cps/templates/layout.html:91 cps/templates/read.html:76
-#: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
+#: calibre-web/templates/layout.html:91 calibre-web/templates/read.html:76
+#: calibre-web/templates/readcbr.html:70 calibre-web/templates/readcbr.html:96
 msgid "Settings"
 msgstr "Paramètres"
 
-#: cps/templates/layout.html:135
+#: calibre-web/templates/layout.html:135
 msgid "Please do not refresh the page"
 msgstr "Veuillez ne pas rafraîchir la page"
 
-#: cps/templates/layout.html:145
+#: calibre-web/templates/layout.html:145
 msgid "Browse"
 msgstr "Explorer"
 
-#: cps/templates/layout.html:158 cps/templates/stats.html:3
+#: calibre-web/templates/layout.html:158 calibre-web/templates/stats.html:3
 msgid "About"
 msgstr "À propos"
 
-#: cps/templates/layout.html:172
+#: calibre-web/templates/layout.html:172
 msgid "Previous"
 msgstr "Précédent"
 
-#: cps/templates/layout.html:199
+#: calibre-web/templates/layout.html:199
 msgid "Book Details"
 msgstr "Détails du livre"
 
-#: cps/templates/list.html:22
+#: calibre-web/templates/list.html:22
 msgid "Grid"
 msgstr ""
 
-#: cps/templates/login.html:18
+#: calibre-web/templates/login.html:18
 msgid "Remember Me"
 msgstr "Se rappeler de moi"
 
-#: cps/templates/login.html:23
+#: calibre-web/templates/login.html:23
 msgid "Forgot Password?"
 msgstr "Mot de passe oublié ?"
 
-#: cps/templates/login.html:34
+#: calibre-web/templates/login.html:34
 msgid "Log in with Magic Link"
 msgstr "Se connecter avec Magic Link"
 
-#: cps/templates/logviewer.html:6
+#: calibre-web/templates/logviewer.html:6
 msgid "Show Calibre-Web Log: "
 msgstr "Afficher le journal Calibre-Web : "
 
-#: cps/templates/logviewer.html:8
+#: calibre-web/templates/logviewer.html:8
 msgid "Calibre-Web Log: "
 msgstr "Journal Calibre-Web : "
 
-#: cps/templates/logviewer.html:8
+#: calibre-web/templates/logviewer.html:8
 msgid "Stream output, can't be displayed"
 msgstr "Le flux de sortie ne peut pas être affiché"
 
-#: cps/templates/logviewer.html:12
+#: calibre-web/templates/logviewer.html:12
 msgid "Show Access Log: "
 msgstr "Afficher le journal d'accès : "
 
-#: cps/templates/logviewer.html:18
+#: calibre-web/templates/logviewer.html:18
 msgid "Download Calibre-Web Log"
 msgstr "Télécharger les journaux Calibre-Web"
 
-#: cps/templates/logviewer.html:21
+#: calibre-web/templates/logviewer.html:21
 msgid "Download Access Log"
 msgstr "Télécharger les journaux d’accès"
 
-#: cps/templates/modal_dialogs.html:6
+#: calibre-web/templates/modal_dialogs.html:6
 msgid "Select Allowed/Denied Tags"
 msgstr "Sélectionner les étiquettes autorisées/refusées"
 
-#: cps/templates/modal_dialogs.html:7
+#: calibre-web/templates/modal_dialogs.html:7
 msgid "Select Allowed/Denied Custom Column Values"
 msgstr "Sélectionner les colonnes personnalisées autorisées/refusées"
 
-#: cps/templates/modal_dialogs.html:8
+#: calibre-web/templates/modal_dialogs.html:8
 msgid "Select Allowed/Denied Tags of User"
 msgstr "Sélectionner les étiquettes d'utilisateur autorisées/refusées"
 
-#: cps/templates/modal_dialogs.html:9
+#: calibre-web/templates/modal_dialogs.html:9
 msgid "Select Allowed/Denied Custom Column Values of User"
 msgstr "Sélectionner les colonnes personnalisées d'utilisateur autorisées/refusées"
 
-#: cps/templates/modal_dialogs.html:15
+#: calibre-web/templates/modal_dialogs.html:15
 msgid "Enter Tag"
 msgstr "Saisir une étiquette"
 
-#: cps/templates/modal_dialogs.html:24
+#: calibre-web/templates/modal_dialogs.html:24
 msgid "Add View Restriction"
 msgstr "Ajouter une restriction de visualisation"
 
-#: cps/templates/modal_dialogs.html:50
+#: calibre-web/templates/modal_dialogs.html:50
 msgid "This book format will be permanently erased from database"
 msgstr "Ce format de livre sera définitivement effacé de la base de données"
 
-#: cps/templates/modal_dialogs.html:51
+#: calibre-web/templates/modal_dialogs.html:51
 msgid "This book will be permanently erased from database"
 msgstr "Le livre va être supprimé définitivement de la base de données"
 
-#: cps/templates/modal_dialogs.html:52
+#: calibre-web/templates/modal_dialogs.html:52
 msgid "and hard disk"
 msgstr "et du disque dur"
 
-#: cps/templates/modal_dialogs.html:56
+#: calibre-web/templates/modal_dialogs.html:56
 msgid "Important Kobo Note: deleted books will remain on any paired Kobo device."
 msgstr "Note Kobo importante: les livres supprimés vont rester sur l'appareil Kobo appairé."
 
-#: cps/templates/modal_dialogs.html:57
+#: calibre-web/templates/modal_dialogs.html:57
 msgid "Books must first be archived and the device synced before a book can safely be deleted."
 msgstr "Les livres doivent d'abord être archivés et l'appareil synchronisé avant qu'un livre puisse être supprimé en tout sécurité."
 
-#: cps/templates/modal_dialogs.html:76
+#: calibre-web/templates/modal_dialogs.html:76
 msgid "Choose File Location"
 msgstr "Choisir l’emplacement du fichier"
 
-#: cps/templates/modal_dialogs.html:82
+#: calibre-web/templates/modal_dialogs.html:82
 msgid "type"
 msgstr "type"
 
-#: cps/templates/modal_dialogs.html:83
+#: calibre-web/templates/modal_dialogs.html:83
 msgid "name"
 msgstr "nom"
 
-#: cps/templates/modal_dialogs.html:84
+#: calibre-web/templates/modal_dialogs.html:84
 msgid "size"
 msgstr "taille"
 
-#: cps/templates/modal_dialogs.html:90
+#: calibre-web/templates/modal_dialogs.html:90
 msgid "Parent Directory"
 msgstr "Répertoire parent"
 
-#: cps/templates/modal_dialogs.html:98
+#: calibre-web/templates/modal_dialogs.html:98
 msgid "Select"
 msgstr "Sélectionner"
 
-#: cps/templates/modal_dialogs.html:134 cps/templates/tasks.html:45
+#: calibre-web/templates/modal_dialogs.html:134 calibre-web/templates/tasks.html:45
 #, fuzzy
 msgid "Ok"
 msgstr "Livre"
 
-#: cps/templates/osd.xml:5
+#: calibre-web/templates/osd.xml:5
 msgid "Calibre-Web eBook Catalog"
 msgstr "Catalogue de livres électroniques Calibre-Web"
 
-#: cps/templates/read.html:6
+#: calibre-web/templates/read.html:6
 #, fuzzy
 msgid "epub Reader"
 msgstr "Lecteur PDF"
 
-#: cps/templates/read.html:81 cps/templates/readcbr.html:104
+#: calibre-web/templates/read.html:81 calibre-web/templates/readcbr.html:104
 msgid "Light"
 msgstr "Clair"
 
-#: cps/templates/read.html:82 cps/templates/readcbr.html:105
+#: calibre-web/templates/read.html:82 calibre-web/templates/readcbr.html:105
 msgid "Dark"
 msgstr "Sombre"
 
-#: cps/templates/read.html:83
+#: calibre-web/templates/read.html:83
 msgid "Sepia"
 msgstr ""
 
-#: cps/templates/read.html:84
+#: calibre-web/templates/read.html:84
 #, fuzzy
 msgid "Black"
 msgstr "Retour"
 
-#: cps/templates/read.html:88
+#: calibre-web/templates/read.html:88
 msgid "Reflow text when sidebars are open."
 msgstr "Mettre à jour la mise en page du texte quand les bandeaux latéraux sont ouverts."
 
-#: cps/templates/read.html:93
+#: calibre-web/templates/read.html:93
 msgid "Font Sizes"
 msgstr ""
 
-#: cps/templates/readcbr.html:8
+#: calibre-web/templates/readcbr.html:8
 #, fuzzy
 msgid "Comic Reader"
 msgstr "Lecteur PDF"
 
-#: cps/templates/readcbr.html:75
+#: calibre-web/templates/readcbr.html:75
 msgid "Keyboard Shortcuts"
 msgstr "Raccourcis clavier"
 
-#: cps/templates/readcbr.html:78
+#: calibre-web/templates/readcbr.html:78
 msgid "Previous Page"
 msgstr "Page précédente"
 
-#: cps/templates/readcbr.html:79 cps/templates/readcbr.html:159
+#: calibre-web/templates/readcbr.html:79 calibre-web/templates/readcbr.html:159
 msgid "Next Page"
 msgstr "Page suivante"
 
-#: cps/templates/readcbr.html:80
+#: calibre-web/templates/readcbr.html:80
 msgid "Single Page Display"
 msgstr ""
 
-#: cps/templates/readcbr.html:81
+#: calibre-web/templates/readcbr.html:81
 msgid "Long Strip Display"
 msgstr ""
 
-#: cps/templates/readcbr.html:82
+#: calibre-web/templates/readcbr.html:82
 msgid "Scale to Best"
 msgstr "Mise à l’échelle optimale"
 
-#: cps/templates/readcbr.html:83
+#: calibre-web/templates/readcbr.html:83
 msgid "Scale to Width"
 msgstr "Mise à l’échelle sur la largeur"
 
-#: cps/templates/readcbr.html:84
+#: calibre-web/templates/readcbr.html:84
 msgid "Scale to Height"
 msgstr "Mise à l’échelle sur la hauteur"
 
-#: cps/templates/readcbr.html:85
+#: calibre-web/templates/readcbr.html:85
 msgid "Scale to Native"
 msgstr "Mise à l’échelle d’origine"
 
-#: cps/templates/readcbr.html:86
+#: calibre-web/templates/readcbr.html:86
 msgid "Rotate Right"
 msgstr "Rotation droite"
 
-#: cps/templates/readcbr.html:87
+#: calibre-web/templates/readcbr.html:87
 msgid "Rotate Left"
 msgstr "Rotation gauche"
 
-#: cps/templates/readcbr.html:88
+#: calibre-web/templates/readcbr.html:88
 msgid "Flip Image"
 msgstr "Inverser l’image"
 
-#: cps/templates/readcbr.html:110
+#: calibre-web/templates/readcbr.html:110
 msgid "Display"
 msgstr ""
 
-#: cps/templates/readcbr.html:113
+#: calibre-web/templates/readcbr.html:113
 #, fuzzy
 msgid "Single Page"
 msgstr "Page admin"
 
-#: cps/templates/readcbr.html:114
+#: calibre-web/templates/readcbr.html:114
 msgid "Long Strip"
 msgstr ""
 
-#: cps/templates/readcbr.html:119
+#: calibre-web/templates/readcbr.html:119
 msgid "Scale"
 msgstr "Échelle"
 
-#: cps/templates/readcbr.html:122
+#: calibre-web/templates/readcbr.html:122
 msgid "Best"
 msgstr "Optimal"
 
-#: cps/templates/readcbr.html:123
+#: calibre-web/templates/readcbr.html:123
 msgid "Width"
 msgstr "Largeur"
 
-#: cps/templates/readcbr.html:124
+#: calibre-web/templates/readcbr.html:124
 msgid "Height"
 msgstr "Hauteur"
 
-#: cps/templates/readcbr.html:125
+#: calibre-web/templates/readcbr.html:125
 msgid "Native"
 msgstr "Origine"
 
-#: cps/templates/readcbr.html:130
+#: calibre-web/templates/readcbr.html:130
 msgid "Rotate"
 msgstr "Rotation"
 
-#: cps/templates/readcbr.html:141
+#: calibre-web/templates/readcbr.html:141
 msgid "Flip"
 msgstr "Inverser"
 
-#: cps/templates/readcbr.html:144
+#: calibre-web/templates/readcbr.html:144
 msgid "Horizontal"
 msgstr "Horizontal"
 
-#: cps/templates/readcbr.html:145
+#: calibre-web/templates/readcbr.html:145
 msgid "Vertical"
 msgstr "Vertical"
 
-#: cps/templates/readcbr.html:150
+#: calibre-web/templates/readcbr.html:150
 msgid "Direction"
 msgstr "Direction"
 
-#: cps/templates/readcbr.html:153
+#: calibre-web/templates/readcbr.html:153
 msgid "Left to Right"
 msgstr "De gauche à droite"
 
-#: cps/templates/readcbr.html:154
+#: calibre-web/templates/readcbr.html:154
 msgid "Right to Left"
 msgstr "De droite à gauche"
 
-#: cps/templates/readcbr.html:162
+#: calibre-web/templates/readcbr.html:162
 msgid "Reset to Top"
 msgstr ""
 
-#: cps/templates/readcbr.html:163
+#: calibre-web/templates/readcbr.html:163
 msgid "Remember Position"
 msgstr ""
 
-#: cps/templates/readcbr.html:168
+#: calibre-web/templates/readcbr.html:168
 msgid "Scrollbar"
 msgstr "Barre de défilement"
 
-#: cps/templates/readcbr.html:171
+#: calibre-web/templates/readcbr.html:171
 msgid "Show"
 msgstr "Montrer"
 
-#: cps/templates/readcbr.html:172
+#: calibre-web/templates/readcbr.html:172
 msgid "Hide"
 msgstr "Cacher"
 
-#: cps/templates/readdjvu.html:5
+#: calibre-web/templates/readdjvu.html:5
 #, fuzzy
 msgid "DJVU Reader"
 msgstr "Lecteur PDF"
 
-#: cps/templates/readpdf.html:32
+#: calibre-web/templates/readpdf.html:32
 #, fuzzy
 msgid "PDF Reader"
 msgstr "Lecteur PDF"
 
-#: cps/templates/readtxt.html:6
+#: calibre-web/templates/readtxt.html:6
 #, fuzzy
 msgid "txt Reader"
 msgstr "Lecteur PDF"
 
-#: cps/templates/register.html:4
+#: calibre-web/templates/register.html:4
 msgid "Register New Account"
 msgstr "Enregistrer un nouveau compte"
 
-#: cps/templates/register.html:10
+#: calibre-web/templates/register.html:10
 msgid "Choose a username"
 msgstr "Choisissez un nom d'utilisateur"
 
-#: cps/templates/register.html:15
+#: calibre-web/templates/register.html:15
 msgid "Your Email"
 msgstr "Votre adresse de courriel"
 
-#: cps/templates/remote_login.html:5
+#: calibre-web/templates/remote_login.html:5
 msgid "Magic Link - Authorise New Device"
 msgstr "Magic Link - Autoriser un nouvel appareil"
 
-#: cps/templates/remote_login.html:7
+#: calibre-web/templates/remote_login.html:7
 msgid "On another device, login and visit:"
 msgstr "Utilisez votre autre appareil, connectez-vous et visitez:"
 
-#: cps/templates/remote_login.html:11
+#: calibre-web/templates/remote_login.html:11
 msgid "Once verified, you will automatically be logged in on this device."
 msgstr "Une fois fait, vous serez automatiquement connecté à cet appareil."
 
-#: cps/templates/remote_login.html:14
+#: calibre-web/templates/remote_login.html:14
 msgid "This verification link will expire in 10 minutes."
 msgstr "Le lien expirera après 10 minutes."
 
-#: cps/templates/schedule_edit.html:33
+#: calibre-web/templates/schedule_edit.html:33
 msgid "Generate Series Cover Thumbnails"
 msgstr ""
 
-#: cps/templates/search.html:6
+#: calibre-web/templates/search.html:6
 msgid "No Results Found"
 msgstr "Aucun résultat trouvé"
 
-#: cps/templates/search.html:7
+#: calibre-web/templates/search.html:7
 msgid "Search Term:"
 msgstr "Chercher le terme:"
 
-#: cps/templates/search.html:9
+#: calibre-web/templates/search.html:9
 msgid "Results for:"
 msgstr "Résultats pour :"
 
-#: cps/templates/search_form.html:21
+#: calibre-web/templates/search_form.html:21
 msgid "Published Date From"
 msgstr "Date de publication (depuis)"
 
-#: cps/templates/search_form.html:31
+#: calibre-web/templates/search_form.html:31
 msgid "Published Date To"
 msgstr "Date de publication (jusqu’à)"
 
-#: cps/templates/search_form.html:44
+#: calibre-web/templates/search_form.html:44
 msgid "Any"
 msgstr ""
 
-#: cps/templates/search_form.html:45
+#: calibre-web/templates/search_form.html:45
 msgid "Empty"
 msgstr ""
 
-#: cps/templates/search_form.html:60
+#: calibre-web/templates/search_form.html:60
 msgid "Exclude Tags"
 msgstr "Exclure les étiquettes"
 
-#: cps/templates/search_form.html:78
+#: calibre-web/templates/search_form.html:78
 msgid "Exclude Series"
 msgstr "Exclure les séries"
 
-#: cps/templates/search_form.html:96
+#: calibre-web/templates/search_form.html:96
 #, fuzzy
 msgid "Exclude Shelves"
 msgstr "Exclure les séries"
 
-#: cps/templates/search_form.html:116
+#: calibre-web/templates/search_form.html:116
 msgid "Exclude Languages"
 msgstr "Exclure les langues"
 
-#: cps/templates/search_form.html:127
+#: calibre-web/templates/search_form.html:127
 msgid "Extensions"
 msgstr "Extensions"
 
-#: cps/templates/search_form.html:135
+#: calibre-web/templates/search_form.html:135
 msgid "Exclude Extensions"
 msgstr "Exclure les extensions"
 
-#: cps/templates/search_form.html:145
+#: calibre-web/templates/search_form.html:145
 msgid "Rating Above"
 msgstr "Évaluation supérieure à"
 
-#: cps/templates/search_form.html:149
+#: calibre-web/templates/search_form.html:149
 msgid "Rating Below"
 msgstr "Évaluation inférieure à"
 
-#: cps/templates/search_form.html:181
+#: calibre-web/templates/search_form.html:181
 msgid "From:"
 msgstr "Depuis"
 
-#: cps/templates/search_form.html:191
+#: calibre-web/templates/search_form.html:191
 msgid "To:"
 msgstr "Vers"
 
-#: cps/templates/shelf.html:13
+#: calibre-web/templates/shelf.html:13
 msgid "Delete this Shelf"
 msgstr "Supprimer cette étagère"
 
-#: cps/templates/shelf.html:14
+#: calibre-web/templates/shelf.html:14
 msgid "Edit Shelf Properties"
 msgstr "Éditer les propriétés de l’étagère"
 
-#: cps/templates/shelf.html:17
+#: calibre-web/templates/shelf.html:17
 msgid "Arrange books manually"
 msgstr "Organiser les livres manuellement"
 
-#: cps/templates/shelf.html:18
+#: calibre-web/templates/shelf.html:18
 msgid "Disable Change order"
 msgstr "Désactiver l’ordre de modification"
 
-#: cps/templates/shelf.html:18
+#: calibre-web/templates/shelf.html:18
 msgid "Enable Change order"
 msgstr "Activer l’ordre de modification"
 
-#: cps/templates/shelf_edit.html:14
+#: calibre-web/templates/shelf_edit.html:14
 msgid "Share with Everyone"
 msgstr "Partager avec tout le monde"
 
-#: cps/templates/shelf_edit.html:21
+#: calibre-web/templates/shelf_edit.html:21
 msgid "Sync this shelf with Kobo device"
 msgstr "Synchronisez cette étagère avec l’appareil Kobo"
 
-#: cps/templates/shelf_order.html:5
+#: calibre-web/templates/shelf_order.html:5
 msgid "Drag to Rearrange Order"
 msgstr "Glisser-déposer pour modifier l’ordre"
 
-#: cps/templates/shelf_order.html:33
+#: calibre-web/templates/shelf_order.html:33
 msgid "Hidden Book"
 msgstr "Livre caché"
 
-#: cps/templates/stats.html:7
+#: calibre-web/templates/stats.html:7
 msgid "Library Statistics"
 msgstr "Statistiques de la librairie Calibre"
 
-#: cps/templates/stats.html:12
+#: calibre-web/templates/stats.html:12
 msgid "Books in this Library"
 msgstr "Livres dans la bibiothèque"
 
-#: cps/templates/stats.html:16
+#: calibre-web/templates/stats.html:16
 msgid "Authors in this Library"
 msgstr "Auteurs dans la bibliothèque"
 
-#: cps/templates/stats.html:20
+#: calibre-web/templates/stats.html:20
 msgid "Categories in this Library"
 msgstr "Catégories dans la librairie"
 
-#: cps/templates/stats.html:24
+#: calibre-web/templates/stats.html:24
 msgid "Series in this Library"
 msgstr "Séries dans la librairie"
 
-#: cps/templates/stats.html:29
+#: calibre-web/templates/stats.html:29
 msgid "System Statistics"
 msgstr "Statistiques système"
 
-#: cps/templates/stats.html:33
+#: calibre-web/templates/stats.html:33
 msgid "Program"
 msgstr ""
 
-#: cps/templates/stats.html:34
+#: calibre-web/templates/stats.html:34
 msgid "Installed Version"
 msgstr "Version installée"
 
-#: cps/templates/tasks.html:12
+#: calibre-web/templates/tasks.html:12
 msgid "User"
 msgstr "Utilisateur"
 
-#: cps/templates/tasks.html:14
+#: calibre-web/templates/tasks.html:14
 msgid "Task"
 msgstr "Tâche"
 
-#: cps/templates/tasks.html:15
+#: calibre-web/templates/tasks.html:15
 msgid "Status"
 msgstr "Statut"
 
-#: cps/templates/tasks.html:16
+#: calibre-web/templates/tasks.html:16
 msgid "Progress"
 msgstr "Avancement"
 
-#: cps/templates/tasks.html:17
+#: calibre-web/templates/tasks.html:17
 msgid "Run Time"
 msgstr "Durée"
 
-#: cps/templates/tasks.html:20
+#: calibre-web/templates/tasks.html:20
 msgid "Actions"
 msgstr ""
 
-#: cps/templates/tasks.html:40
+#: calibre-web/templates/tasks.html:40
 msgid "This task will be cancelled. Any progress made by this task will be saved."
 msgstr ""
 
-#: cps/templates/tasks.html:41
+#: calibre-web/templates/tasks.html:41
 msgid "If this is a scheduled task, it will be re-ran during the next scheduled time."
 msgstr ""
 
-#: cps/templates/user_edit.html:20
+#: calibre-web/templates/user_edit.html:20
 msgid "Reset user Password"
 msgstr "Réinitialiser le mot de passe de l’utilisateur"
 
-#: cps/templates/user_edit.html:43
+#: calibre-web/templates/user_edit.html:43
 msgid "Language of Books"
 msgstr "Montrer les livres dans la langue"
 
-#: cps/templates/user_edit.html:54
+#: calibre-web/templates/user_edit.html:54
 msgid "OAuth Settings"
 msgstr "Réglages OAuth"
 
-#: cps/templates/user_edit.html:56
+#: calibre-web/templates/user_edit.html:56
 msgid "Link"
 msgstr "Relier"
 
-#: cps/templates/user_edit.html:58
+#: calibre-web/templates/user_edit.html:58
 msgid "Unlink"
 msgstr "Dissocier"
 
-#: cps/templates/user_edit.html:64
+#: calibre-web/templates/user_edit.html:64
 msgid "Kobo Sync Token"
 msgstr "Jeton de synchro Kobo"
 
-#: cps/templates/user_edit.html:66
+#: calibre-web/templates/user_edit.html:66
 msgid "Create/View"
 msgstr "Créer/visualiser"
 
-#: cps/templates/user_edit.html:70
+#: calibre-web/templates/user_edit.html:70
 msgid "Force full kobo sync"
 msgstr "Forcer une synchronisation complète Kobo"
 
-#: cps/templates/user_edit.html:88
+#: calibre-web/templates/user_edit.html:88
 msgid "Add allowed/Denied Custom Column Values"
 msgstr "Ajouter les valeurs de colonnes personnalisées autorisées/refusées"
 
-#: cps/templates/user_edit.html:137
+#: calibre-web/templates/user_edit.html:137
 msgid "Sync only books in selected shelves with Kobo"
 msgstr "Synchroniser uniquement les livres dans les étagères sélectionnées avec Kobo"
 
-#: cps/templates/user_edit.html:147 cps/templates/user_table.html:169
+#: calibre-web/templates/user_edit.html:147 calibre-web/templates/user_table.html:169
 msgid "Delete User"
 msgstr "Supprimer l'utilisateur"
 
-#: cps/templates/user_edit.html:159
+#: calibre-web/templates/user_edit.html:159
 msgid "Generate Kobo Auth URL"
 msgstr "Générer l'URL d'authentification Kobo"
 
-#: cps/templates/user_table.html:80 cps/templates/user_table.html:103
+#: calibre-web/templates/user_table.html:80 calibre-web/templates/user_table.html:103
 msgid "Select..."
 msgstr "Sélectionner..."
 
-#: cps/templates/user_table.html:131
+#: calibre-web/templates/user_table.html:131
 #, fuzzy
 msgid "Edit User"
 msgstr "Éditer l’utilisateur"
 
-#: cps/templates/user_table.html:134
+#: calibre-web/templates/user_table.html:134
 #, fuzzy
 msgid "Enter Username"
 msgstr "Choisissez un nom d'utilisateur"
 
-#: cps/templates/user_table.html:135
+#: calibre-web/templates/user_table.html:135
 #, fuzzy
 msgid "Enter Email"
 msgstr "Courriel de test"
 
-#: cps/templates/user_table.html:136
+#: calibre-web/templates/user_table.html:136
 #, fuzzy
 msgid "Enter eReader Email"
 msgstr "Envoyer vers une adresse de courriel Kindle"
 
-#: cps/templates/user_table.html:136
+#: calibre-web/templates/user_table.html:136
 #, fuzzy
 msgid "eReader Email"
 msgstr "Courriel de test"
 
-#: cps/templates/user_table.html:137
+#: calibre-web/templates/user_table.html:137
 #, fuzzy
 msgid "Locale"
 msgstr "Échelle"
 
-#: cps/templates/user_table.html:138
+#: calibre-web/templates/user_table.html:138
 msgid "Visible Book Languages"
 msgstr "Langues de livre visibles"
 
-#: cps/templates/user_table.html:139
+#: calibre-web/templates/user_table.html:139
 #, fuzzy
 msgid "Edit Allowed Tags"
 msgstr "Sélectionner les étiquettes autorisées/refusées"
 
-#: cps/templates/user_table.html:139
+#: calibre-web/templates/user_table.html:139
 msgid "Allowed Tags"
 msgstr "Étiquettes autorisées"
 
-#: cps/templates/user_table.html:140
+#: calibre-web/templates/user_table.html:140
 #, fuzzy
 msgid "Edit Denied Tags"
 msgstr "Sélectionner les étiquettes autorisées/refusées"
 
-#: cps/templates/user_table.html:140
+#: calibre-web/templates/user_table.html:140
 msgid "Denied Tags"
 msgstr "Étiquettes refusées"
 
-#: cps/templates/user_table.html:141
+#: calibre-web/templates/user_table.html:141
 #, fuzzy
 msgid "Edit Allowed Column Values"
 msgstr "Ajouter les valeurs de colonnes autorisées/refusées"
 
-#: cps/templates/user_table.html:141
+#: calibre-web/templates/user_table.html:141
 #, fuzzy
 msgid "Allowed Column Values"
 msgstr "Ajouter les valeurs de colonnes autorisées/refusées"
 
-#: cps/templates/user_table.html:142
+#: calibre-web/templates/user_table.html:142
 #, fuzzy
 msgid "Edit Denied Column Values"
 msgstr "Ajouter les valeurs de colonnes autorisées/refusées"
 
-#: cps/templates/user_table.html:142
+#: calibre-web/templates/user_table.html:142
 #, fuzzy
 msgid "Denied Column Values"
 msgstr "Ajouter les valeurs de colonnes autorisées/refusées"
 
-#: cps/templates/user_table.html:144
+#: calibre-web/templates/user_table.html:144
 #, fuzzy
 msgid "Change Password"
 msgstr "Permettre le changement de mot de passe"
 
-#: cps/templates/user_table.html:147
+#: calibre-web/templates/user_table.html:147
 msgid "View"
 msgstr "Vue"
 
-#: cps/templates/user_table.html:150
+#: calibre-web/templates/user_table.html:150
 #, fuzzy
 msgid "Edit Public Shelves"
 msgstr "Étagère publique"
 
-#: cps/templates/user_table.html:152
+#: calibre-web/templates/user_table.html:152
 #, fuzzy
 msgid "Sync selected Shelves with Kobo"
 msgstr "Synchroniser les étagères sélectionnées avec Kobo"
 
-#: cps/templates/user_table.html:156
+#: calibre-web/templates/user_table.html:156
 #, fuzzy
 msgid "Show Read/Unread Section"
 msgstr "Montrer la sélection par séries"

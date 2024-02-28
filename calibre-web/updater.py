@@ -262,10 +262,10 @@ class Updater(threading.Thread):
         if additional_path:
             exclude.append(additional_path)
         exclude = tuple(exclude)
-        # check if we are in a package, rename cps.py to __init__.py and __main__.py
+        # check if we are in a package, rename calibre-web.py to __init__.py and __main__.py
         if constants.HOME_CONFIG:
-            shutil.copy(os.path.join(source, "cps.py"), os.path.join(source, "__main__.py"))
-            shutil.move(os.path.join(source, "cps.py"), os.path.join(source, "__init__.py"))
+            shutil.copy(os.path.join(source, "calibre-web.py"), os.path.join(source, "__main__.py"))
+            shutil.move(os.path.join(source, "calibre-web.py"), os.path.join(source, "__init__.py"))
 
         for root, dirs, files in os.walk(destination, topdown=True):
             for name in files:
@@ -398,8 +398,8 @@ class Updater(threading.Thread):
             os.sep + "vendor", os.sep + "calibre-web.log", os.sep + ".git", os.sep + "client_secrets.json",
             os.sep + "gdrive_credentials", os.sep + "settings.yaml", os.sep + "venv", os.sep + "virtualenv",
             os.sep + "access.log", os.sep + "access.log1", os.sep + "access.log2", os.sep + ".key",
-            os.sep + ".calibre-web.log.swp", os.sep + "_sqlite3.so", os.sep + "cps" + os.sep + ".HOMEDIR",
-            os.sep + "gmail.json", os.sep + "exclude.txt", os.sep + "cps" + os.sep + "cache"
+            os.sep + ".calibre-web.log.swp", os.sep + "_sqlite3.so", os.sep + "calibre-web" + os.sep + ".HOMEDIR",
+            os.sep + "gmail.json", os.sep + "exclude.txt", os.sep + "calibre-web" + os.sep + "cache"
         ]
         try:
             with open(os.path.join(constants.BASE_DIR, "exclude.txt")) as f:
