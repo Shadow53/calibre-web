@@ -134,7 +134,7 @@ kobo = [
 ]
 
 [tool.poetry.scripts]
-calibre-web = "calibre_web:main"
+calibre-web = "calibre_web.__main__:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.2"
