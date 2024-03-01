@@ -18,7 +18,7 @@
 import datetime
 
 from . import config, constants
-from .services.background_scheduler import BackgroundScheduler, CronTrigger
+from .services.background_scheduler import BackgroundScheduler, CronTrigger, use_APScheduler
 from .services.worker import WorkerThread
 from .tasks.database import TaskReconnectDatabase
 from .tasks.metadata_backup import TaskBackupMetadata
