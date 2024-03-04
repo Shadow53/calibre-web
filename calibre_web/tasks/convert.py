@@ -22,6 +22,11 @@ from shutil import copyfile, copyfileobj
 from time import time
 from uuid import uuid4
 
+from flask_babel import gettext as _
+from flask_babel import lazy_gettext as N_
+from markupsafe import escape
+from sqlalchemy.exc import SQLAlchemyError
+
 from calibre_web import config, db, gdriveutils, helper, logger
 from calibre_web.constants import SUPPORTED_CALIBRE_BINARIES
 from calibre_web.file_helper import get_temp_dir
@@ -30,10 +35,6 @@ from calibre_web.services.worker import CalibreTask
 from calibre_web.subproc_wrapper import process_open
 from calibre_web.tasks.mail import TaskEmail
 from calibre_web.ub import init_db_thread
-from flask_babel import gettext as _
-from flask_babel import lazy_gettext as N_
-from markupsafe import escape
-from sqlalchemy.exc import SQLAlchemyError
 
 log = logger.create()
 

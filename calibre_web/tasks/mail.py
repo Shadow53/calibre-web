@@ -26,10 +26,11 @@ from email.message import EmailMessage
 from email.utils import formatdate, parseaddr
 from io import StringIO
 
+from flask_babel import lazy_gettext as N_
+
 from calibre_web import config, gdriveutils, logger
 from calibre_web.services import gmail
 from calibre_web.services.worker import CalibreTask
-from flask_babel import lazy_gettext as N_
 
 log = logger.create()
 

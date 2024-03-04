@@ -1,9 +1,8 @@
+from babel import negotiate_locale
+from babel.core import UnknownLocaleError
 from flask import request
 from flask_babel import Babel, Locale
 from flask_login import current_user
-
-from babel import negotiate_locale
-from babel.core import UnknownLocaleError
 
 from . import logger
 

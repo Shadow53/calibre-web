@@ -14,13 +14,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from babel.units import format_unit
 from flask import Blueprint, jsonify
 from flask_babel import format_datetime
 from flask_babel import gettext as _
 from flask_login import current_user, login_required
 from markupsafe import escape
-
-from babel.units import format_unit
 
 from . import logger
 from .render_template import render_title_template

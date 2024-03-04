@@ -73,6 +73,7 @@ from .helper import (
     valid_email,
 )
 from .render_template import get_sidebar_config, render_title_template
+from .services.background_scheduler import use_APScheduler
 from .services.worker import WorkerThread
 
 log = logger.create()
@@ -83,7 +84,7 @@ feature_support = {
     "kobo": bool(services.kobo),
     "updater": constants.UPDATER_AVAILABLE,
     "gmail": bool(services.gmail),
-    "scheduler": schedule.use_APScheduler,
+    "scheduler": use_APScheduler,
     "gdrive": gdrive_support
 }
 

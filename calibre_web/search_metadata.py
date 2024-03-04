@@ -23,12 +23,13 @@ import json
 import os
 import sys
 
-from calibre_web.services.Metadata import Metadata
 from flask import Blueprint, Response, request, url_for
 from flask_babel import get_locale
 from flask_login import current_user, login_required
 from sqlalchemy.exc import InvalidRequestError, OperationalError
 from sqlalchemy.orm.attributes import flag_modified
+
+from calibre_web.services.Metadata import Metadata
 
 from . import constants, logger, ub, web_server
 

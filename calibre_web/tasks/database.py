@@ -17,9 +17,10 @@
 
 from urllib.request import urlopen
 
+from flask_babel import lazy_gettext as N_
+
 from calibre_web import config, logger
 from calibre_web.services.worker import CalibreTask
-from flask_babel import lazy_gettext as N_
 
 
 class TaskReconnectDatabase(CalibreTask):
