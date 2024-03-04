@@ -20,38 +20,31 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import platform
-import sqlite3
 import sys
 from collections import OrderedDict
+from importlib import metadata
 
 import flask
 import flask_login
-import jinja2
 from flask_babel import gettext as _
+import jinja2
+import sqlite3
 
-from . import calibre_db, constants, converter, db, dep_check, uploader
+from . import calibre_db, constants, converter, db, uploader
 from .render_template import render_title_template
 
 about = flask.Blueprint("about", __name__)
 
-modules = {}
-req = dep_check.load_dependencies(False)
-opt = dep_check.load_dependencies(True)
-for i in (req + opt):
-    modules[i[1]] = i[0]
+modules = OrderedDict()
+for dep in (s.split(" ")[0] for s in (metadata.requires(__package__) or [])):
+    modules[dep] = metadata.version(dep)
 modules["Jinja2"] = jinja2.__version__
 modules["pySqlite"] = sqlite3.version
 modules["SQLite"] = sqlite3.sqlite_version
-sorted_modules = OrderedDict(sorted(modules.items(), key=lambda x: x[0].casefold()))
 
 
 def collect_stats():
-    if constants.NIGHTLY_VERSION[0] == "$Format:%H$":
-        calibre_web_version = constants.STABLE_VERSION["version"].replace("b", " Beta")
-    else:
-        calibre_web_version = (constants.STABLE_VERSION["version"].replace("b", " Beta") + " - "
-                               + constants.NIGHTLY_VERSION[0].replace("%", "%%") + " - "
-                               + constants.NIGHTLY_VERSION[1].replace("%", "%%"))
+    calibre_web_version = constants.VERSION_STRING
 
     if getattr(sys, "frozen", False):
         calibre_web_version += " - Exe-Version"
@@ -67,7 +60,7 @@ def collect_stats():
     _VERSIONS["Unrar"] = converter.get_unrar_version()
     _VERSIONS["Ebook converter"] = converter.get_calibre_version()
     _VERSIONS["Kepubify"] = converter.get_kepubify_version()
-    _VERSIONS.update(sorted_modules)
+    _VERSIONS.update(modules)
     return _VERSIONS
 
 

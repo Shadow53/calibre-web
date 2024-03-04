@@ -20,10 +20,10 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 __package__ = "calibre_web"
 
-from pathlib import Path
 import mimetypes
 import os
 import sys
+from pathlib import Path
 
 from flask import Flask
 from flask_principal import Principal
@@ -31,7 +31,6 @@ from flask_principal import Principal
 from . import cache_buster, config_sql, db, logger, ub
 from .babel import babel, get_locale
 from .cli import CliParameter
-from .dep_check import dependency_check
 from .MyLoginManager import MyLoginManager
 from .reverseproxy import ReverseProxied
 from .server import WebServer
@@ -149,12 +148,6 @@ def create_app():
         sys.exit(0)
     updater_thread.start()
 
-    for res in dependency_check() + dependency_check(optional=True):
-        log.info('*** "{}" version does not meet the requirements. '
-                 'Should: {}, Found: {}, please consider installing required version ***'
-                 .format(res["name"],
-                         res["target"],
-                         res["found"]))
     app.wsgi_app = ReverseProxied(app.wsgi_app)
 
     if os.environ.get("FLASK_DEBUG"):

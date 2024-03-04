@@ -15,6 +15,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import importlib
 import os
 import sys
 from collections import namedtuple
@@ -174,7 +175,8 @@ BookMeta = namedtuple("BookMeta", "file_path, extension, title, author, cover, d
                                   "series_id, languages, publisher, pubdate, identifiers")
 
 # python build process likes to have x.y.zbw -> b for beta and w a counting number
-STABLE_VERSION = {"version": "0.6.22b"}
+VERSION = importlib.metadata.version(__package__)
+VERSION_STRING = VERSION.replace("b", " Beta")
 
 NIGHTLY_VERSION = {}
 NIGHTLY_VERSION[0] = "$Format:%H$"

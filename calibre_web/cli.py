@@ -21,15 +21,11 @@ import socket
 import sys
 
 from .constants import CONFIG_DIR as _CONFIG_DIR
-from .constants import DEFAULT_GDRIVE_FILE, DEFAULT_SETTINGS_FILE
-from .constants import NIGHTLY_VERSION as _NIGHTLY_VERSION
-from .constants import STABLE_VERSION as _STABLE_VERSION
+from .constants import DEFAULT_GDRIVE_FILE, DEFAULT_SETTINGS_FILE, VERSION_STRING
 
 
 def version_info() -> str:
-    if _NIGHTLY_VERSION[1].startswith("$Format"):
-        return "Calibre-Web version: %s - unknown git-clone" % _STABLE_VERSION["version"].replace("b", " Beta")
-    return "Calibre-Web version: {} -{}".format(_STABLE_VERSION["version"].replace("b", " Beta"), _NIGHTLY_VERSION[1])
+    return f"Calibre-Web version: {VERSION_STRING}"
 
 
 class CliParameter:
