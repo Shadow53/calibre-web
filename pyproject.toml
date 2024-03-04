@@ -1,10 +1,10 @@
 [project]
 requires-python = ">=3.8,<4.0"
-name = "calibreweb"
+name = "calibre_web"
 version = "0.6.22b"
 
 [tool.poetry]
-name = "calibreweb"
+name = "calibre_web"
 version = "0.6.22b"
 description = "Web app for browsing, reading and downloading eBooks stored in a Calibre database."
 authors = [
@@ -160,6 +160,8 @@ strict = false
 report_progress = true
 
 [tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = "tests"
 addopts = [
     "--import-mode=importlib",
 ]
