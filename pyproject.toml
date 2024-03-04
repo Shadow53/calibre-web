@@ -1,5 +1,7 @@
 [project]
 requires-python = ">=3.8,<4.0"
+name = "calibreweb"
+version = "0.6.22b"
 
 [tool.poetry]
 name = "calibreweb"
@@ -25,7 +27,7 @@ classifiers = [
 ]
 keywords = ["calibre", "calibre-web", "library"]
 packages = [
-  { include = "calibre_web" }
+  { include = "src/calibre_web" }
 ]
 
 [build-system]
@@ -157,6 +159,11 @@ live_mode = true
 strict = false
 report_progress = true
 
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
+
 [tool.ruff]
 line-length = 120
 indent-width = 4
@@ -168,7 +175,12 @@ src = ["calibre-web"]
 select = ["E", "F", "UP", "W", "C90", "B", "I", "SIM", "N", "D", "YTT", "ANN", "ASYNC", "S", "BLE", "FBT", "A", "C4",
 "DTZ", "EM", "EXE", "FA", "ISC", "ICN", "G", "PIE", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SLOT", "TCH", "ARG",
 "PTH", "TD", "FIX", "ERA", "PL", "TRY", "FLY", "PERF", "FURB", "LOG", "RUF"]
-ignore = ["D211", "D213", "ISC001"]
+ignore = [
+    "ANN101", # Missing type annotation for self in method
+    "D211",
+    "D213",
+    "ISC001",
+]
 unfixable = []
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 typing-modules = []
