@@ -50,7 +50,6 @@ from . import (
     constants,
     db,
     debug_info,
-    gdriveutils,
     helper,
     kobo_sync_status,
     logger,
@@ -61,7 +60,6 @@ from . import (
     web_server,
 )
 from .babel import get_available_locale, get_available_translations, get_user_locale_language
-from .gdriveutils import gdrive_support, is_gdrive_ready
 from .helper import (
     check_email,
     check_username,
@@ -83,9 +81,7 @@ feature_support = {
     "goodreads": bool(services.goodreads_support),
     "kobo": bool(services.kobo),
     "updater": constants.UPDATER_AVAILABLE,
-    "gmail": bool(services.gmail),
     "scheduler": use_APScheduler,
-    "gdrive": gdrive_support
 }
 
 try:
@@ -131,7 +127,6 @@ def before_request():
     except AttributeError:
         pass    # ? fails on requesting /ajax/emailstat during restart ?
     g.constants = constants
-    g.google_site_verification = os.getenv("GOOGLE_SITE_VERIFICATION", "")
     g.allow_registration = config.config_public_reg
     g.allow_anonymous = config.config_anonbrowse
     g.allow_upload = config.config_uploading
@@ -1117,37 +1112,6 @@ def _config_string(to_save, x):
     return config.set_from_dictionary(to_save, x, lambda y: y.strip().strip("\u200B\u200C\u200D\ufeff") if y else y)
 
 
-def _configuration_gdrive_helper(to_save):
-    gdrive_error = None
-    if to_save.get("config_use_google_drive"):
-        gdrive_secrets = {}
-
-        if not os.path.isfile(gdriveutils.SETTINGS_YAML):
-            config.config_use_google_drive = False
-
-        if gdrive_support:
-            gdrive_error = gdriveutils.get_error_text(gdrive_secrets)
-        if "config_use_google_drive" in to_save and not config.config_use_google_drive and not gdrive_error:
-            with open(gdriveutils.CLIENT_SECRETS) as settings:
-                gdrive_secrets = json.load(settings)["web"]
-            if not gdrive_secrets:
-                return _configuration_result(_("client_secrets.json Is Not Configured For Web Application"))
-            gdriveutils.update_settings(
-                gdrive_secrets["client_id"],
-                gdrive_secrets["client_secret"],
-                gdrive_secrets["redirect_uris"][0]
-            )
-
-    # always show Google Drive settings, but in case of error deny support
-    new_gdrive_value = (not gdrive_error) and ("config_use_google_drive" in to_save)
-    if config.config_use_google_drive and not new_gdrive_value:
-        config.config_google_drive_watch_changes_response = {}
-    config.config_use_google_drive = new_gdrive_value
-    if _config_string(to_save, "config_google_drive_folder"):
-        gdriveutils.deleteDatabaseOnChange()
-    return gdrive_error
-
-
 def _configuration_oauth_helper(to_save):
     active_oauths = 0
     reboot_required = False
@@ -1315,28 +1279,14 @@ def edit_mailsettings():
 def update_mailsettings():
     to_save = request.form.to_dict()
     _config_int(to_save, "mail_server_type")
-    if to_save.get("invalidate"):
-        config.mail_gmail_token = {}
-        with contextlib.suppress(AttributeError):
-            flag_modified(config, "mail_gmail_token")
-    elif to_save.get("gmail"):
-        try:
-            config.mail_gmail_token = services.gmail.setup_gmail(config.mail_gmail_token)
-            flash(_("Success! Gmail Account Verified."), category="success")
-        except Exception as ex:
-            flash(str(ex), category="error")
-            log.exception(ex)
-            return edit_mailsettings()
-
-    else:
-        _config_int(to_save, "mail_port")
-        _config_int(to_save, "mail_use_ssl")
-        if to_save.get("mail_password_e", ""):
-            _config_string(to_save, "mail_password_e")
-        _config_int(to_save, "mail_size", lambda y: int(y) * 1024 * 1024)
-        config.mail_server = to_save.get("mail_server", "").strip()
-        config.mail_from = to_save.get("mail_from", "").strip()
-        config.mail_login = to_save.get("mail_login", "").strip()
+    _config_int(to_save, "mail_port")
+    _config_int(to_save, "mail_use_ssl")
+    if to_save.get("mail_password_e", ""):
+        _config_string(to_save, "mail_password_e")
+    _config_int(to_save, "mail_size", lambda y: int(y) * 1024 * 1024)
+    config.mail_server = to_save.get("mail_server", "").strip()
+    config.mail_from = to_save.get("mail_from", "").strip()
+    config.mail_login = to_save.get("mail_login", "").strip()
     try:
         config.save()
     except (OperationalError, InvalidRequestError) as e:
@@ -1713,7 +1663,6 @@ def _db_simulate_change():
 def _db_configuration_update_helper():
     db_change = False
     to_save = request.form.to_dict()
-    gdrive_error = None
 
     to_save["config_calibre_dir"] = re.sub(r"[\\/]metadata\.db$",
                                            "",
@@ -1722,25 +1671,19 @@ def _db_configuration_update_helper():
     db_valid = False
     try:
         db_change, db_valid = _db_simulate_change()
-
-        # gdrive_error drive setup
-        gdrive_error = _configuration_gdrive_helper(to_save)
     except (OperationalError, InvalidRequestError) as e:
         ub.session.rollback()
         log.error_or_exception(f"Settings Database error: {e}")
-        _db_configuration_result(_("Oops! Database Error: %(error)s.", error=e.orig), gdrive_error)
+        _db_configuration_result(_("Oops! Database Error: %(error)s.", error=e.orig))
     try:
         metadata_db = os.path.join(to_save["config_calibre_dir"], "metadata.db")
-        if config.config_use_google_drive and is_gdrive_ready() and not os.path.exists(metadata_db):
-            gdriveutils.downloadFile(None, "metadata.db", metadata_db)
-            db_change = True
     except Exception as ex:
-        return _db_configuration_result(f"{ex}", gdrive_error)
+        return _db_configuration_result(f"{ex}")
 
     if db_change or not db_valid or not config.db_configured \
        or config.config_calibre_dir != to_save["config_calibre_dir"]:
         if not os.path.exists(metadata_db) or not to_save["config_calibre_dir"]:
-            return _db_configuration_result(_("DB Location is not Valid, Please Enter Correct Path"), gdrive_error)
+            return _db_configuration_result(_("DB Location is not Valid, Please Enter Correct Path"))
         else:
             calibre_db.setup_db(to_save["config_calibre_dir"], ub.app_DB_path)
         config.store_calibre_uuid(calibre_db, db.Library_Id)
@@ -1765,7 +1708,7 @@ def _db_configuration_update_helper():
     config.config_calibre_split = to_save.get("config_calibre_split", 0) == "on"
     calibre_db.update_config(config)
     config.save()
-    return _db_configuration_result(None, gdrive_error)
+    return _db_configuration_result(None)
 
 
 def _configuration_update_helper():
@@ -1894,29 +1837,16 @@ def _configuration_result(error_flash=None, reboot=False):
     return Response(json.dumps(resp), mimetype="application/json")
 
 
-def _db_configuration_result(error_flash=None, gdrive_error=None):
-    gdrive_authenticate = not is_gdrive_ready()
-    gdrivefolders = []
-    if not gdrive_error and config.config_use_google_drive:
-        gdrive_error = gdriveutils.get_error_text()
-    if gdrive_error and gdrive_support:
-        log.error(gdrive_error)
-        gdrive_error = _(gdrive_error)
-        flash(gdrive_error, category="error")
-    elif not gdrive_authenticate and gdrive_support:
-        gdrivefolders = gdriveutils.listRootFolders()
+def _db_configuration_result(error_flash=None):
     if error_flash:
         log.error(error_flash)
         config.load()
         flash(error_flash, category="error")
-    elif request.method == "POST" and not gdrive_error:
+    elif request.method == "POST":
         flash(_("Database Settings updated"), category="success")
 
     return render_title_template("config_db.html",
                                  config=config,
-                                 show_authenticate_google_drive=gdrive_authenticate,
-                                 gdriveError=gdrive_error,
-                                 gdrivefolders=gdrivefolders,
                                  feature_support=feature_support,
                                  title=_("Database Configuration"), page="dbconfig")
 

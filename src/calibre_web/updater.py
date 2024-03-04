@@ -394,12 +394,12 @@ class Updater(threading.Thread):
     @staticmethod
     def _add_excluded_files(log_function):
         excluded_files = [
-            os.sep + "app.db", os.sep + "calibre-web.log1", os.sep + "calibre-web.log2", os.sep + "gdrive.db",
+            os.sep + "app.db", os.sep + "calibre-web.log1", os.sep + "calibre-web.log2",
             os.sep + "vendor", os.sep + "calibre-web.log", os.sep + ".git", os.sep + "client_secrets.json",
-            os.sep + "gdrive_credentials", os.sep + "settings.yaml", os.sep + "venv", os.sep + "virtualenv",
+            os.sep + "settings.yaml", os.sep + "venv", os.sep + "virtualenv",
             os.sep + "access.log", os.sep + "access.log1", os.sep + "access.log2", os.sep + ".key",
             os.sep + ".calibre-web.log.swp", os.sep + "_sqlite3.so", os.sep + "calibre-web" + os.sep + ".HOMEDIR",
-            os.sep + "gmail.json", os.sep + "exclude.txt", os.sep + "calibre-web" + os.sep + "cache"
+            os.sep + "exclude.txt", os.sep + "calibre-web" + os.sep + "cache"
         ]
         try:
             with open(os.path.join(constants.BASE_DIR, "exclude.txt")) as f:

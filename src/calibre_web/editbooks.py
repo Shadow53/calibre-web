@@ -60,7 +60,6 @@ from . import (
     config,
     constants,
     db,
-    gdriveutils,
     helper,
     isoLanguages,
     kobo_sync_status,
@@ -170,10 +169,6 @@ def edit_book(book_id):
             book.has_cover = 1
             modify_date = True
 
-        # upload new covers or new file formats to google drive
-        if config.config_use_google_drive:
-            gdriveutils.updateGdriveCalibreFromLocal()
-
         if to_save.get("cover_url", None):
             if not current_user.role_upload():
                 edit_error = True
@@ -233,8 +228,6 @@ def edit_book(book_id):
 
         calibre_db.session.merge(book)
         calibre_db.session.commit()
-        if config.config_use_google_drive:
-            gdriveutils.updateGdriveCalibreFromLocal()
         if meta is not False \
             and edit_error is not True \
                 and title_author_error is not True \
@@ -286,21 +279,12 @@ def upload():
 
                 book_id = db_book.id
                 title = db_book.title
-                if config.config_use_google_drive:
-                    helper.upload_new_file_gdrive(book_id,
-                                                  input_authors[0],
-                                                  renamed_authors,
-                                                  title,
-                                                  title_dir,
-                                                  meta.file_path,
-                                                  meta.extension.lower())
-                else:
-                    error = helper.update_dir_structure(book_id,
-                                                        config.get_book_path(),
-                                                        input_authors[0],
-                                                        meta.file_path,
-                                                        title_dir + meta.extension.lower(),
-                                                        renamed_author=renamed_authors)
+                error = helper.update_dir_structure(book_id,
+                                                    config.get_book_path(),
+                                                    input_authors[0],
+                                                    meta.file_path,
+                                                    title_dir + meta.extension.lower(),
+                                                    renamed_author=renamed_authors)
 
                 move_coverfile(meta, db_book)
 
@@ -309,8 +293,6 @@ def upload():
                 # save data to database, reread data
                 calibre_db.session.commit()
 
-                if config.config_use_google_drive:
-                    gdriveutils.updateGdriveCalibreFromLocal()
                 if error:
                     flash(error, category="error")
                 link = '<a href="{}">{}</a>'.format(url_for("web.show_book", book_id=book_id), escape(title))
@@ -577,9 +559,6 @@ def table_xchange_author_title():
                 edited_books_id = book.id
                 modify_date = True
 
-            if config.config_use_google_drive:
-                gdriveutils.updateGdriveCalibreFromLocal()
-
             if edited_books_id:
                 # TODO: Handle error
                 _edit_error = helper.update_dir_structure(edited_books_id, config.get_book_path(), input_authors[0],
@@ -593,9 +572,6 @@ def table_xchange_author_title():
                 calibre_db.session.rollback()
                 log.error_or_exception(f"Database error: {e}")
                 return json.dumps({"success": False})
-
-            if config.config_use_google_drive:
-                gdriveutils.updateGdriveCalibreFromLocal()
         return json.dumps({"success": True})
     return ""
 

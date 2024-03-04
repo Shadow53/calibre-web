@@ -20,7 +20,7 @@ import os
 from flask_babel import lazy_gettext as N_
 from lxml import etree
 
-from calibre_web import config, db, gdriveutils, logger
+from calibre_web import config, db, logger
 from calibre_web.services.worker import CalibreTask
 
 from ..epub_helper import create_new_metadata_backup
@@ -91,28 +91,16 @@ class TaskBackupMetadata(CalibreTask):
     def open_metadata(self, book, custom_columns) -> None:
         # package = self.create_new_metadata_backup(book, custom_columns)
         package = create_new_metadata_backup(book, custom_columns, self.export_language, self.translated_title)
-        if config.config_use_google_drive:
-            if not gdriveutils.is_gdrive_ready():
-                msg = "Google Drive is configured but not ready"
-                raise Exception(msg)
-
-            gdriveutils.uploadFileToEbooksFolder(os.path.join(book.path, "metadata.opf").replace("\\", "/"),
-                                                 etree.tostring(package,
-                                                                xml_declaration=True,
-                                                                encoding="utf-8",
-                                                                pretty_print=True).decode("utf-8"),
-                                                 True)
-        else:
-            # TODO: Handle book folder not found or not readable
-            book_metadata_filepath = os.path.join(config.get_book_path(), book.path, "metadata.opf")
-            # prepare finalize everything and output
-            doc = etree.ElementTree(package)
-            try:
-                with open(book_metadata_filepath, "wb") as f:
-                    doc.write(f, xml_declaration=True, encoding="utf-8", pretty_print=True)
-            except Exception as ex:
-                msg = f"Writing Metadata failed with error: {ex} "
-                raise Exception(msg)
+        # TODO: Handle book folder not found or not readable
+        book_metadata_filepath = os.path.join(config.get_book_path(), book.path, "metadata.opf")
+        # prepare finalize everything and output
+        doc = etree.ElementTree(package)
+        try:
+            with open(book_metadata_filepath, "wb") as f:
+                doc.write(f, xml_declaration=True, encoding="utf-8", pretty_print=True)
+        except Exception as ex:
+            msg = f"Writing Metadata failed with error: {ex} "
+            raise Exception(msg)
 
     @property
     def name(self) -> str:

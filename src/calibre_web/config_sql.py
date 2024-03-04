@@ -64,7 +64,6 @@ class _Settings(_Base):
     mail_from = Column(String, default="automailer <mail@example.com>")
     mail_size = Column(Integer, default=25*1024*1024)
     mail_server_type = Column(SmallInteger, default=0)
-    mail_gmail_token = Column(JSON, default={})
 
     config_calibre_dir = Column(String)
     config_calibre_uuid = Column(String)
@@ -105,10 +104,6 @@ class _Settings(_Base):
     config_restricted_column = Column(SmallInteger, default=0)
     config_denied_column_value = Column(String, default="")
     config_allowed_column_value = Column(String, default="")
-
-    config_use_google_drive = Column(Boolean, default=False)
-    config_google_drive_folder = Column(String)
-    config_google_drive_watch_changes_response = Column(JSON, default={})
 
     config_use_goodreads = Column(Boolean, default=False)
     config_goodreads_api_key = Column(String)
@@ -282,8 +277,7 @@ class ConfigSQL:
         return {k: v for k, v in self.__dict__.items() if k.startswith("mail_")}
 
     def get_mail_server_configured(self):
-        return bool((self.mail_server != constants.DEFAULT_MAIL_SERVER and self.mail_server_type == 0)
-                    or (self.mail_gmail_token != {} and self.mail_server_type == 1))
+        return (self.mail_server != constants.DEFAULT_MAIL_SERVER and self.mail_server_type == 0)
 
     def get_scheduled_task_settings(self):
         return {k: v for k, v in self.__dict__.items() if k.startswith("schedule_")}

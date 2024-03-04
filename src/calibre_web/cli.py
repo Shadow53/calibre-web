@@ -38,7 +38,6 @@ class CliParameter:
                                                      "a interface for browsing, reading and downloading eBooks\n",
                                          prog="calibre-web.py")
         parser.add_argument("-p", metavar="path", help="path and name to settings db, e.g. /opt/cw.db")
-        parser.add_argument("-g", metavar="path", help="path and name to gdrive db, e.g. /opt/gd.db")
         parser.add_argument("-c", metavar="path", help="path and name to SSL certfile, e.g. /opt/test.cert, "
                                                        "works only in combination with keyfile")
         parser.add_argument("-k", metavar="path", help="path and name to SSL keyfile, e.g. /opt/test.key, "
@@ -58,13 +57,9 @@ class CliParameter:
 
         self.logpath = args.o or ""
         self.settings_path = args.p or os.path.join(_CONFIG_DIR, DEFAULT_SETTINGS_FILE)
-        self.gd_path = args.g or os.path.join(_CONFIG_DIR, DEFAULT_GDRIVE_FILE)
 
         if os.path.isdir(self.settings_path):
             self.settings_path = os.path.join(self.settings_path, DEFAULT_SETTINGS_FILE)
-
-        if os.path.isdir(self.gd_path):
-            self.gd_path = os.path.join(self.gd_path, DEFAULT_GDRIVE_FILE)
 
         # handle and check parameter for ssl encryption
         self.certfilepath = None

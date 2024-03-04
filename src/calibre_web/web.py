@@ -51,7 +51,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import app, calibre_db, config, constants, db, isoLanguages, kobo_sync_status, limiter, logger, services, ub
 from .babel import get_available_locale
-from .gdriveutils import do_gdrive_download, getFileFromEbooksFolder
 from .helper import (
     check_email,
     check_read_formats,
@@ -115,7 +114,7 @@ def add_security_headers(resp):
     if request.path.startswith("/author/") and config.config_use_goodreads:
         csp += " images.gr-assets.com i.gr-assets.com s.gr-assets.com"
     csp += " data:"
-    if request.endpoint == "edit-book.show_edit_book" or config.config_use_google_drive:
+    if request.endpoint == "edit-book.show_edit_book":
         csp += " *;"
     elif request.endpoint == "web.read_book":
         csp += " blob:; style-src-elem 'self' blob: 'unsafe-inline';"
@@ -1217,44 +1216,31 @@ def serve_book(book_id, book_format, anyname):
         return "File not in Database"
     range_header = request.headers.get("Range", None)
 
-    if config.config_use_google_drive:
+    if book_format.upper() == "TXT":
+        log.info("Serving book: %s", data.name)
         try:
-            headers = Headers()
-            headers["Content-Type"] = mimetypes.types_map.get("." + book_format, "application/octet-stream")
-            if not range_header:
-                log.info("Serving book: %s", data.name)
-                headers["Accept-Ranges"] = "bytes"
-            df = getFileFromEbooksFolder(book.path, data.name + "." + book_format)
-            return do_gdrive_download(df, headers, (book_format.upper() == "TXT"))
-        except AttributeError as ex:
-            log.error_or_exception(ex)
-            return "File Not Found"
-    else:
-        if book_format.upper() == "TXT":
-            log.info("Serving book: %s", data.name)
+            rawdata = open(os.path.join(config.get_book_path(), book.path, data.name + "." + book_format),
+                           "rb").read()
+            result = chardet.detect(rawdata)
             try:
-                rawdata = open(os.path.join(config.get_book_path(), book.path, data.name + "." + book_format),
-                               "rb").read()
-                result = chardet.detect(rawdata)
-                try:
-                    text_data = rawdata.decode(result["encoding"]).encode("utf-8")
-                except UnicodeDecodeError as e:
-                    log.exception(f"Encoding error in text file {book.id}: {e}")
-                    if "surrogate" in e.reason:
-                        text_data = rawdata.decode(result["encoding"], "surrogatepass").encode("utf-8", "surrogatepass")
-                    else:
-                        text_data = rawdata.decode(result["encoding"], "ignore").encode("utf-8", "ignore")
-                return make_response(text_data)
-            except FileNotFoundError:
-                log.exception("File Not Found")
-                return "File Not Found"
-        # enable byte range read of pdf
-        response = make_response(
-            send_from_directory(os.path.join(config.get_book_path(), book.path), data.name + "." + book_format))
-        if not range_header:
-            log.info("Serving book: %s", data.name)
-            response.headers["Accept-Ranges"] = "bytes"
-        return response
+                text_data = rawdata.decode(result["encoding"]).encode("utf-8")
+            except UnicodeDecodeError as e:
+                log.exception(f"Encoding error in text file {book.id}: {e}")
+                if "surrogate" in e.reason:
+                    text_data = rawdata.decode(result["encoding"], "surrogatepass").encode("utf-8", "surrogatepass")
+                else:
+                    text_data = rawdata.decode(result["encoding"], "ignore").encode("utf-8", "ignore")
+            return make_response(text_data)
+        except FileNotFoundError:
+            log.exception("File Not Found")
+            return "File Not Found"
+    # enable byte range read of pdf
+    response = make_response(
+        send_from_directory(os.path.join(config.get_book_path(), book.path), data.name + "." + book_format))
+    if not range_header:
+        log.info("Serving book: %s", data.name)
+        response.headers["Accept-Ranges"] = "bytes"
+    return response
 
 
 @web.route("/download/<int:book_id>/<book_format>", defaults={"anyname": "None"})

@@ -28,8 +28,7 @@ from io import StringIO
 
 from flask_babel import lazy_gettext as N_
 
-from calibre_web import config, gdriveutils, logger
-from calibre_web.services import gmail
+from calibre_web import config, logger
 from calibre_web.services.worker import CalibreTask
 
 log = logger.create()
@@ -158,10 +157,7 @@ class TaskEmail(CalibreTask):
         try:
             # create MIME message
             msg = self.prepare_message()
-            if self.settings["mail_server_type"] == 0:
-                self.send_standard_email(msg)
-            else:
-                self.send_gmail_email(msg)
+            self.send_standard_email(msg)
         except MemoryError as e:
             log.error_or_exception(e, stacklevel=3)
             self._handleError(f"MemoryError sending e-mail: {e!s}")
@@ -215,10 +211,6 @@ class TaskEmail(CalibreTask):
         self._handleSuccess()
         log.debug("E-mail send successfully")
 
-    def send_gmail_email(self, message) -> None:
-        gmail.send_messsage(self.settings.get("mail_gmail_token", None), message)
-        self._handleSuccess()
-
     @property
     def progress(self):
         if self.asyncSMTP is not None:
@@ -237,28 +229,14 @@ class TaskEmail(CalibreTask):
     def _get_attachment(cls, book_path, filename):
         """Get file as MIMEBase message."""
         calibre_path = config.get_book_path()
-        if config.config_use_google_drive:
-            df = gdriveutils.getFileFromEbooksFolder(book_path, filename)
-            if df:
-                datafile = os.path.join(calibre_path, book_path, filename)
-                if not os.path.exists(os.path.join(calibre_path, book_path)):
-                    os.makedirs(os.path.join(calibre_path, book_path))
-                df.GetContentFile(datafile)
-            else:
-                return None
-            file_ = open(datafile, "rb")
+        try:
+            file_ = open(os.path.join(calibre_path, book_path, filename), "rb")
             data = file_.read()
             file_.close()
-            os.remove(datafile)
-        else:
-            try:
-                file_ = open(os.path.join(calibre_path, book_path, filename), "rb")
-                data = file_.read()
-                file_.close()
-            except OSError as e:
-                log.error_or_exception(e, stacklevel=3)
-                log.exception("The requested file could not be read. Maybe wrong permissions?")
-                return None
+        except OSError as e:
+            log.error_or_exception(e, stacklevel=3)
+            log.exception("The requested file could not be read. Maybe wrong permissions?")
+            return None
         return data
 
     @property

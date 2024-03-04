@@ -19,7 +19,6 @@ def main():
     from .admin import admi
     from .editbooks import editbook
     from .error_handler import init_errorhandler
-    from .gdrive import gdrive
     from .opds import opds
     from .search import search
     from .search_metadata import meta
@@ -55,7 +54,6 @@ def main():
     app.register_blueprint(admi)
     app.register_blueprint(remotelogin)
     app.register_blueprint(meta)
-    app.register_blueprint(gdrive)
     app.register_blueprint(editbook)
     if kobo_available:
         app.register_blueprint(kobo)
