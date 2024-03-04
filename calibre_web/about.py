@@ -20,15 +20,15 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import platform
+import sqlite3
 import sys
 from collections import OrderedDict
 from importlib import metadata
 
 import flask
 import flask_login
-from flask_babel import gettext as _
 import jinja2
-import sqlite3
+from flask_babel import gettext as _
 
 from . import calibre_db, constants, converter, db, uploader
 from .render_template import render_title_template
