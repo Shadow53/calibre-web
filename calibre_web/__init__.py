@@ -20,6 +20,7 @@
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 __package__ = "calibre_web"
 
+from pathlib import Path
 import mimetypes
 import os
 import sys
@@ -107,8 +108,8 @@ def create_app():
     cli_param.init()
 
     ub.init_db(cli_param.settings_path)
-    # pylint: disable=no-member
-    encrypt_key, error = config_sql.get_encryption_key(os.path.dirname(cli_param.settings_path))
+    settings_dir = Path(cli_param.settings_path).parent
+    encrypt_key, error = config_sql.get_encryption_key(settings_dir)
 
     config_sql.load_configuration(ub.session, encrypt_key)
     config.init_config(ub.session, encrypt_key, cli_param)
@@ -123,14 +124,14 @@ def create_app():
                  'Please install it using pip: "pip install flask-limiter" ***')
         print('*** "flask-limiter" is needed for calibre-web to run. '
               'Please install it using pip: "pip install flask-limiter" ***')
-        web_server.stop(True)
+        web_server.stop(restart=True)
         sys.exit(8)
     if not wtf_present:
         log.info('*** "flask-WTF" is needed for calibre-web to run. '
                  'Please install it using pip: "pip install flask-WTF" ***')
         print('*** "flask-WTF" is needed for calibre-web to run. '
               'Please install it using pip: "pip install flask-WTF" ***')
-        web_server.stop(True)
+        web_server.stop(restart=True)
         sys.exit(7)
 
     lm.login_view = "web.login"
@@ -148,7 +149,7 @@ def create_app():
         sys.exit(0)
     updater_thread.start()
 
-    for res in dependency_check() + dependency_check(True):
+    for res in dependency_check() + dependency_check(optional=True):
         log.info('*** "{}" version does not meet the requirements. '
                  'Should: {}, Found: {}, please consider installing required version ***'
                  .format(res["name"],

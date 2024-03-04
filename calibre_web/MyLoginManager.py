@@ -27,15 +27,15 @@ from flask_login.utils import decode_cookie
 
 
 class MyLoginManager(LoginManager):
-    def _session_protection_failed(self):
+    def _session_protection_failed(self) -> bool:
         sess = session._get_current_object()
         ident = self._session_identifier_generator()
         if(sess and not (len(sess) == 1
                              and sess.get("csrf_token", None))) and ident != sess.get("_id", None):
-            return super(). _session_protection_failed()
+            return super()._session_protection_failed()
         return False
 
-    def _load_user_from_remember_cookie(self, cookie):
+    def _load_user_from_remember_cookie(self, cookie: str):
         user_id = decode_cookie(cookie)
         if user_id is not None:
             session["_user_id"] = user_id
