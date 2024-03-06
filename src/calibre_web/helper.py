@@ -40,15 +40,6 @@ from sqlalchemy.sql.expression import and_, false, func, or_, text, true
 from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash
 
-try:
-    import advocate
-    from advocate.exceptions import UnacceptableAddressException
-    use_advocate = True
-except ImportError:
-    use_advocate = False
-    advocate = requests
-    UnacceptableAddressException = MissingSchema = BaseException
-
 from . import calibre_db, cli_param, config, db, fs, logger, ub
 from .constants import CACHE_TYPE_THUMBNAILS, SUPPORTED_CALIBRE_BINARIES, THUMBNAIL_TYPE_COVER, THUMBNAIL_TYPE_SERIES
 from .constants import STATIC_DIR as _STATIC_DIR
@@ -715,13 +706,8 @@ def get_series_thumbnail(series_id, resolution):
 # saves book cover from url
 def save_cover_from_url(url, book_path):
     try:
-        if cli_param.allow_localhost:
-            img = requests.get(url, timeout=(10, 200), allow_redirects=False)  # TODO: Error Handling
-        elif use_advocate:
-            img = advocate.get(url, timeout=(10, 200), allow_redirects=False)      # TODO: Error Handling
-        else:
-            log.error("python module advocate is not installed but is needed")
-            return False, _("Python module 'advocate' is not installed but is needed for cover uploads")
+        # TODO: this used to use `advocate` to avoid SSRF attacks
+        img = requests.get(url, timeout=(10, 200), allow_redirects=False)  # TODO: Error Handling
         img.raise_for_status()
         return save_cover(img, book_path)
     except (socket.gaierror,

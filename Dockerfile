@@ -5,7 +5,6 @@ RUN \
   apt-get update && \
   apt-get install -y \
     git \
-    libldap2-dev \
     libsasl2-dev \
     python3-pip
 
@@ -17,7 +16,6 @@ RUN \
     libxcomposite1 \
     libxi6 \
     libxslt1.1 \
-    libldap-2.4-2 \
     libsasl2-2 \
     libxrandr2 \
     python3-minimal \
@@ -49,7 +47,6 @@ RUN \
   echo "**** cleanup ****" && \
   apt-get -y purge \
     git \
-    libldap2-dev \
     libsasl2-dev \
     python3-pip && \
   apt-get -y autoremove && \

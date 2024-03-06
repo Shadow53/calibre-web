@@ -79,8 +79,6 @@ from .tasks_status import render_task_status
 from .usermanagement import login_required_if_no_ano
 
 feature_support = {
-    "ldap": bool(services.ldap),
-    "goodreads": bool(services.goodreads_support),
     "kobo": bool(services.kobo)
 }
 
@@ -111,8 +109,6 @@ def add_security_headers(resp):
     if request.endpoint == "web.read_book":
         csp += " blob:"
     csp += "; img-src 'self'"
-    if request.path.startswith("/author/") and config.config_use_goodreads:
-        csp += " images.gr-assets.com i.gr-assets.com s.gr-assets.com"
     csp += " data:"
     if request.endpoint == "edit-book.show_edit_book":
         csp += " *;"
@@ -555,10 +551,6 @@ def render_author_books(page, author_id, order):
 
     author_info = None
     other_books = []
-    if services.goodreads_support and config.config_use_goodreads:
-        author_info = services.goodreads_support.get_author_info(author_name)
-        book_entries = [entry.Books for entry in entries]
-        other_books = services.goodreads_support.get_other_books(author_info, book_entries)
     return render_title_template("author.html", entries=entries, pagination=pagination, id=author_id,
                                  title=_("Author: %(name)s", name=author_name), author=author_info,
                                  other_books=other_books, page="author", order=order[1])
@@ -1375,9 +1367,6 @@ def render_login(username="", password=""):
 def login():
     if current_user is not None and current_user.is_authenticated:
         return redirect(url_for("web.index"))
-    if config.config_login_type == constants.LOGIN_LDAP and not services.ldap:
-        log.error("Cannot activate LDAP authentication")
-        flash(_("Cannot activate LDAP authentication"), category="error")
     return render_login()
 
 
@@ -1394,58 +1383,31 @@ def login_post():
         return render_login(username, form.get("password", ""))
     if current_user is not None and current_user.is_authenticated:
         return redirect(url_for("web.index"))
-    if config.config_login_type == constants.LOGIN_LDAP and not services.ldap:
-        log.error("Cannot activate LDAP authentication")
-        flash(_("Cannot activate LDAP authentication"), category="error")
     user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == username).first()
     remember_me = bool(form.get("remember_me"))
-    if config.config_login_type == constants.LOGIN_LDAP and services.ldap and user and form["password"] != "":
-        login_result, error = services.ldap.bind_user(username, form["password"])
-        if login_result:
-            log.debug(f"You are now logged in as: '{user.name}'")
-            return handle_login_user(user,
-                                     remember_me,
-                                     _("you are now logged in as: '%(nickname)s'", nickname=user.name),
-                                     "success")
-        elif login_result is None and user and check_password_hash(str(user.password), form["password"]) \
-                and user.name != "Guest":
-            log.info(f"Local Fallback Login as: '{user.name}'")
-            return handle_login_user(user,
-                                     remember_me,
-                                     _("Fallback Login as: '%(nickname)s', "
-                                       "LDAP Server not reachable, or user not known", nickname=user.name),
-                                     "warning")
-        elif login_result is None:
-            log.info(error)
-            flash(_("Could not login: %(message)s", message=error), category="error")
-        else:
-            ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
-            log.warning('LDAP Login failed for user "%s" IP-address: %s', username, ip_address)
-            flash(_("Wrong Username or Password"), category="error")
-    else:
-        ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
-        if form.get("forgot", "") == "forgot":
-            if user is not None and user.name != "Guest":
-                ret, __ = reset_password(user.id)
-                if ret == 1:
-                    flash(_("New Password was sent to your email address"), category="info")
-                    log.info('Password reset for user "%s" IP-address: %s', username, ip_address)
-                else:
-                    log.error("An unknown error occurred. Please try again later")
-                    flash(_("An unknown error occurred. Please try again later."), category="error")
+    ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
+    if form.get("forgot", "") == "forgot":
+        if user is not None and user.name != "Guest":
+            ret, __ = reset_password(user.id)
+            if ret == 1:
+                flash(_("New Password was sent to your email address"), category="info")
+                log.info('Password reset for user "%s" IP-address: %s', username, ip_address)
             else:
-                flash(_("Please enter valid username to reset password"), category="error")
-                log.warning("Username missing for password reset IP-address: %s", ip_address)
-        elif user and check_password_hash(str(user.password), form["password"]) and user.name != "Guest":
-            config.config_is_initial = False
-            log.debug(f"You are now logged in as: '{user.name}'")
-            return handle_login_user(user,
-                                     remember_me,
-                                     _("You are now logged in as: '%(nickname)s'", nickname=user.name),
-                                     "success")
+                log.error("An unknown error occurred. Please try again later")
+                flash(_("An unknown error occurred. Please try again later."), category="error")
         else:
-            log.warning(f'Login failed for user "{username}" IP-address: {ip_address}')
-            flash(_("Wrong Username or Password"), category="error")
+            flash(_("Please enter valid username to reset password"), category="error")
+            log.warning("Username missing for password reset IP-address: %s", ip_address)
+    elif user and check_password_hash(str(user.password), form["password"]) and user.name != "Guest":
+        config.config_is_initial = False
+        log.debug(f"You are now logged in as: '{user.name}'")
+        return handle_login_user(user,
+                                 remember_me,
+                                 _("You are now logged in as: '%(nickname)s'", nickname=user.name),
+                                 "success")
+    else:
+        log.warning(f'Login failed for user "{username}" IP-address: {ip_address}')
+        flash(_("Wrong Username or Password"), category="error")
     return render_login(username, form.get("password", ""))
 
 

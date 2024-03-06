@@ -77,8 +77,6 @@ from .services.worker import WorkerThread
 log = logger.create()
 
 feature_support = {
-    "ldap": bool(services.ldap),
-    "goodreads": bool(services.goodreads_support),
     "kobo": bool(services.kobo),
     "updater": constants.UPDATER_AVAILABLE,
     "scheduler": use_APScheduler,
@@ -1162,78 +1160,6 @@ def _configuration_logfile_helper(to_save):
     return reboot_required, None
 
 
-def _configuration_ldap_helper(to_save):
-    reboot_required = False
-    reboot_required |= _config_int(to_save, "config_ldap_port")
-    reboot_required |= _config_int(to_save, "config_ldap_authentication")
-    reboot_required |= _config_string(to_save, "config_ldap_dn")
-    reboot_required |= _config_string(to_save, "config_ldap_serv_username")
-    reboot_required |= _config_string(to_save, "config_ldap_user_object")
-    reboot_required |= _config_string(to_save, "config_ldap_group_object_filter")
-    reboot_required |= _config_string(to_save, "config_ldap_group_members_field")
-    reboot_required |= _config_string(to_save, "config_ldap_member_user_object")
-    reboot_required |= _config_checkbox(to_save, "config_ldap_openldap")
-    reboot_required |= _config_int(to_save, "config_ldap_encryption")
-    reboot_required |= _config_string(to_save, "config_ldap_cacert_path")
-    reboot_required |= _config_string(to_save, "config_ldap_cert_path")
-    reboot_required |= _config_string(to_save, "config_ldap_key_path")
-    _config_string(to_save, "config_ldap_group_name")
-
-    address = urlparse(to_save.get("config_ldap_provider_url", ""))
-    to_save["config_ldap_provider_url"] = (address.hostname or address.path).strip("/")
-    reboot_required |= _config_string(to_save, "config_ldap_provider_url")
-
-    if to_save.get("config_ldap_serv_password_e", "") != "":
-        reboot_required |= 1
-        config.set_from_dictionary(to_save, "config_ldap_serv_password_e")
-    config.save()
-
-    if not config.config_ldap_provider_url \
-        or not config.config_ldap_port \
-        or not config.config_ldap_dn \
-        or not config.config_ldap_user_object:
-        return reboot_required, _configuration_result(_("Please Enter a LDAP Provider, "
-                                                        "Port, DN and User Object Identifier"))
-
-    if config.config_ldap_authentication > constants.LDAP_AUTH_ANONYMOUS:
-        if config.config_ldap_authentication > constants.LDAP_AUTH_UNAUTHENTICATE:
-            if not config.config_ldap_serv_username or not bool(config.config_ldap_serv_password_e):
-                return reboot_required, _configuration_result(_("Please Enter a LDAP Service Account and Password"))
-        elif not config.config_ldap_serv_username:
-            return reboot_required, _configuration_result(_("Please Enter a LDAP Service Account"))
-
-    if config.config_ldap_group_object_filter:
-        if config.config_ldap_group_object_filter.count("%s") != 1:
-            return reboot_required, \
-                   _configuration_result(_('LDAP Group Object Filter Needs to Have One "%s" Format Identifier'))
-        if config.config_ldap_group_object_filter.count("(") != config.config_ldap_group_object_filter.count(")"):
-            return reboot_required, _configuration_result(_("LDAP Group Object Filter Has Unmatched Parenthesis"))
-
-    if config.config_ldap_user_object.count("%s") != 1:
-        return reboot_required, \
-               _configuration_result(_('LDAP User Object Filter needs to Have One "%s" Format Identifier'))
-    if config.config_ldap_user_object.count("(") != config.config_ldap_user_object.count(")"):
-        return reboot_required, _configuration_result(_("LDAP User Object Filter Has Unmatched Parenthesis"))
-
-    if to_save.get("ldap_import_user_filter") == "0":
-        config.config_ldap_member_user_object = ""
-    else:
-        if config.config_ldap_member_user_object.count("%s") != 1:
-            return reboot_required, \
-                   _configuration_result(_('LDAP Member User Filter needs to Have One "%s" Format Identifier'))
-        if config.config_ldap_member_user_object.count("(") != config.config_ldap_member_user_object.count(")"):
-            return reboot_required, _configuration_result(_("LDAP Member User Filter Has Unmatched Parenthesis"))
-
-    if config.config_ldap_cacert_path or config.config_ldap_cert_path or config.config_ldap_key_path:
-        if not (os.path.isfile(config.config_ldap_cacert_path) and
-                os.path.isfile(config.config_ldap_cert_path) and
-                os.path.isfile(config.config_ldap_key_path)):
-            return reboot_required, \
-                   _configuration_result(_("LDAP CACertificate, Certificate or Key Location is not Valid, "
-                                           "Please Enter Correct Path"))
-    return reboot_required, None
-
-
 @admi.route("/ajax/simulatedbchange", methods=["POST"])
 @login_required
 @admin_required
@@ -1528,114 +1454,6 @@ def get_updater_status():
     return ""
 
 
-def ldap_import_create_user(user, user_data):
-    user_login_field = extract_dynamic_field_from_filter(user, config.config_ldap_user_object)
-
-    try:
-        username = user_data[user_login_field][0].decode("utf-8")
-    except KeyError as ex:
-        log.exception("Failed to extract LDAP user: %s - %s", user, ex)
-        message = _("Failed to extract at least One LDAP User")
-        return 0, message
-
-    # check for duplicate username
-    if ub.session.query(ub.User).filter(func.lower(ub.User.name) == username.lower()).first():
-        # if ub.session.query(ub.User).filter(ub.User.name == username).first():
-        log.warning("LDAP User  %s Already in Database", user_data)
-        return 0, None
-
-    ereader_mail = ""
-    if "mail" in user_data:
-        useremail = user_data["mail"][0].decode("utf-8")
-        if len(user_data["mail"]) > 1:
-            ereader_mail = user_data["mail"][1].decode("utf-8")
-
-    else:
-        log.debug("No Mail Field Found in LDAP Response")
-        useremail = username + "@email.com"
-
-    try:
-        # check for duplicate email
-        useremail = check_email(useremail)
-    except Exception as ex:
-        log.warning(f"LDAP Email Error: {user_data}, {ex}")
-        return 0, None
-    content = ub.User()
-    content.name = username
-    content.password = ""  # dummy password which will be replaced by ldap one
-    content.email = useremail
-    content.kindle_mail = ereader_mail
-    content.default_language = config.config_default_language
-    content.locale = config.config_default_locale
-    content.role = config.config_default_role
-    content.sidebar_view = config.config_default_show
-    content.allowed_tags = config.config_allowed_tags
-    content.denied_tags = config.config_denied_tags
-    content.allowed_column_value = config.config_allowed_column_value
-    content.denied_column_value = config.config_denied_column_value
-    ub.session.add(content)
-    try:
-        ub.session.commit()
-        return 1, None  # increase no of users
-    except Exception as ex:
-        log.warning("Failed to create LDAP user: %s - %s", user, ex)
-        ub.session.rollback()
-        message = _("Failed to Create at Least One LDAP User")
-        return 0, message
-
-
-@admi.route("/import_ldap_users", methods=["POST"])
-@login_required
-@admin_required
-def import_ldap_users():
-    showtext = {}
-    try:
-        new_users = services.ldap.get_group_members(config.config_ldap_group_name)
-    except (services.ldap.LDAPException, TypeError, AttributeError, KeyError) as e:
-        log.error_or_exception(e)
-        showtext["text"] = _("Error: %(ldaperror)s", ldaperror=e)
-        return json.dumps(showtext)
-    if not new_users:
-        log.debug("LDAP empty response")
-        showtext["text"] = _("Error: No user returned in response of LDAP server")
-        return json.dumps(showtext)
-
-    imported = 0
-    for username in new_users:
-        user = username.decode("utf-8")
-        if "=" in user:
-            # if member object field is empty take user object as filter
-            if config.config_ldap_member_user_object:
-                query_filter = config.config_ldap_member_user_object
-            else:
-                query_filter = config.config_ldap_user_object
-            try:
-                user_identifier = extract_user_identifier(user, query_filter)
-            except Exception as ex:
-                log.warning(ex)
-                continue
-        else:
-            user_identifier = user
-            query_filter = None
-        try:
-            user_data = services.ldap.get_object_details(user=user_identifier, query_filter=query_filter)
-        except AttributeError as ex:
-            log.error_or_exception(ex)
-            continue
-        if user_data:
-            user_count, message = ldap_import_create_user(user, user_data)
-            if message:
-                showtext["text"] = message
-            else:
-                imported += user_count
-        else:
-            log.warning("LDAP User: %s Not Found", user)
-            showtext["text"] = _("At Least One LDAP User Not Found in Database")
-    if not showtext:
-        showtext["text"] = _(f"{imported} User Successfully Imported")
-    return json.dumps(showtext)
-
-
 @admi.route("/ajax/canceltask", methods=["POST"])
 @login_required
 @admin_required
@@ -1728,9 +1546,6 @@ def _configuration_update_helper():
         _config_checkbox_int(to_save, "config_uploading")
         _config_checkbox_int(to_save, "config_unicode_filename")
         _config_checkbox_int(to_save, "config_embed_metadata")
-        # Reboot on config_anonbrowse with enabled ldap, as decoraters are changed in this case
-        reboot_required |= (_config_checkbox_int(to_save, "config_anonbrowse")
-                            and config.config_login_type == constants.LOGIN_LDAP)
         _config_checkbox_int(to_save, "config_public_reg")
         _config_checkbox_int(to_save, "config_register_email")
         reboot_required |= _config_checkbox_int(to_save, "config_kobo_sync")
@@ -1755,27 +1570,10 @@ def _configuration_update_helper():
 
         reboot_required |= _config_int(to_save, "config_login_type")
 
-        # LDAP configurator
-        if config.config_login_type == constants.LOGIN_LDAP:
-            reboot, message = _configuration_ldap_helper(to_save)
-            if message:
-                return message
-            reboot_required |= reboot
-
         # Remote login configuration
         _config_checkbox(to_save, "config_remote_login")
         if not config.config_remote_login:
             ub.session.query(ub.RemoteAuthToken).filter(ub.RemoteAuthToken.token_type == 0).delete()
-
-        # Goodreads configuration
-        _config_checkbox(to_save, "config_use_goodreads")
-        _config_string(to_save, "config_goodreads_api_key")
-        if to_save.get("config_goodreads_api_secret_e", ""):
-            _config_string(to_save, "config_goodreads_api_secret_e")
-        if services.goodreads_support:
-            services.goodreads_support.connect(config.config_goodreads_api_key,
-                                               config.config_goodreads_api_secret_e,
-                                               config.config_use_goodreads)
 
         _config_int(to_save, "config_updatechannel")
 
@@ -2022,26 +1820,3 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
         log.error_or_exception(f"Settings Database error: {e}")
         flash(_("Oops! Database Error: %(error)s.", error=e.orig), category="error")
     return ""
-
-
-def extract_user_data_from_field(user, field):
-    match = re.search(field + r"=([@\.\d\s\w-]+)", user, re.IGNORECASE | re.UNICODE)
-    if match:
-        return match.group(1)
-    else:
-        msg = f"Could Not Parse LDAP User: {user}"
-        raise Exception(msg)
-
-
-def extract_dynamic_field_from_filter(user, filtr):
-    match = re.search("([a-zA-Z0-9-]+)=%s", filtr, re.IGNORECASE | re.UNICODE)
-    if match:
-        return match.group(1)
-    else:
-        msg = "Could Not Parse LDAP Userfield: {}"
-        raise Exception(msg, user)
-
-
-def extract_user_identifier(user, filtr):
-    dynamic_field = extract_dynamic_field_from_filter(user, filtr)
-    return extract_user_data_from_field(user, dynamic_field)

@@ -47,16 +47,6 @@ def requires_basic_auth_if_no_ano(f):
                 return _authenticate()
             else:
                 return f(*args, **kwargs)
-        if config.config_login_type == constants.LOGIN_LDAP and services.ldap:
-            login_result, error = services.ldap.bind_user(auth.username, auth.password)
-            if login_result:
-                user = _fetch_user_by_name(auth.username)
-                [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
-                login_user(user)
-                return f(*args, **kwargs)
-            elif login_result is not None:
-                log.error(error)
-                return _authenticate()
         user = _load_user_from_auth_header(auth.username, auth.password)
         if not user:
             return _authenticate()

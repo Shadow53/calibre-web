@@ -151,23 +151,6 @@
       </div>
     </div>
     {% endif %}
-    {% if feature_support['goodreads'] %}
-    <div class="form-group">
-      <input type="checkbox" id="config_use_goodreads" name="config_use_goodreads" data-control="goodreads-settings" {% if config.config_use_goodreads %}checked{% endif %}>
-      <label for="config_use_goodreads">{{_('Use Goodreads')}}</label>
-      <a href="https://www.goodreads.com/api/keys" target="_blank" style="margin-left: 5px">{{_('Create an API Key')}}</a>
-    </div>
-    <div data-related="goodreads-settings">
-      <div class="form-group">
-        <label for="config_goodreads_api_key">{{_('Goodreads API Key')}}</label>
-        <input type="text" class="form-control" id="config_goodreads_api_key" name="config_goodreads_api_key" value="{% if config.config_goodreads_api_key != None %}{{ config.config_goodreads_api_key }}{% endif %}" autocomplete="off">
-      </div>
-      <div class="form-group">
-        <label for="config_goodreads_api_secret_e">{{_('Goodreads API Secret')}}</label>
-        <input type="password" class="form-control" id="config_goodreads_api_secret_e" name="config_goodreads_api_secret_e" value="" autocomplete="off">
-      </div>
-    </div>
-    {% endif %}
     <div class="form-group">
       <input type="checkbox" id="config_allow_reverse_proxy_header_login" name="config_allow_reverse_proxy_header_login" data-control="reverse-proxy-login-settings" {% if config.config_allow_reverse_proxy_header_login %}checked{% endif %}>
       <label for="config_allow_reverse_proxy_header_login">{{_('Allow Reverse Proxy Authentication')}}</label>
@@ -179,189 +162,82 @@
       </div>
     </div>
     {% if not config.config_is_initial %}
-    {% if feature_support['ldap'] or feature_support['oauth'] %}
+    {% if feature_support['oauth'] %}
       <div class="form-group">
         <label for="config_login_type">{{_('Login type')}}</label>
         <select name="config_login_type" id="config_login_type" class="form-control" data-control="login-settings">
            <option value="0" {% if config.config_login_type == 0 %}selected{% endif %}>{{_('Use Standard Authentication')}}</option>
-           {% if feature_support['ldap'] %}
-           <option value="1" {% if config.config_login_type == 1 %}selected{% endif %}>{{_('Use LDAP Authentication')}}</option>
-           {% endif %}
            {% if feature_support['oauth'] %}
            <option value="2" {% if config.config_login_type == 2 %}selected{% endif %}>{{_('Use OAuth')}}</option>
            {% endif %}
         </select>
       </div>
-    {% if feature_support['ldap'] %}
-      <div data-related="login-settings-1">
-        <div class="form-group">
-          <label for="config_ldap_provider_url">{{_('LDAP Server Host Name or IP Address')}}</label>
-          <input type="text" class="form-control" id="config_ldap_provider_url" name="config_ldap_provider_url" value="{% if config.config_ldap_provider_url != None %}{{ config.config_ldap_provider_url }}{% endif %}" autocomplete="off">
-        </div>
-        <div class="form-group">
-          <label for="config_ldap_port">{{_('LDAP Server Port')}}</label>
-          <input type="number" min="1" max="65535" class="form-control" id="config_ldap_port" name="config_ldap_port" value="{% if config.config_ldap_port != None %}{{ config.config_ldap_port }}{% endif %}" autocomplete="off" required>
-        </div>
-        <div class="form-group">
-          <label for="config_ldap_encryption">{{_('LDAP Encryption')}}</label>
-            <select name="config_ldap_encryption" id="config_ldap_encryption" class="form-control" data-controlall="ldap-cert-settings">
-                <option value="0" {% if config.config_ldap_encryption == 0 %}selected{% endif %}>{{ _('None') }}</option>
-                <option value="1" {% if config.config_ldap_encryption == 1 %}selected{% endif %}>{{ _('TLS') }}</option>
-                <option value="2" {% if config.config_ldap_encryption == 2 %}selected{% endif %}>{{ _('SSL') }}</option>
-            </select>
-        </div>
-        <div data-related="ldap-cert-settings">
-          <label for="config_ldap_cacert_path" >{{_('LDAP CACertificate Path (Only needed for Client Certificate Authentication)')}}</label>
-          <div class="form-group input-group">
-            <input type="text" class="form-control" id="config_ldap_cacert_path" name="config_ldap_cacert_path" value="{% if config.config_ldap_cacert_path != None %}{{ config.config_ldap_cacert_path }}{% endif %}" autocomplete="off">
-            <span class="input-group-btn">
-              <button type="button" id="library_path" data-toggle="modal" data-link="config_ldap_cacert_path" data-target="#fileModal" class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span></button>
-            </span>
-          </div>
-          <label for="config_ldap_cert_path">{{_('LDAP Certificate Path (Only needed for Client Certificate Authentication)')}}</label>
-          <div class="form-group input-group">
-            <input type="text" class="form-control" id="config_ldap_cert_path" name="config_ldap_cert_path" value="{% if config.config_ldap_cert_path != None %}{{ config.config_ldap_cert_path }}{% endif %}" autocomplete="off">
-            <span class="input-group-btn">
-              <button type="button" id="library_path" data-toggle="modal" data-link="config_ldap_cert_path" data-target="#fileModal" class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span></button>
-            </span>
-          </div>
-          <label for="config_ldap_key_path">{{_('LDAP Keyfile Path (Only needed for Client Certificate Authentication)')}}</label>
-          <div class="form-group input-group">
-            <input type="text" class="form-control" id="config_ldap_key_path" name="config_ldap_key_path" value="{% if config.config_ldap_key_path != None %}{{ config.config_ldap_key_path }}{% endif %}" autocomplete="off">
-            <span class="input-group-btn">
-              <button type="button" id="library_path" data-toggle="modal" data-link="config_ldap_key_path" data-target="#fileModal" class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span></button>
-            </span>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="config_ldap_authentication">{{_('LDAP Authentication')}}</label>
-            <select name="config_ldap_authentication" id="config_ldap_authentication" class="form-control" data-control="ldap-auth-password" data-controlall="ldap-auth-settings">
-                <option value="0" {% if config.config_ldap_authentication == 0 %}selected{% endif %}>{{ _('Anonymous') }}</option>
-                <option value="1" {% if config.config_ldap_authentication == 1 %}selected{% endif %}>{{ _('Unauthenticated') }}</option>
-                <option value="2" {% if config.config_ldap_authentication == 2 %}selected{% endif %}>{{ _('Simple') }}</option>
-            </select>
-        </div>
-        <div data-related="ldap-auth-settings">
-          <div class="form-group">
-            <label for="config_ldap_serv_username">{{_('LDAP Administrator Username')}}</label>
-            <input type="text" class="form-control" id="config_ldap_serv_username" name="config_ldap_serv_username" value="{% if config.config_ldap_serv_username != None %}{{ config.config_ldap_serv_username }}{% endif %}" autocomplete="off">
-          </div>
-        </div>
-        <div data-related="ldap-auth-password-2">
-          <div class="form-group">
-            <label for="config_ldap_serv_password_e">{{_('LDAP Administrator Password')}}</label>
-            <input type="password" class="form-control" id="config_ldap_serv_password_e" name="config_ldap_serv_password_e" value="" autocomplete="off">
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="config_ldap_dn">{{_('LDAP Distinguished Name (DN)')}}</label>
-          <input type="text" class="form-control" id="config_ldap_dn" name="config_ldap_dn" value="{% if config.config_ldap_dn != None %}{{ config.config_ldap_dn }}{% endif %}" autocomplete="off">
-        </div>
-        <div class="form-group">
-          <label for="config_ldap_user_object">{{_('LDAP User Object Filter')}}</label>
-          <input type="text" class="form-control" id="config_ldap_user_object" name="config_ldap_user_object" value="{% if config.config_ldap_user_object != None %}{{ config.config_ldap_user_object }}{% endif %}" autocomplete="off">
-        </div>
-        <div class="form-group">
-          <input type="checkbox" id="config_ldap_openldap" name="config_ldap_openldap" {% if config.config_ldap_openldap %}checked{% endif %}>
-          <label for="config_ldap_openldap">{{_('LDAP Server is OpenLDAP?')}}</label>
-        </div>
-          <h4 class="text-center">{{_('Following Settings are Needed For User Import')}}</h4>
-          <div class="form-group">
-            <label for="config_ldap_group_object_filter">{{_('LDAP Group Object Filter')}}</label>
-            <input type="text" class="form-control" id="config_ldap_group_object_filter" name="config_ldap_group_object_filter" value="{% if config.config_ldap_group_object_filter != None %}{{ config.config_ldap_group_object_filter }}{% endif %}" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label for="config_ldap_group_name">{{_('LDAP Group Name')}}</label>
-            <input type="text" class="form-control" id="config_ldap_group_name" name="config_ldap_group_name" value="{% if config.config_ldap_group_name != None %}{{ config.config_ldap_group_name }}{% endif %}" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label for="config_ldap_group_members_field">{{_('LDAP Group Members Field')}}</label>
-            <input type="text" class="form-control" id="config_ldap_group_members_field" name="config_ldap_group_members_field" value="{% if config.config_ldap_group_members_field != None %}{{ config.config_ldap_group_members_field }}{% endif %}" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label for="ldap_import_user_filter">{{_('LDAP Member User Filter Detection')}}</label>
-              <select name="ldap_import_user_filter" id="ldap_import_user_filter" class="form-control" data-control="ldap_member_user_object">
-                  <option value="0" {% if config.config_ldap_member_user_object == "" %}selected{% endif %}>{{ _('Autodetect') }}</option>
-                  <option value="1" {% if config.config_ldap_member_user_object %}selected{% endif %}>{{ _('Custom Filter') }}</option>
-              </select>
-          </div>
-        <div data-related="ldap_member_user_object-1">
-          <div class="form-group">
-              <label for="config_ldap_member_user_object">{{_('LDAP Member User Filter')}}</label>
-              <input type="text" class="form-control" id="config_ldap_member_user_object" name="config_ldap_member_user_object" value="{% if config.config_ldap_member_user_object != None %}{{ config.config_ldap_member_user_object }}{% endif %}" autocomplete="off">
-          </div>
-        </div>
-
+    <div data-related="login-settings-2">
+      {% for prov in provider %}
+      <h4>  {{prov['provider_name']}} </h4>
+      {% if prov.obtain_link %}
+      <div class="form-group">
+        <a href="{{prov['obtain_link']}}" target="_blank">{{_('Obtain %(provider)s OAuth Credential', provider=prov['provider_name'])}}</a>
       </div>
       {% endif %}
-      {% if feature_support['oauth'] %}
-        <div data-related="login-settings-2">
-          {% for prov in provider %}
-          <h4>  {{prov['provider_name']}} </h4>
-          {% if prov.obtain_link %}
-          <div class="form-group">
-            <a href="{{prov['obtain_link']}}" target="_blank">{{_('Obtain %(provider)s OAuth Credential', provider=prov['provider_name'])}}</a>
-          </div>
-          {% endif %}
-          <div class="form-group">
-            <label for="config_{{ prov['id'] }}_oauth_client_id">{{_('%(provider)s OAuth Client Id', provider=prov['provider_name'])}}</label>
-            <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_client_id" name="config_{{ prov['id'] }}_oauth_client_id" value="{% if prov['oauth_client_id']%}{{ prov['oauth_client_id'] }}{% endif %}" autocomplete="off">
-          </div>
-          <div class="form-group">
-            <label for="config_{{ prov['id'] }}_oauth_client_secret">{{_('%(provider)s OAuth Client Secret', provider=prov['provider_name'])}}</label>
-            <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_client_secret" name="config_{{ prov['id'] }}_oauth_client_secret" value="{% if prov['oauth_client_secret']%}{{ prov['oauth_client_secret'] }}{% endif %}" autocomplete="off">
-          </div>
-          {% if 'scope' in prov and 'generic' == prov['provider_name'] %}
-            <div class="form-group">
-              <label for="config_{{ prov['id'] }}_scope">{{_('%(provider)s OAuth scope', provider=prov['provider_name'])}}</label>
-              <input type="text" class="form-control" id="config_{{ prov['id'] }}_scope" name="config_{{ prov['id'] }}_scope" value="{% if prov['scope']%}{{ prov['scope'] }}{% endif %}" autocomplete="off">
-            </div>
-          {% endif %}
-          {% if 'oauth_base_url' in prov %}
-            <div class="form-group">
-              <label for="config_{{ prov['id'] }}_oauth_base_url">{{_('%(provider)s OAuth Base URL', provider=prov['provider_name'])}}</label>
-              <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_base_url" name="config_{{ prov['id'] }}_oauth_base_url" value="{% if prov['oauth_base_url']%}{{ prov['oauth_base_url'] }}{% endif %}" autocomplete="off">
-            </div>
-          {% endif %}
-          {% if 'oauth_auth_url' in prov %}
-            <div class="form-group">
-              <label for="config_{{ prov['id'] }}_oauth_auth_url">{{_('%(provider)s OAuth Auth URL (relative)', provider=prov['provider_name'])}}</label>
-              <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_auth_url" name="config_{{ prov['id'] }}_oauth_auth_url" value="{% if prov['oauth_auth_url']%}{{ prov['oauth_auth_url'] }}{% endif %}" autocomplete="off">
-            </div>
-          {% endif %}
-          {% if 'oauth_token_url' in prov %}
-            <div class="form-group">
-              <label for="config_{{ prov['id'] }}_oauth_token_url">{{_('%(provider)s OAuth Token URL (relative)', provider=prov['provider_name'])}}</label>
-              <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_token_url" name="config_{{ prov['id'] }}_oauth_token_url" value="{% if prov['oauth_token_url']%}{{ prov['oauth_token_url'] }}{% endif %}" autocomplete="off">
-            </div>
-          {% endif %}
-          {% if 'oauth_userinfo_url' in prov %}
-            <div class="form-group">
-              <label for="config_{{ prov['id'] }}_oauth_userinfo_url">{{_('%(provider)s OAuth UserInfo URL (relative)', provider=prov['provider_name'])}}</label>
-              <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_userinfo_url" name="config_{{ prov['id'] }}_oauth_userinfo_url" value="{% if prov['oauth_userinfo_url']%}{{ prov['oauth_userinfo_url'] }}{% endif %}" autocomplete="off">
-            </div>
-          {% endif %}
-          {% if 'username_mapper' in prov %}
-            <div class="form-group">
-              <label for="config_{{ prov['id'] }}_username_mapper">{{_('%(provider)s OAuth Username mapper', provider=prov['provider_name'])}}</label>
-              <input type="text" class="form-control" id="config_{{ prov['id'] }}_username_mapper" name="config_{{ prov['id'] }}_username_mapper" value="{% if prov['username_mapper']%}{{ prov['username_mapper'] }}{% endif %}" autocomplete="off">
-            </div>
-          {% endif %}
-          {% if 'email_mapper' in prov %}
-            <div class="form-group">
-              <label for="config_{{ prov['id'] }}_email_mapper">{{_('%(provider)s OAuth Email mapper', provider=prov['provider_name'])}}</label>
-              <input type="text" class="form-control" id="config_{{ prov['id'] }}_email_mapper" name="config_{{ prov['id'] }}_email_mapper" value="{% if prov['email_mapper']%}{{ prov['email_mapper'] }}{% endif %}" autocomplete="off">
-            </div>
-          {% endif %}
-          {% if 'login_button' in prov %}
-            <div class="form-group">
-              <label for="config_{{ prov['id'] }}_login_button">{{_('%(provider)s OAuth Login Button', provider=prov['provider_name'])}}</label>
-              <input type="text" class="form-control" id="config_{{ prov['id'] }}_login_button" name="config_{{ prov['id'] }}_login_button" value="{% if prov['login_button']%}{{ prov['login_button'] }}{% endif %}" autocomplete="off">
-            </div>
-          {% endif %}
-        {% endfor %}
+      <div class="form-group">
+        <label for="config_{{ prov['id'] }}_oauth_client_id">{{_('%(provider)s OAuth Client Id', provider=prov['provider_name'])}}</label>
+        <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_client_id" name="config_{{ prov['id'] }}_oauth_client_id" value="{% if prov['oauth_client_id']%}{{ prov['oauth_client_id'] }}{% endif %}" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="config_{{ prov['id'] }}_oauth_client_secret">{{_('%(provider)s OAuth Client Secret', provider=prov['provider_name'])}}</label>
+        <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_client_secret" name="config_{{ prov['id'] }}_oauth_client_secret" value="{% if prov['oauth_client_secret']%}{{ prov['oauth_client_secret'] }}{% endif %}" autocomplete="off">
+      </div>
+      {% if 'scope' in prov and 'generic' == prov['provider_name'] %}
+        <div class="form-group">
+          <label for="config_{{ prov['id'] }}_scope">{{_('%(provider)s OAuth scope', provider=prov['provider_name'])}}</label>
+          <input type="text" class="form-control" id="config_{{ prov['id'] }}_scope" name="config_{{ prov['id'] }}_scope" value="{% if prov['scope']%}{{ prov['scope'] }}{% endif %}" autocomplete="off">
         </div>
       {% endif %}
+      {% if 'oauth_base_url' in prov %}
+        <div class="form-group">
+          <label for="config_{{ prov['id'] }}_oauth_base_url">{{_('%(provider)s OAuth Base URL', provider=prov['provider_name'])}}</label>
+          <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_base_url" name="config_{{ prov['id'] }}_oauth_base_url" value="{% if prov['oauth_base_url']%}{{ prov['oauth_base_url'] }}{% endif %}" autocomplete="off">
+        </div>
+      {% endif %}
+      {% if 'oauth_auth_url' in prov %}
+        <div class="form-group">
+          <label for="config_{{ prov['id'] }}_oauth_auth_url">{{_('%(provider)s OAuth Auth URL (relative)', provider=prov['provider_name'])}}</label>
+          <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_auth_url" name="config_{{ prov['id'] }}_oauth_auth_url" value="{% if prov['oauth_auth_url']%}{{ prov['oauth_auth_url'] }}{% endif %}" autocomplete="off">
+        </div>
+      {% endif %}
+      {% if 'oauth_token_url' in prov %}
+        <div class="form-group">
+          <label for="config_{{ prov['id'] }}_oauth_token_url">{{_('%(provider)s OAuth Token URL (relative)', provider=prov['provider_name'])}}</label>
+          <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_token_url" name="config_{{ prov['id'] }}_oauth_token_url" value="{% if prov['oauth_token_url']%}{{ prov['oauth_token_url'] }}{% endif %}" autocomplete="off">
+        </div>
+      {% endif %}
+      {% if 'oauth_userinfo_url' in prov %}
+        <div class="form-group">
+          <label for="config_{{ prov['id'] }}_oauth_userinfo_url">{{_('%(provider)s OAuth UserInfo URL (relative)', provider=prov['provider_name'])}}</label>
+          <input type="text" class="form-control" id="config_{{ prov['id'] }}_oauth_userinfo_url" name="config_{{ prov['id'] }}_oauth_userinfo_url" value="{% if prov['oauth_userinfo_url']%}{{ prov['oauth_userinfo_url'] }}{% endif %}" autocomplete="off">
+        </div>
+      {% endif %}
+      {% if 'username_mapper' in prov %}
+        <div class="form-group">
+          <label for="config_{{ prov['id'] }}_username_mapper">{{_('%(provider)s OAuth Username mapper', provider=prov['provider_name'])}}</label>
+          <input type="text" class="form-control" id="config_{{ prov['id'] }}_username_mapper" name="config_{{ prov['id'] }}_username_mapper" value="{% if prov['username_mapper']%}{{ prov['username_mapper'] }}{% endif %}" autocomplete="off">
+        </div>
+      {% endif %}
+      {% if 'email_mapper' in prov %}
+        <div class="form-group">
+          <label for="config_{{ prov['id'] }}_email_mapper">{{_('%(provider)s OAuth Email mapper', provider=prov['provider_name'])}}</label>
+          <input type="text" class="form-control" id="config_{{ prov['id'] }}_email_mapper" name="config_{{ prov['id'] }}_email_mapper" value="{% if prov['email_mapper']%}{{ prov['email_mapper'] }}{% endif %}" autocomplete="off">
+        </div>
+      {% endif %}
+      {% if 'login_button' in prov %}
+        <div class="form-group">
+          <label for="config_{{ prov['id'] }}_login_button">{{_('%(provider)s OAuth Login Button', provider=prov['provider_name'])}}</label>
+          <input type="text" class="form-control" id="config_{{ prov['id'] }}_login_button" name="config_{{ prov['id'] }}_login_button" value="{% if prov['login_button']%}{{ prov['login_button'] }}{% endif %}" autocomplete="off">
+        </div>
+      {% endif %}
+    {% endfor %}
+    </div>
       {% endif %}
     {% endif %}
       </div>

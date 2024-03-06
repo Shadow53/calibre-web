@@ -780,24 +780,6 @@ $(function() {
         $(".discover .row").isotope("layout");
     });
 
-    $("#import_ldap_users").click(function() {
-        $("#DialogHeader").addClass("hidden");
-        $("#DialogFinished").addClass("hidden");
-        $("#DialogContent").html("");
-        $("#spinner2").show();
-        $.ajax({
-            method:"post",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            url: getPath() + "/import_ldap_users",
-            success: function success(data) {
-                $("#spinner2").hide();
-                $("#DialogContent").html(data.text);
-                $("#DialogFinished").removeClass("hidden");
-            }
-        });
-    });
-
     $(".author-expand").click(function() {
         $(this).parent().find("a.author-name").slice($(this).data("authors-max")).toggle();
         $(this).parent().find("span.author-hidden-divider").toggle();

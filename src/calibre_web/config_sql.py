@@ -104,33 +104,10 @@ class _Settings(_Base):
     config_restricted_column = Column(SmallInteger, default=0)
     config_denied_column_value = Column(String, default="")
     config_allowed_column_value = Column(String, default="")
-
-    config_use_goodreads = Column(Boolean, default=False)
-    config_goodreads_api_key = Column(String)
-    config_goodreads_api_secret_e = Column(String)
-    config_goodreads_api_secret = Column(String)
     config_register_email = Column(Boolean, default=False)
     config_login_type = Column(Integer, default=0)
 
     config_kobo_proxy = Column(Boolean, default=False)
-
-    config_ldap_provider_url = Column(String, default="example.org")
-    config_ldap_port = Column(SmallInteger, default=389)
-    config_ldap_authentication = Column(SmallInteger, default=constants.LDAP_AUTH_SIMPLE)
-    config_ldap_serv_username = Column(String, default="cn=admin,dc=example,dc=org")
-    config_ldap_serv_password_e = Column(String)
-    config_ldap_serv_password = Column(String)
-    config_ldap_encryption = Column(SmallInteger, default=0)
-    config_ldap_cacert_path = Column(String, default="")
-    config_ldap_cert_path = Column(String, default="")
-    config_ldap_key_path = Column(String, default="")
-    config_ldap_dn = Column(String, default="dc=example,dc=org")
-    config_ldap_user_object = Column(String, default="uid=%s")
-    config_ldap_member_user_object = Column(String, default="")
-    config_ldap_openldap = Column(Boolean, default=True)
-    config_ldap_group_object_filter = Column(String, default="(&(objectclass=posixGroup)(cn=%s))")
-    config_ldap_group_members_field = Column(String, default="memberUid")
-    config_ldap_group_name = Column(String, default="calibreweb")
 
     config_kepubifypath = Column(String, default=None)
     config_converterpath = Column(String, default=None)
@@ -408,23 +385,12 @@ def _encrypt_fields(session, secret_key) -> None:
     except OperationalError:
         with session.bind.connect() as conn:
             conn.execute(text("ALTER TABLE settings ADD column 'mail_password_e' String"))
-            conn.execute(text("ALTER TABLE settings ADD column 'config_goodreads_api_secret_e' String"))
-            conn.execute(text("ALTER TABLE settings ADD column 'config_ldap_serv_password_e' String"))
         session.commit()
         crypter = Fernet(secret_key)
-        settings = session.query(_Settings.mail_password, _Settings.config_goodreads_api_secret,
-                                 _Settings.config_ldap_serv_password).first()
+        settings = session.query(_Settings.mail_password).first()
         if settings.mail_password:
             session.query(_Settings).update(
                 {_Settings.mail_password_e: crypter.encrypt(settings.mail_password.encode())})
-        if settings.config_goodreads_api_secret:
-            session.query(_Settings).update(
-                {_Settings.config_goodreads_api_secret_e:
-                     crypter.encrypt(settings.config_goodreads_api_secret.encode())})
-        if settings.config_ldap_serv_password:
-            session.query(_Settings).update(
-                {_Settings.config_ldap_serv_password_e:
-                     crypter.encrypt(settings.config_ldap_serv_password.encode())})
         session.commit()
 
 

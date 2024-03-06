@@ -105,6 +105,7 @@
               projectDir = self;
             })
             poetry
+            just
           ];
         };
       });
