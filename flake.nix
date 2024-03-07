@@ -75,6 +75,13 @@
               "text2digits"
               "wordninja"
               "scholarly"
+              "types-bleach"
+              "types-flask"
+              "types-jinja"
+              "types-jinja2"
+              "types-markupsafe"
+              "types-oauthlib"
+              "types-werkzeug"
             ])
           );
     in
