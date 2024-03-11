@@ -22,7 +22,6 @@ from shutil import copyfile, copyfileobj
 from time import time
 from uuid import uuid4
 
-from flask_babel import gettext as _
 from flask_babel import lazy_gettext as N_
 from markupsafe import escape
 from sqlalchemy.exc import SQLAlchemyError

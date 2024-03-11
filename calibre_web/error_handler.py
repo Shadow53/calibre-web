@@ -23,9 +23,9 @@ from werkzeug.exceptions import default_exceptions
 try:
     from werkzeug.exceptions import FailedDependency
 except ImportError:
-    from werkzeug.exceptions import UnprocessableEntity as FailedDependency
+    pass
 
-from . import app, config, logger, services
+from . import app, config, logger
 
 log = logger.create()
 

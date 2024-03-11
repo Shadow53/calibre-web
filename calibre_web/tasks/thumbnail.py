@@ -17,8 +17,7 @@
 
 import os
 from datetime import datetime
-from shutil import copyfile, copyfileobj
-from urllib.request import urlopen
+from shutil import copyfile
 
 from flask_babel import lazy_gettext as N_
 from sqlalchemy import func, or_, text

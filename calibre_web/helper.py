@@ -29,7 +29,7 @@ from uuid import uuid4
 
 import requests
 import unidecode
-from flask import abort, make_response, redirect, send_from_directory, url_for
+from flask import abort, make_response, send_from_directory, url_for
 from flask_babel import get_locale
 from flask_babel import gettext as _
 from flask_babel import lazy_gettext as N_
@@ -40,7 +40,7 @@ from sqlalchemy.sql.expression import and_, false, func, or_, text, true
 from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash
 
-from . import calibre_db, cli_param, config, db, fs, logger, ub
+from . import calibre_db, config, db, fs, logger, ub
 from .constants import CACHE_TYPE_THUMBNAILS, SUPPORTED_CALIBRE_BINARIES, THUMBNAIL_TYPE_COVER, THUMBNAIL_TYPE_SERIES
 from .constants import STATIC_DIR as _STATIC_DIR
 from .epub_helper import create_new_metadata_backup, get_content_opf, replace_metadata, updateEpub

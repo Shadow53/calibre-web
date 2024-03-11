@@ -1,11 +1,41 @@
-#!/use/bin/env python3
+
+#  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
+#    Copyright (C) 2018-2019 OzzieIsaacs, cervinko, jkrehm, bodybybuddha, ok11,
+#                            andy29485, idalin, Kyosfonica, wuqi, Kennyl, lemmsh,
+#                            falgh1, grunjol, csitko, ytils, xybydy, trasba, vrabe,
+#                            ruben-herold, marblepebble, JackED42, SiphonSquirrel,
+#                            apetresc, nanu-c, mutschler
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program. If not, see <http://www.gnu.org/licenses/>.
 import sys
 
 from flask import request
 
-from . import create_app, limiter
+from . import web_server
+from .about import about
+from .admin import admi
+from .app import create_app
+from .editbooks import editbook
+from .error_handler import init_errorhandler
 from .jinjia import jinjia
+from .opds import opds
 from .remotelogin import remotelogin
+from .search import search
+from .search_metadata import meta
+from .shelf import shelf
+from .tasks_status import tasks
+from .web import web
 
 
 def request_username():
@@ -14,17 +44,6 @@ def request_username():
 
 def main():
     app = create_app()
-
-    from .about import about
-    from .admin import admi
-    from .editbooks import editbook
-    from .error_handler import init_errorhandler
-    from .opds import opds
-    from .search import search
-    from .search_metadata import meta
-    from .shelf import shelf
-    from .tasks_status import tasks
-    from .web import web
     try:
         from flask_limiter.util import get_remote_address
 
@@ -40,7 +59,6 @@ def main():
     except ImportError:
         oauth_available = False
 
-    from . import web_server
     init_errorhandler()
 
     app.register_blueprint(search)
@@ -63,7 +81,3 @@ def main():
         app.register_blueprint(oauth)
     success = web_server.start()
     sys.exit(0 if success else 1)
-
-
-if __name__ == "__main__":
-    main()

@@ -21,7 +21,7 @@ import socket
 import sys
 
 from .constants import CONFIG_DIR as _CONFIG_DIR
-from .constants import DEFAULT_GDRIVE_FILE, DEFAULT_SETTINGS_FILE, VERSION_STRING
+from .constants import DEFAULT_SETTINGS_FILE, VERSION_STRING
 
 
 def version_info() -> str:

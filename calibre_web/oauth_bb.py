@@ -38,6 +38,10 @@ with contextlib.suppress(NameError):
     from .oauth import OAuthBackend, backend_resultcode
 
 
+OAUTH_GITHUB = 0
+OAUTH_GENERIC = 1
+
+
 oauth_check = {}
 oauthblueprints = []
 oauth = Blueprint("oauth", __name__)

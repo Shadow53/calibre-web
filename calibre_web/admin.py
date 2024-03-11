@@ -30,7 +30,6 @@ import time
 from datetime import datetime, timedelta
 from datetime import time as datetime_time
 from functools import wraps
-from urllib.parse import urlparse
 
 from flask import Blueprint, Response, abort, flash, g, make_response, redirect, request, send_from_directory, url_for
 from flask import session as flask_session

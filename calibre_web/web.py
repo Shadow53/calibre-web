@@ -20,7 +20,6 @@
 
 import copy
 import json
-import mimetypes
 import os
 
 import chardet  # dependency of requests
@@ -46,7 +45,6 @@ from sqlalchemy.exc import IntegrityError, InvalidRequestError, OperationalError
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.expression import and_, false, func, not_, or_, text
 from sqlalchemy.sql.functions import coalesce
-from werkzeug.datastructures import Headers
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import app, calibre_db, config, constants, db, isoLanguages, kobo_sync_status, limiter, logger, services, ub
@@ -70,6 +68,7 @@ from .helper import (
     valid_password,
 )
 from .kobo_sync_status import change_archived_books, remove_synced_book
+from .oauth_bb import OAUTH_GENERIC, OAUTH_GITHUB
 from .pagination import Pagination
 from .redirect import redirect_back
 from .render_template import render_title_template
@@ -1235,11 +1234,12 @@ def serve_book(book_id, book_format, anyname):
     return response
 
 
-@web.route("/download/<int:book_id>/<book_format>", defaults={"anyname": "None"})
-@web.route("/download/<int:book_id>/<book_format>/<anyname>")
+@web.route("/download/<int:book_id>/<book_format>", defaults={"_anyname": "None"})
+@web.route("/download/<int:book_id>/<book_format>/<_anyname>")
 @login_required_if_no_ano
 @download_required
-def download_link(book_id, book_format, anyname):
+def download_link(book_id: int, book_format: str, _anyname: Optional[str]) -> str:
+    # TODO: use anyname?
     client = "kobo" if "Kobo" in request.headers.get("User-Agent") else ""
     return get_download_link(book_id, book_format, client)
 
@@ -1247,11 +1247,11 @@ def download_link(book_id, book_format, anyname):
 @web.route("/send/<int:book_id>/<book_format>/<int:convert>", methods=["POST"])
 @login_required_if_no_ano
 @download_required
-def send_to_ereader(book_id, book_format, convert):
+def send_to_ereader(book_id: int, book_format: str, convert: int):
     if not config.get_mail_server_configured():
         response = [{"type": "danger", "message": _("Please configure the SMTP mail settings first...")}]
         return Response(json.dumps(response), mimetype="application/json")
-    elif current_user.kindle_mail:
+    if current_user.kindle_mail:
         result = send_mail(book_id, book_format, convert, current_user.kindle_mail, config.get_book_path(),
                            current_user.name)
         if result is None:
@@ -1336,7 +1336,7 @@ def register():
     return render_title_template("register.html", config=config, title=_("Register"), page="register")
 
 
-def handle_login_user(user, remember, message, category):
+def handle_login_user(user: str, remember: bool, message: str, category: str):
     login_user(user, remember=remember)
     ub.store_user_session()
     flash(message, category=category)
@@ -1344,14 +1344,14 @@ def handle_login_user(user, remember, message, category):
     return redirect_back("web.index")
 
 
-def render_login(username="", password=""):
+def render_login(username: str = "", password: str = ""):
     next_url = request.args.get("next", default=url_for("web.index"), type=str)
     if url_for("web.logout") == next_url:
         next_url = url_for("web.index")
     login_button = "generic oauth2 provider"
-    if 3 in oauth_check:
+    if OAUTH_GENERIC in oauth_check:
         from .oauth_bb import oauthblueprints
-        login_button = oauthblueprints[2].get("login_button") or login_button
+        login_button = oauthblueprints[OAUTH_GENERIC].get("login_button") or login_button
     return render_title_template("login.html",
                                  title=_("Login"),
                                  next_url=next_url,
@@ -1424,7 +1424,13 @@ def logout():
 
 
 # ################################### Users own configuration #########################################################
-def change_profile(kobo_support, local_oauth_check, oauth_status, translations, languages):
+def change_profile(
+    kobo_support: bool,
+    local_oauth_check: Dict[str, Any],
+    oauth_status: Optional[List[Any]],
+    translations: List[Locale],
+    languages: List[str],
+):
     to_save = request.form.to_dict()
     current_user.random_books = 0
     try:
@@ -1434,7 +1440,7 @@ def change_profile(kobo_support, local_oauth_check, oauth_status, translations, 
             current_user.kindle_mail = valid_email(to_save.get("kindle_mail"))
         new_email = valid_email(to_save.get("email", current_user.email))
         if not new_email:
-            raise Exception(_("Email can't be empty and has to be a valid Email"))
+            raise ValueError(_("Email can't be empty and has to be a valid Email"))
         if new_email != current_user.email:
             current_user.email = check_email(new_email)
         if current_user.role_admin() and to_save.get("name", current_user.name) != current_user.name:
@@ -1451,7 +1457,7 @@ def change_profile(kobo_support, local_oauth_check, oauth_status, translations, 
         if old_state == 0 and current_user.kobo_only_shelves_sync == 1:
             kobo_sync_status.update_on_sync_shelfs(current_user.id)
 
-    except Exception as ex:
+    except ValueError as ex:
         flash(str(ex), category="error")
         return render_title_template("user_edit.html",
                                      content=current_user,
@@ -1483,7 +1489,8 @@ def change_profile(kobo_support, local_oauth_check, oauth_status, translations, 
         log.debug("Found an existing account for this Email")
     except OperationalError as e:
         ub.session.rollback()
-        log.exception("Database error: %s", e)
+        # Logger automatically includes exception information
+        log.exception("Database error")
         flash(_("Oops! Database Error: %(error)s.", error=e), category="error")
 
 
@@ -1493,7 +1500,7 @@ def profile():
     languages = calibre_db.speaking_language()
     translations = get_available_locale()
     kobo_support = feature_support["kobo"] and config.config_kobo_sync
-    if feature_support["oauth"] and config.config_login_type == 2:
+    if feature_support["oauth"] and config.config_login_type == constants.LOGIN_OAUTH:
         oauth_status = get_oauth_status()
         local_oauth_check = oauth_check
     else:
@@ -1521,7 +1528,7 @@ def profile():
 @web.route("/read/<int:book_id>/<book_format>")
 @login_required_if_no_ano
 @viewer_required
-def read_book(book_id, book_format):
+def read_book(book_id: int, book_format: str):
     book = calibre_db.get_filtered_book(book_id)
 
     if not book:
@@ -1541,42 +1548,41 @@ def read_book(book_id, book_format):
     if book_format.lower() == "epub":
         log.debug("Start epub reader for %d", book_id)
         return render_title_template("read.html", bookid=book_id, title=book.title, bookmark=bookmark)
-    elif book_format.lower() == "pdf":
+    if book_format.lower() == "pdf":
         log.debug("Start pdf reader for %d", book_id)
         return render_title_template("readpdf.html", pdffile=book_id, title=book.title)
-    elif book_format.lower() == "txt":
+    if book_format.lower() == "txt":
         log.debug("Start txt reader for %d", book_id)
         return render_title_template("readtxt.html", txtfile=book_id, title=book.title)
-    elif book_format.lower() in ["djvu", "djv"]:
+    if book_format.lower() in ["djvu", "djv"]:
         log.debug("Start djvu reader for %d", book_id)
         return render_title_template("readdjvu.html", djvufile=book_id, title=book.title, extension=book_format.lower())
-    else:
-        for fileExt in constants.EXTENSIONS_AUDIO:
-            if book_format.lower() == fileExt:
-                entries = calibre_db.get_filtered_book(book_id)
-                log.debug("Start mp3 listening for %d", book_id)
-                return render_title_template("listenmp3.html", mp3file=book_id, audioformat=book_format.lower(),
-                                             entry=entries, bookmark=bookmark)
-        for fileExt in ["cbr", "cbt", "cbz"]:
-            if book_format.lower() == fileExt:
-                all_name = str(book_id)
-                title = book.title
-                if len(book.series):
-                    title = title + " - " + book.series[0].name
-                    if book.series_index:
-                        title = title + " #" + f"{book.series_index:.2f}".rstrip("0").rstrip(".")
-                log.debug("Start comic reader for %d", book_id)
-                return render_title_template("readcbr.html", comicfile=all_name, title=title,
-                                             extension=fileExt, bookmark=bookmark)
-        log.debug("Selected book is unavailable. File does not exist or is not accessible")
-        flash(_("Oops! Selected book is unavailable. File does not exist or is not accessible"),
-              category="error")
-        return redirect(url_for("web.index"))
+    for file_ext in constants.EXTENSIONS_AUDIO:
+        if book_format.lower() == file_ext:
+            entries = calibre_db.get_filtered_book(book_id)
+            log.debug("Start mp3 listening for %d", book_id)
+            return render_title_template("listenmp3.html", mp3file=book_id, audioformat=book_format.lower(),
+                                         entry=entries, bookmark=bookmark)
+    for file_ext in ["cbr", "cbt", "cbz"]:
+        if book_format.lower() == file_ext:
+            all_name = str(book_id)
+            title = book.title
+            if len(book.series):
+                title = title + " - " + book.series[0].name
+                if book.series_index:
+                    title = title + " #" + f"{book.series_index:.2f}".rstrip("0").rstrip(".")
+            log.debug("Start comic reader for %d", book_id)
+            return render_title_template("readcbr.html", comicfile=all_name, title=title,
+                                         extension=file_ext, bookmark=bookmark)
+    log.debug("Selected book is unavailable. File does not exist or is not accessible")
+    flash(_("Oops! Selected book is unavailable. File does not exist or is not accessible"),
+          category="error")
+    return redirect(url_for("web.index"))
 
 
 @web.route("/book/<int:book_id>")
 @login_required_if_no_ano
-def show_book(book_id):
+def show_book(book_id: int):
     entries = calibre_db.get_book_read_archived(book_id, config.config_read_column, allow_show_archived=True)
     if entries:
         read_book = entries[1]
@@ -1588,10 +1594,7 @@ def show_book(book_id):
             entry.languages[lang_index].language_name = isoLanguages.get_language_name(get_locale(), entry.languages[
                 lang_index].lang_code)
         cc = calibre_db.get_cc_columns(config, filter_config_custom_read=True)
-        book_in_shelves = []
-        shelves = ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == book_id).all()
-        for sh in shelves:
-            book_in_shelves.append(sh.shelf)
+        book_in_shelves = list(ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == book_id).all())
 
         entry.tags = sort(entry.tags, key=lambda tag: tag.name)
 
@@ -1612,8 +1615,7 @@ def show_book(book_id):
                                      title=entry.title,
                                      books_shelfs=book_in_shelves,
                                      page="book")
-    else:
-        log.debug("Selected book is unavailable. File does not exist or is not accessible")
-        flash(_("Oops! Selected book is unavailable. File does not exist or is not accessible"),
-              category="error")
-        return redirect(url_for("web.index"))
+    log.debug("Selected book is unavailable. File does not exist or is not accessible")
+    flash(_("Oops! Selected book is unavailable. File does not exist or is not accessible"),
+          category="error")
+    return redirect(url_for("web.index"))
