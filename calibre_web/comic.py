@@ -15,15 +15,16 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from importlib.util import find_spec
 import os
 
 from . import cover, isoLanguages, logger
 from .constants import BookMeta
 
 try:
-    from wand.image import Image
+    find_spec("Image", "wand.image")
     use_IM = True
-except (ImportError, RuntimeError):
+except (Value, ModuleNotFoundError):
     use_IM = False
 
 log = logger.create()

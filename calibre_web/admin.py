@@ -30,6 +30,7 @@ import time
 from datetime import datetime, timedelta
 from datetime import time as datetime_time
 from functools import wraps
+from importlib.util import find_spec
 
 from flask import Blueprint, Response, abort, flash, g, make_response, redirect, request, send_from_directory, url_for
 from flask import session as flask_session
@@ -81,10 +82,9 @@ feature_support = {
 }
 
 try:
-    import rarfile  # pylint: disable=unused-import
-
+    find_spec("rarfile")
     feature_support["rar"] = True
-except (ImportError, SyntaxError):
+except (ValueError, ModuleNotFoundError):
     feature_support["rar"] = False
 
 try:

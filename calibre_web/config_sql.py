@@ -40,6 +40,7 @@ log = logger.create()
 _Base = declarative_base()
 
 def init():
+    global CONFIG
     CONFIG = ConfigSQL()
 
 

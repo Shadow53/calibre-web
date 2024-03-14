@@ -27,6 +27,7 @@ cli_param = None
 
 
 def init():
+    global cli_param
     cli_param = CliParameter()
 
 

@@ -101,6 +101,7 @@ calibre_db = None
 
 
 def init():
+    global calibre_db
     calibre_db = CalibreDB()
 
 

@@ -50,6 +50,7 @@ log = logger.create()
 web_server = None
 
 def init():
+    global web_server
     web_server = WebServer()
 
 

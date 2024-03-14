@@ -38,6 +38,7 @@ _REPOSITORY_API_URL = "https://api.github.com/repos/janeczku/calibre-web"
 
 
 def init():
+    global updater_thread
     updater_thread = Updater()
 
 

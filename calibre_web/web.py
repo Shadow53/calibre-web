@@ -37,7 +37,7 @@ from flask import (
     url_for,
 )
 from flask import session as flask_session
-from flask_babel import get_locale
+from flask_babel import get_locale, Locale
 from flask_babel import gettext as _
 from flask_limiter import RateLimitExceeded
 from flask_limiter.util import get_remote_address
