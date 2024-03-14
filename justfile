@@ -4,7 +4,7 @@ check:
     mypy .
 
 style:
-    black .
+    ruff format
 
 test:
     pytest
