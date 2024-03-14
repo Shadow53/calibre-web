@@ -6,7 +6,7 @@ from calibre_web import constants
 from calibre_web.about import collect_stats
 
 
-def test_collect_stats():
+def test_collect_stats() -> None:
     versions = collect_stats()
     assert versions["Calibre Web"].startswith(constants.VERSION_STRING)
     assert versions["Python"] == sys.version

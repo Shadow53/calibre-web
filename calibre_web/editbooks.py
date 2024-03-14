@@ -67,8 +67,8 @@ from . import (
     ub,
     uploader,
 )
-from .db import calibre_db
 from .config_sql import CONFIG
+from .db import calibre_db
 from .kobo_sync_status import change_archived_books
 from .render_template import render_title_template
 from .services.worker import WorkerThread

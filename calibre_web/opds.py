@@ -30,8 +30,8 @@ from sqlalchemy.exc import InvalidRequestError, OperationalError
 from sqlalchemy.sql.expression import and_, func, or_, text, true
 
 from . import db, isoLanguages, logger, ub
-from .db import calibre_db
 from .config_sql import CONFIG
+from .db import calibre_db
 from .helper import get_book_cover, get_download_link
 from .pagination import Pagination
 from .usermanagement import requires_basic_auth_if_no_ano

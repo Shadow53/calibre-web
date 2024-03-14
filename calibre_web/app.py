@@ -7,25 +7,25 @@ from flask import Flask, request
 from flask_principal import Principal
 
 from . import cache_buster, config_sql, db, logger, ub
+from .about import about
+from .admin import admi
 from .babel import babel, get_locale
 from .cli import cli_param
 from .config_sql import CONFIG
 from .db import calibre_db
-from .MyLoginManager import MyLoginManager
-from .reverseproxy import ReverseProxied
-from .server import web_server
-from .updater import updater_thread
-from .about import about
-from .admin import admi
 from .editbooks import editbook
 from .error_handler import init_errorhandler
 from .jinjia import jinjia
+from .MyLoginManager import MyLoginManager
 from .opds import opds
 from .remotelogin import remotelogin
+from .reverseproxy import ReverseProxied
 from .search import search
 from .search_metadata import meta
+from .server import web_server
 from .shelf import shelf
 from .tasks_status import tasks
+from .updater import updater_thread
 from .web import web
 
 try:

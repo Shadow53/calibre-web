@@ -28,8 +28,8 @@ from sqlalchemy.exc import InvalidRequestError, OperationalError
 from sqlalchemy.sql.expression import func, true
 
 from . import db, logger, ub
-from .db import calibre_db
 from .config_sql import CONFIG
+from .db import calibre_db
 from .render_template import render_title_template
 from .usermanagement import login_required_if_no_ano
 

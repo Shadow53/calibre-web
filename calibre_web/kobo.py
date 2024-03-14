@@ -35,11 +35,11 @@ from sqlalchemy.sql.expression import and_, or_
 from werkzeug.datastructures import Headers
 
 from . import db, helper, isoLanguages, kobo_auth, kobo_sync_status, logger, ub
-from .app import csrf
 from . import shelf as shelf_lib
-from .db import calibre_db
+from .app import csrf
 from .config_sql import CONFIG
 from .constants import COVER_THUMBNAIL_SMALL  # , sqlalchemy_version2
+from .db import calibre_db
 from .epub import get_epub_layout
 from .helper import get_download_link
 from .kobo_auth import get_auth_token, requires_kobo_auth

@@ -45,6 +45,7 @@ def get_datetime_from_json(json_object, field_name):
 
 
 class SyncToken:
+
     """The SyncToken is used to persist state accross requests.
     When serialized over the response headers, the Kobo device will propagate the token onto following
     requests to the service. As an example use-case, the SyncToken is used to detect books that have been added

@@ -422,9 +422,7 @@ def _migrate_table(session, orm_class, secret_key=None) -> None:
                     column_default = f"DEFAULT `{column.default.arg}`"
                 column_type = "JSON" if isinstance(column.type, JSON) else column.type
                 alter_table = text(
-                    "ALTER TABLE {} ADD COLUMN `{}` {} {}".format(
-                        orm_class.__tablename__, column_name, column_type, column_default
-                    )
+                    f"ALTER TABLE {orm_class.__tablename__} ADD COLUMN `{column_name}` {column_type} {column_default}"
                 )
                 log.debug(alter_table)
                 session.execute(alter_table)

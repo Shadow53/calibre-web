@@ -27,6 +27,7 @@ except ImportError:
 
 
 class OAuthBackend(SQLAlchemyBackend):
+
     """Stores and retrieves OAuth tokens using a relational database through
     the `SQLAlchemy`_ ORM.
 

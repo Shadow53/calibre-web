@@ -69,8 +69,8 @@ from flask_limiter import RateLimitExceeded
 from flask_login import current_user, login_required, login_user
 
 from . import db, helper, limiter, lm, logger, ub
-from .db import calibre_db
 from .config_sql import CONFIG
+from .db import calibre_db
 from .render_template import render_title_template
 
 log = logger.create()

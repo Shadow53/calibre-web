@@ -14,8 +14,8 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from importlib.util import find_spec
 import os
+from importlib.util import find_spec
 
 from . import cover, isoLanguages, logger
 from .constants import BookMeta

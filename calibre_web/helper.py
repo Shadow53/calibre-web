@@ -40,10 +40,10 @@ from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash
 
 from . import db, fs, logger, ub
-from .db import calibre_db
 from .config_sql import CONFIG
 from .constants import CACHE_TYPE_THUMBNAILS, SUPPORTED_CALIBRE_BINARIES, THUMBNAIL_TYPE_COVER, THUMBNAIL_TYPE_SERIES
 from .constants import STATIC_DIR as _STATIC_DIR
+from .db import calibre_db
 from .epub_helper import create_new_metadata_backup, get_content_opf, replace_metadata, updateEpub
 from .file_helper import get_temp_dir
 from .services.worker import WorkerThread

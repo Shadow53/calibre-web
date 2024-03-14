@@ -26,8 +26,8 @@ from sqlalchemy.sql.expression import and_, func, not_, or_, text, true
 from sqlalchemy.sql.functions import coalesce
 
 from . import db, logger, ub
-from .db import calibre_db
 from .config_sql import CONFIG
+from .db import calibre_db
 from .pagination import Pagination
 from .render_template import render_title_template
 from .usermanagement import login_required_if_no_ano

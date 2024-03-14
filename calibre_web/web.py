@@ -18,10 +18,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+import contextlib
 import copy
 import json
 import os
-from typing import Optional, Dict, Any, List
+from functools import wraps
+from typing import Any, Dict, List, Optional
 
 import chardet  # dependency of requests
 from flask import (
@@ -37,7 +39,7 @@ from flask import (
     url_for,
 )
 from flask import session as flask_session
-from flask_babel import get_locale, Locale
+from flask_babel import Locale, get_locale
 from flask_babel import gettext as _
 from flask_limiter import RateLimitExceeded
 from flask_limiter.util import get_remote_address
@@ -47,13 +49,11 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.expression import and_, false, func, not_, or_, text
 from sqlalchemy.sql.functions import coalesce
 from werkzeug.security import check_password_hash, generate_password_hash
-import contextlib
-from functools import wraps
 
 from . import app, constants, db, isoLanguages, kobo_sync_status, limiter, logger, services, ub
-from .db import calibre_db
-from .config_sql import CONFIG
 from .babel import get_available_locale
+from .config_sql import CONFIG
+from .db import calibre_db
 from .helper import (
     check_email,
     check_read_formats,
