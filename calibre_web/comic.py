@@ -23,7 +23,7 @@ from .constants import BookMeta
 try:
     find_spec("Image", "wand.image")
     use_IM = True
-except (Value, ModuleNotFoundError):
+except (ValueError, ModuleNotFoundError):
     use_IM = False
 
 log = logger.create()
