@@ -35,8 +35,12 @@ except ImportError:
 from . import constants, logger
 from .subproc_wrapper import process_wait
 
+CONFIG = None
 log = logger.create()
 _Base = declarative_base()
+
+def init():
+    CONFIG = ConfigSQL()
 
 
 class _Flask_Settings(_Base):
@@ -314,7 +318,7 @@ class ConfigSQL:
             have_metadata_db = os.path.isfile(db_file)
         self.db_configured = have_metadata_db
         constants.EXTENSIONS_UPLOAD = [x.lstrip().rstrip().lower() for x in self.config_upload_formats.split(",")]
-        from . import cli_param
+        from .cli import cli_param
         if os.environ.get("FLASK_DEBUG"):
             logfile = logger.setup(logger.LOG_TO_STDOUT, logger.logging.DEBUG)
         else:
@@ -526,3 +530,6 @@ def get_encryption_key(key_path):
         except PermissionError as e:
             error = e
     return key, error
+
+
+init()

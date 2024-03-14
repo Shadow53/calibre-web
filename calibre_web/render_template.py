@@ -21,7 +21,8 @@ from flask_login import current_user
 from sqlalchemy.sql.expression import or_
 from werkzeug.local import LocalProxy
 
-from . import config, constants, logger, ub
+from . import constants, logger, ub
+from .config_sql import CONFIG
 from .ub import User
 
 log = logger.create()

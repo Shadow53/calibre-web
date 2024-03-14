@@ -32,8 +32,13 @@ from flask_babel import gettext as _
 from . import constants, logger  #  config, web_server
 from .file_helper import get_temp_dir
 
+updater_thread = None
 log = logger.create()
 _REPOSITORY_API_URL = "https://api.github.com/repos/janeczku/calibre-web"
+
+
+def init():
+    updater_thread = Updater()
 
 
 def is_sha1(sha1) -> bool:
@@ -628,3 +633,6 @@ class Updater(threading.Thread):
             status["message"] = _("General error")
         log.debug("Updater status: {}".format(status["message"] or "OK"))
         return status, commit
+
+
+init()

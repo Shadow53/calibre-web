@@ -31,7 +31,8 @@ from sqlalchemy.orm.attributes import flag_modified
 
 from calibre_web.services.Metadata import Metadata
 
-from . import constants, logger, ub, web_server
+from . import constants, logger, ub
+from .app import web_server
 
 # current_milli_time = lambda: int(round(time() * 1000))
 

@@ -1,5 +1,5 @@
-import sys
 import sqlite3
+import sys
 
 import jinja2
 from calibre_web import constants

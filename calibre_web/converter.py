@@ -20,7 +20,8 @@ import re
 
 from flask_babel import lazy_gettext as N_
 
-from . import config, logger
+from . import logger
+from .config_sql import CONFIG
 from .subproc_wrapper import process_wait
 
 log = logger.create()

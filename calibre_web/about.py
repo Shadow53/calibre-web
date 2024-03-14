@@ -30,7 +30,8 @@ import flask_login
 import jinja2
 from flask_babel import gettext as _
 
-from . import calibre_db, constants, converter, db, uploader
+from . import constants, converter, db, uploader
+from .db import calibre_db
 from .render_template import render_title_template
 
 about = flask.Blueprint("about", __name__)

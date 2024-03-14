@@ -46,6 +46,10 @@ except ImportError:
 from . import logger
 
 log = logger.create()
+web_server = None
+
+def init():
+    web_server = WebServer()
 
 
 def _readable_listen_address(address, port) -> str:
@@ -71,22 +75,22 @@ class WebServer:
 
     def init_app(self, application, config) -> None:
         self.app = application
-        self.listen_address = config.get_config_ipaddress()
-        self.listen_port = config.config_port
+        self.listen_address = CONFIG.get_config_ipaddress()
+        self.listen_port = CONFIG.config_port
 
-        if config.config_access_log:
+        if CONFIG.config_access_log:
             log_name = "gevent.access" if _GEVENT else "tornado.access"
             formatter = logger.ACCESS_FORMATTER_GEVENT if _GEVENT else logger.ACCESS_FORMATTER_TORNADO
             self.access_logger, logfile = logger.create_access_log(config.config_access_logfile, log_name, formatter)
-            if logfile != config.config_access_logfile:
-                log.warning("Accesslog path %s not valid, falling back to default", config.config_access_logfile)
-                config.config_access_logfile = logfile
-                config.save()
+            if logfile != CONFIG.config_access_logfile:
+                log.warning("Accesslog path %s not valid, falling back to default", CONFIG.config_access_logfile)
+                CONFIG.config_access_logfile = logfile
+                CONFIG.save()
         elif not _GEVENT:
             logger.get("tornado.access").disabled = True
 
-        certfile_path = config.get_config_certfile()
-        keyfile_path = config.get_config_keyfile()
+        certfile_path = CONFIG.get_config_certfile()
+        keyfile_path = CONFIG.get_config_keyfile()
         if certfile_path and keyfile_path:
             if os.path.isfile(certfile_path) and os.path.isfile(keyfile_path):
                 self.ssl_args = {"certfile": certfile_path, "keyfile": keyfile_path}
@@ -311,7 +315,7 @@ class WebServer:
         self.stop()
 
     def stop(self, restart=False) -> None:
-        from . import updater_thread
+        from .app import updater_thread
         updater_thread.stop()
 
         log.info("webserver stop (restart=%s)", restart)
@@ -325,3 +329,5 @@ class WebServer:
             else:
                 self.wsgiserver.asyncio_loop.call_soon_threadsafe(self.wsgiserver.stop)
 
+
+init()

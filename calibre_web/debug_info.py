@@ -26,7 +26,8 @@ from io import BytesIO
 from flask import __version__, send_file
 from flask_babel.speaklater import LazyString
 
-from . import config, logger
+from . import logger
+from .config_sql import CONFIG
 from .about import collect_stats
 
 log = logger.create()

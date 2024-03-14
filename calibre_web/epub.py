@@ -20,7 +20,8 @@ import zipfile
 
 from lxml import etree
 
-from . import config, cover, isoLanguages, logger
+from . import cover, isoLanguages, logger
+from .config_sql import CONFIG
 from .constants import BookMeta
 from .epub_helper import default_ns, get_content_opf
 from .helper import split_authors

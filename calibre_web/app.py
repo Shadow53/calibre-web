@@ -3,16 +3,30 @@ import os
 import sys
 from pathlib import Path
 
-from flask import Flask
+from flask import Flask, request
 from flask_principal import Principal
 
 from . import cache_buster, config_sql, db, logger, ub
 from .babel import babel, get_locale
-from .cli import CliParameter
+from .cli import CliParameter, cli_param
+from .config_sql import CONFIG
+from .db import calibre_db
 from .MyLoginManager import MyLoginManager
 from .reverseproxy import ReverseProxied
-from .server import WebServer
-from .updater import Updater
+from .server import WebServer, web_server
+from .updater import Updater, updater_thread
+from .about import about
+from .admin import admi
+from .editbooks import editbook
+from .error_handler import init_errorhandler
+from .jinjia import jinjia
+from .opds import opds
+from .remotelogin import remotelogin
+from .search import search
+from .search_metadata import meta
+from .shelf import shelf
+from .tasks_status import tasks
+from .web import web
 
 try:
     from flask_limiter import Limiter
@@ -60,17 +74,7 @@ app.config.update(
 
 lm = MyLoginManager()
 
-cli_param = CliParameter()
-
-config = config_sql.ConfigSQL()
-
 csrf = CSRFProtect() if wtf_present else None
-
-calibre_db = db.CalibreDB()
-
-web_server = WebServer()
-
-updater_thread = Updater()
 
 if limiter_present:
     limiter = Limiter(key_func=True, headers_enabled=True, auto_check=False, swallow_errors=True)
@@ -89,7 +93,7 @@ def create_app():
     encrypt_key, error = config_sql.get_encryption_key(settings_dir)
 
     config_sql.load_configuration(ub.session, encrypt_key)
-    config.init_config(ub.session, encrypt_key, cli_param)
+    CONFIG.init_config(ub.session, encrypt_key, cli_param)
 
     if error:
         log.error(error)
@@ -113,7 +117,7 @@ def create_app():
 
     lm.login_view = "web.login"
     lm.anonymous_user = ub.Anonymous
-    lm.session_protection = "strong" if config.config_session == 1 else "basic"
+    lm.session_protection = "strong" if CONFIG.config_session == 1 else "basic"
 
     db.CalibreDB.update_config(config)
     db.CalibreDB.setup_db(config.config_calibre_dir, cli_param.settings_path)
@@ -143,7 +147,7 @@ def create_app():
         babel.init_app(app, locale_selector=get_locale)
 
 
-    config.store_calibre_uuid(calibre_db, db.Library_Id)
+    CONFIG.store_calibre_uuid(calibre_db, db.Library_Id)
     # Configure rate limiter
     app.config.update(RATELIMIT_ENABLED=config.config_ratelimiter)
     limiter.init_app(app)
@@ -155,3 +159,47 @@ def create_app():
 
     return app
 
+
+def request_username():
+    return request.authorization.username
+
+
+def main():
+    app = create_app()
+    try:
+        from flask_limiter.util import get_remote_address
+
+        from .kobo import get_kobo_activated, kobo
+        from .kobo_auth import kobo_auth
+        kobo_available = get_kobo_activated()
+    except (ImportError, AttributeError):  # Catch also error for not installed flask-WTF (missing csrf decorator)
+        kobo_available = False
+
+    try:
+        from .oauth_bb import oauth
+        oauth_available = True
+    except ImportError:
+        oauth_available = False
+
+    init_errorhandler()
+
+    app.register_blueprint(search)
+    app.register_blueprint(tasks)
+    app.register_blueprint(web)
+    app.register_blueprint(opds)
+    limiter.limit("3/minute", key_func=request_username)(opds)
+    app.register_blueprint(jinjia)
+    app.register_blueprint(about)
+    app.register_blueprint(shelf)
+    app.register_blueprint(admi)
+    app.register_blueprint(remotelogin)
+    app.register_blueprint(meta)
+    app.register_blueprint(editbook)
+    if kobo_available:
+        app.register_blueprint(kobo)
+        app.register_blueprint(kobo_auth)
+        limiter.limit("3/minute", key_func=get_remote_address)(kobo)
+    if oauth_available:
+        app.register_blueprint(oauth)
+    success = web_server.start()
+    sys.exit(0 if success else 1)

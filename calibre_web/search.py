@@ -25,7 +25,9 @@ from flask_login import current_user
 from sqlalchemy.sql.expression import and_, func, not_, or_, text, true
 from sqlalchemy.sql.functions import coalesce
 
-from . import calibre_db, config, db, logger, ub
+from . import db, logger, ub
+from .db import calibre_db
+from .config_sql import CONFIG
 from .pagination import Pagination
 from .render_template import render_title_template
 from .usermanagement import login_required_if_no_ano
@@ -120,7 +122,7 @@ def adv_search_ratings(q, rating_high, rating_low):
 
 
 def adv_search_read_status(read_status):
-    if not config.config_read_column:
+    if not CONFIG.config_read_column:
         if read_status == "True":
             db_filter = and_(ub.ReadBook.user_id == int(current_user.id),
                              ub.ReadBook.read_status == ub.ReadBook.STATUS_FINISHED)

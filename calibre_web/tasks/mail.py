@@ -28,7 +28,8 @@ from io import StringIO
 
 from flask_babel import lazy_gettext as N_
 
-from calibre_web import config, logger
+from calibre_web import logger
+from calibre_web.config_sql import CONFIG
 from calibre_web.services.worker import CalibreTask
 
 log = logger.create()
@@ -228,7 +229,7 @@ class TaskEmail(CalibreTask):
     @classmethod
     def _get_attachment(cls, book_path, filename):
         """Get file as MIMEBase message."""
-        calibre_path = config.get_book_path()
+        calibre_path = CONFIG.get_book_path()
         try:
             file_ = open(os.path.join(calibre_path, book_path, filename), "rb")
             data = file_.read()

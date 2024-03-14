@@ -26,9 +26,9 @@ classifiers = [
 	"Operating System :: OS Independent"
 ]
 keywords = ["calibre", "calibre-web", "library"]
-packages = [
-  { include = "src/calibre_web" }
-]
+#packages = [
+#  { include = "calibre_web" }
+#]
 
 [build-system]
 requires = ["poetry-core"]

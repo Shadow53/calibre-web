@@ -22,14 +22,16 @@ from flask_login import login_required, login_user
 from sqlalchemy.sql.expression import func
 from werkzeug.security import check_password_hash
 
-from . import config, limiter, lm, logger, ub
+from . import lm, logger, ub
+from .app import limiter
+from .config_sql import CONFIG
 
 log = logger.create()
 
 def login_required_if_no_ano(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        if config.config_anonbrowse == 1:
+        if CONFIG.config_anonbrowse == 1:
             return func(*args, **kwargs)
         return login_required(func)(*args, **kwargs)
 
@@ -40,7 +42,7 @@ def requires_basic_auth_if_no_ano(f):
     def decorated(*args, **kwargs):
         auth = request.authorization
         if not auth or auth.type != "basic":
-            if config.config_anonbrowse != 1:
+            if CONFIG.config_anonbrowse != 1:
                 user = load_user_from_reverse_proxy_header(request)
                 if user:
                     return f(*args, **kwargs)
@@ -85,8 +87,8 @@ def load_user(user_id):
 
 @lm.request_loader
 def load_user_from_reverse_proxy_header(req):
-    if config.config_allow_reverse_proxy_header_login:
-        rp_header_name = config.config_reverse_proxy_login_header_name
+    if CONFIG.config_allow_reverse_proxy_header_login:
+        rp_header_name = CONFIG.config_reverse_proxy_login_header_name
         if rp_header_name:
             rp_header_username = req.headers.get(rp_header_name)
             if rp_header_username:

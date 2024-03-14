@@ -97,6 +97,12 @@ books_publishers_link = Table("books_publishers_link", Base.metadata,
                               Column("publisher", Integer, ForeignKey("publishers.id"), primary_key=True)
                               )
 
+calibre_db = None
+
+
+def init():
+    calibre_db = CalibreDB()
+
 
 class Library_Id(Base):
     __tablename__ = "library_id"
@@ -935,11 +941,11 @@ class CalibreDB:
         tmp_cc = self.session.query(CustomColumns).filter(CustomColumns.datatype.notin_(cc_exceptions)).all()
         cc = []
         r = None
-        if config.config_columns_to_ignore:
+        if CONFIG.config_columns_to_ignore:
             r = re.compile(config.config_columns_to_ignore)
 
         for col in tmp_cc:
-            if filter_config_custom_read and config.config_read_column and config.config_read_column == col.id:
+            if filter_config_custom_read and CONFIG.config_read_column and CONFIG.config_read_column == col.id:
                 continue
             if r and r.match(col.name):
                 continue
@@ -1080,3 +1086,6 @@ class Category:
 
     def __init__(self, count):
         self.count = count"""
+
+
+init()

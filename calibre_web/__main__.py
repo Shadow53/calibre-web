@@ -1,5 +1,5 @@
 #!/use/bin/env python3
 
-from . import main
+from .app import main
 
 main()

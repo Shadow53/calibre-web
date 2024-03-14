@@ -28,7 +28,9 @@ from flask_login import current_user, login_required
 from sqlalchemy.exc import InvalidRequestError, OperationalError
 from sqlalchemy.sql.expression import func, true
 
-from . import calibre_db, config, db, logger, ub
+from . import db, logger, ub
+from .db import calibre_db
+from .config_sql import CONFIG
 from .render_template import render_title_template
 from .usermanagement import login_required_if_no_ano
 
@@ -321,7 +323,7 @@ def create_edit_shelf(shelf, page_title, page, shelf_id=False):
             flash(_("Sorry you are not allowed to create a public shelf"), category="error")
             return redirect(url_for("web.index"))
         is_public = 1 if to_save.get("is_public") == "on" else 0
-        if config.config_kobo_sync:
+        if CONFIG.config_kobo_sync:
             shelf.kobo_sync = bool(to_save.get("kobo_sync"))
             if shelf.kobo_sync:
                 ub.session.query(ub.ShelfArchive).filter(ub.ShelfArchive.user_id == current_user.id).filter(
@@ -445,7 +447,7 @@ def render_show_shelf(shelf_type, shelf_id, page_no, sort_param):
                                                            db.Books,
                                                            ub.BookShelf.shelf == shelf_id,
                                                            [ub.BookShelf.order.asc()],
-                                                           True, config.config_read_column,
+                                                           True, CONFIG.config_read_column,
                                                            ub.BookShelf, ub.BookShelf.book_id == db.Books.id)
         # delete chelf entries where book is not existent anymore, can happen if book is deleted outside calibre-web
         wrong_entries = calibre_db.session.query(ub.BookShelf) \

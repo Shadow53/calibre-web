@@ -52,7 +52,7 @@ generic = None
 def oauth_required(f):
     @wraps(f)
     def inner(*args, **kwargs):
-        if config.config_login_type == constants.LOGIN_OAUTH:
+        if CONFIG.config_login_type == constants.LOGIN_OAUTH:
             return f(*args, **kwargs)
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             data = {"status": "error", "message": "Not Found"}
@@ -160,7 +160,7 @@ def bind_oauth_or_register(provider_id, provider_user_id, redirect_url, provider
             log.info("Login failed, No User Linked With OAuth Account")
             return redirect(url_for("web.login"))
             # return redirect(url_for('web.login'))
-            # if config.config_public_reg:
+            # if CONFIG.config_public_reg:
             #   return redirect(url_for('web.register'))
             # else:
             #    flash(_("Public registration is not enabled"), category="error")

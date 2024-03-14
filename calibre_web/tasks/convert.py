@@ -26,7 +26,8 @@ from flask_babel import lazy_gettext as N_
 from markupsafe import escape
 from sqlalchemy.exc import SQLAlchemyError
 
-from calibre_web import config, db, helper, logger
+from calibre_web import db, helper, logger
+from calibre_web.config_sql import CONFIG
 from calibre_web.constants import SUPPORTED_CALIBRE_BINARIES
 from calibre_web.file_helper import get_temp_dir
 from calibre_web.kobo_sync_status import remove_synced_book
@@ -116,7 +117,7 @@ class TaskConvert(CalibreTask):
                      book_id,
                      format_new_ext)
 
-        if config.config_kepubifypath and format_old_ext == ".epub" and format_new_ext == ".kepub":
+        if CONFIG.config_kepubifypath and format_old_ext == ".epub" and format_new_ext == ".kepub":
             check, error_message = self._convert_kepubify(file_path,
                                                           format_old_ext,
                                                           format_new_ext)
@@ -167,7 +168,7 @@ class TaskConvert(CalibreTask):
         return None
 
     def _convert_kepubify(self, file_path, format_old_ext, format_new_ext):
-        if config.config_embed_metadata and config.config_binariesdir:
+        if CONFIG.config_embed_metadata and CONFIG.config_binariesdir:
             tmp_dir, temp_file_name = helper.do_calibre_export(self.book_id, format_old_ext[1:])
             filename = os.path.join(tmp_dir, temp_file_name + format_old_ext)
             temp_file_path = tmp_dir
@@ -206,16 +207,16 @@ class TaskConvert(CalibreTask):
     def _convert_calibre(self, file_path, format_old_ext, format_new_ext, has_cover):
         try:
             # path_tmp_opf = self._embed_metadata()
-            if config.config_embed_metadata:
+            if CONFIG.config_embed_metadata:
                 quotes = [3, 5]
                 tmp_dir = get_temp_dir()
                 calibredb_binarypath = os.path.join(config.config_binariesdir, SUPPORTED_CALIBRE_BINARIES["calibredb"])
                 my_env = os.environ.copy()
-                if config.config_calibre_split:
+                if CONFIG.config_calibre_split:
                     my_env["CALIBRE_OVERRIDE_DATABASE_PATH"] = os.path.join(config.config_calibre_dir, "metadata.db")
-                    library_path = config.config_calibre_split_dir
+                    library_path = CONFIG.config_calibre_split_dir
                 else:
-                    library_path = config.config_calibre_dir
+                    library_path = CONFIG.config_calibre_dir
 
                 opf_command = [calibredb_binarypath, "show_metadata", "--as-opf", str(self.book_id),
                                "--with-library", library_path]
@@ -228,13 +229,13 @@ class TaskConvert(CalibreTask):
             quotes = [1, 2, 4, 6]
             command = [config.config_converterpath, (file_path + format_old_ext),
                        (file_path + format_new_ext)]
-            if config.config_embed_metadata:
+            if CONFIG.config_embed_metadata:
                 command.extend(["--from-opf", path_tmp_opf])
             if has_cover:
                 command.extend(["--cover", os.path.join(os.path.dirname(file_path), "cover.jpg")])
             quotes_index = 3
-            if config.config_calibre:
-                parameters = config.config_calibre.split(" ")
+            if CONFIG.config_calibre:
+                parameters = CONFIG.config_calibre.split(" ")
                 for param in parameters:
                     command.append(param)
                     quotes.append(quotes_index)

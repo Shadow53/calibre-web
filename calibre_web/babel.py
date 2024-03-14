@@ -1,3 +1,5 @@
+from typing import List
+
 from babel import negotiate_locale
 from babel.core import UnknownLocaleError
 from flask import request

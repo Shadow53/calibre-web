@@ -68,7 +68,9 @@ from flask_babel import gettext as _
 from flask_limiter import RateLimitExceeded
 from flask_login import current_user, login_required, login_user
 
-from . import calibre_db, config, db, helper, limiter, lm, logger, ub
+from . import db, helper, limiter, lm, logger, ub
+from .db import calibre_db
+from .config_sql import CONFIG
 from .render_template import render_title_template
 
 log = logger.create()
@@ -104,8 +106,8 @@ def generate_auth_token(user_id):
 
     for book in books:
         formats = [data.format for data in book.data]
-        if "KEPUB" not in formats and config.config_kepubifypath and "EPUB" in formats:
-            helper.convert_book_format(book.id, config.config_calibre_dir, "EPUB", "KEPUB", current_user.name)
+        if "KEPUB" not in formats and CONFIG.config_kepubifypath and "EPUB" in formats:
+            helper.convert_book_format(book.id, CONFIG.config_calibre_dir, "EPUB", "KEPUB", current_user.name)
 
     return render_title_template(
         "generate_kobo_auth_url.html",

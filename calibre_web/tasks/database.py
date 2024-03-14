@@ -19,7 +19,8 @@ from urllib.request import urlopen
 
 from flask_babel import lazy_gettext as N_
 
-from calibre_web import config, logger
+from calibre_web import logger
+from calibre_web.config_sql import CONFIG
 from calibre_web.services.worker import CalibreTask
 
 
@@ -27,8 +28,8 @@ class TaskReconnectDatabase(CalibreTask):
     def __init__(self, task_message=N_("Reconnecting Calibre database")) -> None:
         super().__init__(task_message)
         self.log = logger.create()
-        self.listen_address = config.get_config_ipaddress()
-        self.listen_port = config.config_port
+        self.listen_address = CONFIG.get_config_ipaddress()
+        self.listen_port = CONFIG.config_port
 
 
     def run(self, worker_thread) -> None:

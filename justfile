@@ -1,7 +1,7 @@
 
 check:
-    mypy .
     ruff check
+    mypy .
 
 style:
     black .

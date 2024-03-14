@@ -17,7 +17,8 @@
 
 import datetime
 
-from . import config, constants
+from . import constants
+from .config_sql import CONFIG
 from .services.background_scheduler import BackgroundScheduler, CronTrigger
 from .services.worker import WorkerThread
 from .tasks.database import TaskReconnectDatabase
@@ -28,7 +29,7 @@ from .tasks.thumbnail import TaskClearCoverThumbnailCache, TaskGenerateCoverThum
 
 def get_scheduled_tasks(reconnect=True):
     tasks = []
-    # Reconnect Calibre database (metadata.db) based on config.schedule_reconnect
+    # Reconnect Calibre database (metadata.db) based on CONFIG.schedule_reconnect
     if reconnect:
         tasks.append([lambda: TaskReconnectDatabase(), "reconnect", False])
 
@@ -36,16 +37,16 @@ def get_scheduled_tasks(reconnect=True):
     tasks.append([lambda: TaskDeleteTempFolder(), "delete temp", True])
 
     # Generate metadata.opf file for each changed book
-    if config.schedule_metadata_backup:
+    if CONFIG.schedule_metadata_backup:
         tasks.append([lambda: TaskBackupMetadata("en"), "backup metadata", False])
 
     # Generate all missing book cover thumbnails
-    if config.schedule_generate_book_covers:
+    if CONFIG.schedule_generate_book_covers:
         tasks.append([lambda: TaskClearCoverThumbnailCache(0), "delete superfluous book covers", True])
         tasks.append([lambda: TaskGenerateCoverThumbnails(), "generate book covers", False])
 
     # Generate all missing series thumbnails
-    if config.schedule_generate_series_covers:
+    if CONFIG.schedule_generate_series_covers:
         tasks.append([lambda: TaskGenerateSeriesThumbnails(), "generate book covers", False])
 
     return tasks
@@ -65,8 +66,8 @@ def register_scheduled_tasks(reconnect=True) -> None:
         # Remove all existing jobs
         scheduler.remove_all_jobs()
 
-        start = config.schedule_start_time
-        duration = config.schedule_duration
+        start = CONFIG.schedule_start_time
+        duration = CONFIG.schedule_duration
 
         # Register scheduled tasks
         scheduler.schedule_tasks(tasks=get_scheduled_tasks(reconnect), trigger=CronTrigger(hour=start))
@@ -83,8 +84,8 @@ def register_startup_tasks() -> None:
     scheduler = BackgroundScheduler()
 
     if scheduler:
-        start = config.schedule_start_time
-        duration = config.schedule_duration
+        start = CONFIG.schedule_start_time
+        duration = CONFIG.schedule_duration
 
         # Run scheduled tasks immediately for development and testing
         # Ignore tasks that should currently be running, as these will be added when registering scheduled tasks

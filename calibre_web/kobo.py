@@ -34,8 +34,11 @@ from sqlalchemy.exc import StatementError
 from sqlalchemy.sql.expression import and_, or_
 from werkzeug.datastructures import Headers
 
-from . import calibre_db, config, csrf, db, helper, isoLanguages, kobo_auth, kobo_sync_status, logger, ub
+from . import db, helper, isoLanguages, kobo_auth, kobo_sync_status, logger, ub
+from .app import csrf
 from . import shelf as shelf_lib
+from .db import calibre_db
+from .config_sql import CONFIG
 from .constants import COVER_THUMBNAIL_SMALL  #, sqlalchemy_version2
 from .epub import get_epub_layout
 from .helper import get_download_link
@@ -74,7 +77,7 @@ CONNECTION_SPECIFIC_HEADERS = [
 
 
 def get_kobo_activated():
-    return config.config_kobo_sync
+    return CONFIG.config_kobo_sync
 
 
 def make_request_to_kobo_store(sync_token=None):
@@ -97,7 +100,7 @@ def make_request_to_kobo_store(sync_token=None):
 
 
 def redirect_or_proxy_request():
-    if config.config_kobo_proxy:
+    if CONFIG.config_kobo_proxy:
         if request.method == "GET":
             return redirect(get_store_url_for_current_request(), 307)
         else:
@@ -196,8 +199,8 @@ def HandleSyncRequest():
     log.debug(f"Books to Sync: {len(books.all())}")
     for book in books:
         formats = [data.format for data in book.Books.data]
-        if "KEPUB" not in formats and config.config_kepubifypath and "EPUB" in formats:
-            helper.convert_book_format(book.Books.id, config.get_book_path(), "EPUB", "KEPUB", current_user.name)
+        if "KEPUB" not in formats and CONFIG.config_kepubifypath and "EPUB" in formats:
+            helper.convert_book_format(book.Books.id, CONFIG.get_book_path(), "EPUB", "KEPUB", current_user.name)
 
         kobo_reading_state = get_or_create_reading_state(book.Books.id)
         entitlement = {
@@ -290,7 +293,7 @@ def HandleSyncRequest():
 
 def generate_sync_response(sync_token, sync_results, set_cont=False):
     extra_headers = {}
-    if config.config_kobo_proxy and not set_cont:
+    if CONFIG.config_kobo_proxy and not set_cont:
         # Merge in sync results from the official Kobo store.
         try:
             store_response = make_request_to_kobo_store(sync_token)
@@ -526,7 +529,7 @@ def HandleTagUpdate(tag_id):
                                               ub.Shelf.user_id == current_user.id).one_or_none()
     if not shelf:
         log.debug("Received Kobo tag update request on a collection unknown to CalibreWeb")
-        if config.config_kobo_proxy:
+        if CONFIG.config_kobo_proxy:
             return redirect_or_proxy_request()
         else:
             abort(404, description="Collection isn't known to CalibreWeb")
@@ -898,7 +901,7 @@ def HandleCoverImageRequest(book_uuid, width, height, Quality, isGreyscale):
         log.debug("Serving local cover image of book %s" % book_uuid)
         return book_cover
 
-    if not config.config_kobo_proxy:
+    if not CONFIG.config_kobo_proxy:
         log.debug("Returning 404 for cover image of unknown book %s" % book_uuid)
         # additional proxy request make no sense, -> direct return
         return abort(404)
@@ -954,7 +957,7 @@ def HandleUserRequest(dummy=None):
 @csrf.exempt
 @kobo.route("/v1/user/loyalty/benefits", methods=["GET"])
 def handle_benefits():
-    if config.config_kobo_proxy:
+    if CONFIG.config_kobo_proxy:
         return redirect_or_proxy_request()
     else:
         return make_response(jsonify({"Benefits": {}}))
@@ -963,7 +966,7 @@ def handle_benefits():
 @csrf.exempt
 @kobo.route("/v1/analytics/gettests", methods=["GET", "POST"])
 def handle_getests():
-    if config.config_kobo_proxy:
+    if CONFIG.config_kobo_proxy:
         return redirect_or_proxy_request()
     else:
         testkey = request.headers.get("X-Kobo-userkey", "")
@@ -1015,7 +1018,7 @@ def make_calibre_web_auth_response():
 @requires_kobo_auth
 def HandleAuthRequest():
     log.debug("Kobo Auth request")
-    if config.config_kobo_proxy:
+    if CONFIG.config_kobo_proxy:
         try:
             return redirect_or_proxy_request()
         except Exception:
@@ -1029,7 +1032,7 @@ def HandleInitRequest():
     log.info("Init")
 
     kobo_resources = None
-    if config.config_kobo_proxy:
+    if CONFIG.config_kobo_proxy:
         try:
             store_response = make_request_to_kobo_store()
             store_response_json = store_response.json()

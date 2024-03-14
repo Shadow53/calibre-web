@@ -28,7 +28,8 @@ from flask_babel import gettext as _
 from flask_login import current_user, login_required, login_user
 from sqlalchemy.sql.expression import true
 
-from . import config, logger, ub
+from . import logger, ub
+from .config_sql import CONFIG
 from .render_template import render_title_template
 
 remotelogin = Blueprint("remotelogin", __name__)
@@ -38,7 +39,7 @@ log = logger.create()
 def remote_login_required(f):
     @wraps(f)
     def inner(*args, **kwargs):
-        if config.config_remote_login:
+        if CONFIG.config_remote_login:
             return f(*args, **kwargs)
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             data = {"status": "error", "message": "Forbidden"}

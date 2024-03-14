@@ -56,8 +56,6 @@ from sqlalchemy.orm.exc import StaleDataError
 from sqlalchemy.sql.expression import func
 
 from . import (
-    calibre_db,
-    config,
     constants,
     db,
     helper,
@@ -67,6 +65,8 @@ from . import (
     ub,
     uploader,
 )
+from .db import calibre_db
+from .config_sql import CONFIG
 from .kobo_sync_status import change_archived_books
 from .render_template import render_title_template
 from .services.worker import WorkerThread
@@ -150,7 +150,7 @@ def edit_book(book_id):
             edited_books_id = book.id
             modify_date = True
             title_author_error = helper.update_dir_structure(edited_books_id,
-                                                             config.get_book_path(),
+                                                             CONFIG.get_book_path(),
                                                              input_authors[0],
                                                              renamed_author=renamed)
         if title_author_error:
@@ -258,7 +258,7 @@ def edit_book(book_id):
 @login_required_if_no_ano
 @upload_required
 def upload():
-    if not config.config_uploading:
+    if not CONFIG.config_uploading:
         abort(404)
     if request.method == "POST" and "btn-upload" in request.files:
         for requested_file in request.files.getlist("btn-upload"):
@@ -280,7 +280,7 @@ def upload():
                 book_id = db_book.id
                 title = db_book.title
                 error = helper.update_dir_structure(book_id,
-                                                    config.get_book_path(),
+                                                    CONFIG.get_book_path(),
                                                     input_authors[0],
                                                     meta.file_path,
                                                     title_dir + meta.extension.lower(),
@@ -329,7 +329,7 @@ def convert_bookformat(book_id):
         return redirect(url_for("edit-book.show_edit_book", book_id=book_id))
 
     log.info("converting: book id: %s from: %s to: %s", book_id, book_format_from, book_format_to)
-    rtn = helper.convert_book_format(book_id, config.get_book_path(), book_format_from.upper(),
+    rtn = helper.convert_book_format(book_id, CONFIG.get_book_path(), book_format_from.upper(),
                                      book_format_to.upper(), current_user.name)
 
     if rtn is None:
@@ -399,7 +399,7 @@ def edit_list_book(param):
         elif param == "title":
             sort_param = book.sort
             if handle_title_on_edit(book, vals.get("value", "")):
-                rename_error = helper.update_dir_structure(book.id, config.get_book_path())
+                rename_error = helper.update_dir_structure(book.id, CONFIG.get_book_path())
                 if not rename_error:
                     ret = Response(json.dumps({"success": True, "newValue":  book.title}),
                                    mimetype="application/json")
@@ -417,7 +417,7 @@ def edit_list_book(param):
                            mimetype="application/json")
         elif param == "authors":
             input_authors, __, renamed = handle_author_on_edit(book, vals["value"], vals.get("checkA", None) == "true")
-            rename_error = helper.update_dir_structure(book.id, config.get_book_path(), input_authors[0],
+            rename_error = helper.update_dir_structure(book.id, CONFIG.get_book_path(), input_authors[0],
                                                        renamed_author=renamed)
             if not rename_error:
                 ret = Response(json.dumps({
@@ -561,7 +561,7 @@ def table_xchange_author_title():
 
             if edited_books_id:
                 # TODO: Handle error
-                _edit_error = helper.update_dir_structure(edited_books_id, config.get_book_path(), input_authors[0],
+                _edit_error = helper.update_dir_structure(edited_books_id, CONFIG.get_book_path(), input_authors[0],
                                                          renamed_author=renamed)
             if modify_date:
                 book.last_modified = datetime.utcnow()
@@ -740,7 +740,7 @@ def file_handling_on_upload(requested_file):
 
     # extract metadata from file
     try:
-        meta = uploader.upload(requested_file, config.config_rarfile_location)
+        meta = uploader.upload(requested_file, CONFIG.config_rarfile_location)
     except OSError:
         log.exception("File %s could not saved to temp dir", requested_file.filename)
         flash(_("File %(filename)s could not saved to temp dir",
@@ -837,7 +837,7 @@ def delete_book_from_table(book_id, book_format, json_response):
         book = calibre_db.get_book(book_id)
         if book:
             try:
-                result, error = helper.delete_book(book, config.get_book_path(), book_format=book_format.upper())
+                result, error = helper.delete_book(book, CONFIG.get_book_path(), book_format=book_format.upper())
                 if not result:
                     if json_response:
                         return json.dumps([{"location": url_for("edit-book.show_edit_book", book_id=book_id),
@@ -911,17 +911,17 @@ def render_edit_book(book_id):
     valid_source_formats = []
     allowed_conversion_formats = []
     kepub_possible = None
-    if config.config_converterpath:
+    if CONFIG.config_converterpath:
         for file in book.data:
             if file.format.lower() in constants.EXTENSIONS_CONVERT_FROM:
                 valid_source_formats.append(file.format.lower())
-    if config.config_kepubifypath and "epub" in [file.format.lower() for file in book.data]:
+    if CONFIG.config_kepubifypath and "epub" in [file.format.lower() for file in book.data]:
         kepub_possible = True
-        if not config.config_converterpath:
+        if not CONFIG.config_converterpath:
             valid_source_formats.append("epub")
 
     # Determine what formats don't already exist
-    if config.config_converterpath:
+    if CONFIG.config_converterpath:
         allowed_conversion_formats = constants.EXTENSIONS_CONVERT_TO[:]
         for file in book.data:
             if file.format.lower() in allowed_conversion_formats:

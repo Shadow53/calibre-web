@@ -40,7 +40,9 @@ from sqlalchemy.sql.expression import and_, false, func, or_, text, true
 from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash
 
-from . import calibre_db, config, db, fs, logger, ub
+from . import db, fs, logger, ub
+from .db import calibre_db
+from .config_sql import CONFIG
 from .constants import CACHE_TYPE_THUMBNAILS, SUPPORTED_CALIBRE_BINARIES, THUMBNAIL_TYPE_COVER, THUMBNAIL_TYPE_SERIES
 from .constants import STATIC_DIR as _STATIC_DIR
 from .epub_helper import create_new_metadata_backup, get_content_opf, replace_metadata, updateEpub
@@ -78,7 +80,7 @@ def convert_book_format(book_id, calibre_path, old_book_format, new_book_format,
                           format=old_book_format, fn=data.name + "." + old_book_format.lower())
     # read settings and append converter task to queue
     if ereader_mail:
-        settings = config.get_mail_settings()
+        settings = CONFIG.get_mail_settings()
         settings["subject"] = _("Send to eReader")  # pretranslate Subject for Email
         settings["body"] = _("This Email has been sent via Calibre-Web.")
     else:
@@ -94,7 +96,7 @@ def convert_book_format(book_id, calibre_path, old_book_format, new_book_format,
 # Texts are not lazy translated as they are supposed to get send out as is
 def send_test_mail(ereader_mail, user_name) -> None:
     WorkerThread.add(user_name, TaskEmail(_("Calibre-Web Test Email"), None, None,
-                     config.get_mail_settings(), ereader_mail, N_("Test Email"),
+                     CONFIG.get_mail_settings(), ereader_mail, N_("Test Email"),
                                           _("This Email has been sent via Calibre-Web.")))
 
 
@@ -143,7 +145,7 @@ def check_send_to_ereader(entry):
     book_formats = []
     if len(entry.data):
         for ele in iter(entry.data):
-            if ele.uncompressed_size < config.mail_size:
+            if ele.uncompressed_size < CONFIG.mail_size:
                 formats.append(ele.format)
         if "EPUB" in formats:
             book_formats.append({"format": "Epub",
@@ -157,7 +159,7 @@ def check_send_to_ereader(entry):
             book_formats.append({"format": "Azw",
                                  "convert": 0,
                                  "text": _("Send %(format)s to eReader", format="Azw")})
-        if config.config_converterpath:
+        if CONFIG.config_converterpath:
             book_formats.extend(check_send_to_ereader_with_converter(formats))
         return book_formats
     else:
@@ -198,7 +200,7 @@ def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id)
             link = '<a href="{}">{}</a>'.format(url_for("web.show_book", book_id=book_id), escape(book.title))
             email_text = N_("%(book)s send to eReader", book=link)
             WorkerThread.add(user_id, TaskEmail(_("Send to eReader"), book.path, converted_file_name,
-                             config.get_mail_settings(), ereader_mail,
+                             CONFIG.get_mail_settings(), ereader_mail,
                              email_text, _("This Email has been sent via Calibre-Web.")))
             return None
     return _("The requested file could not be read. Maybe wrong permissions?")
@@ -211,7 +213,7 @@ def get_valid_filename(value, replace_whitespace=True, chars=128):
     if value[-1:] == ".":
         value = value[:-1]+"_"
     value = value.replace("/", "_").replace(":", "_").strip("\0")
-    if config.config_unicode_filename:
+    if CONFIG.config_unicode_filename:
         value = (unidecode.unidecode(value))
     if replace_whitespace:
         #  *+:\"/<>? are replaced by _
@@ -265,7 +267,7 @@ def get_sorted_author(value):
 
 
 def edit_book_read_status(book_id, read_status=None):
-    if not config.config_read_column:
+    if not CONFIG.config_read_column:
         book = ub.session.query(ub.ReadBook).filter(and_(ub.ReadBook.user_id == int(current_user.id),
                                                          ub.ReadBook.book_id == book_id)).first()
         if book:
@@ -490,7 +492,7 @@ def reset_password(user_id):
     existing_user = ub.session.query(ub.User).filter(ub.User.id == user_id).first()
     if not existing_user:
         return 0, None
-    if not config.get_mail_server_configured():
+    if not CONFIG.get_mail_server_configured():
         return 2, None
     try:
         password = generate_random_password(config.config_password_min_length)
@@ -570,17 +572,17 @@ def valid_email(email):
     return email
 
 def valid_password(check_password):
-    if config.config_password_policy:
+    if CONFIG.config_password_policy:
         verify = ""
-        if config.config_password_min_length > 0:
+        if CONFIG.config_password_min_length > 0:
             verify += "^(?=.{" + str(config.config_password_min_length) + ",}$)"
-        if config.config_password_number:
+        if CONFIG.config_password_number:
             verify += r"(?=.*?\d)"
-        if config.config_password_lower:
+        if CONFIG.config_password_lower:
             verify += "(?=.*?[a-z])"
-        if config.config_password_upper:
+        if CONFIG.config_password_upper:
             verify += "(?=.*?[A-Z])"
-        if config.config_password_special:
+        if CONFIG.config_password_special:
             verify += r"(?=.*?[^A-Za-z\s0-9])"
         match = re.match(verify, check_password)
         if not match:
@@ -785,10 +787,10 @@ def do_download_file(book, book_format, client, data, headers):
     if client == "kobo" and book_format == "kepub":
         headers["Content-Disposition"] = headers["Content-Disposition"].replace(".kepub", ".kepub.epub")
 
-    if book_format == "kepub" and config.config_kepubifypath and config.config_embed_metadata:
+    if book_format == "kepub" and CONFIG.config_kepubifypath and CONFIG.config_embed_metadata:
         filename, download_name = do_kepubify_metadata_replace(book, os.path.join(filename,
                                                                                   book_name + "." + book_format))
-    elif book_format != "kepub" and config.config_binariesdir and config.config_embed_metadata:
+    elif book_format != "kepub" and CONFIG.config_binariesdir and CONFIG.config_embed_metadata:
             filename, download_name = do_calibre_export(book.id, book_format)
     else:
         download_name = book_name
@@ -824,11 +826,11 @@ def do_calibre_export(book_id, book_format, ):
         calibredb_binarypath = get_calibre_binarypath("calibredb")
         temp_file_name = str(uuid4())
         my_env = os.environ.copy()
-        if config.config_calibre_split:
+        if CONFIG.config_calibre_split:
             my_env["CALIBRE_OVERRIDE_DATABASE_PATH"] = os.path.join(config.config_calibre_dir, "metadata.db")
-            library_path = config.config_calibre_split_dir
+            library_path = CONFIG.config_calibre_split_dir
         else:
-            library_path = config.config_calibre_dir
+            library_path = CONFIG.config_calibre_dir
         opf_command = [calibredb_binarypath, "export", "--dont-write-opf", "--with-library", library_path,
                        "--to-dir", tmp_dir, "--formats", book_format, "--template", f"{temp_file_name}",
                        str(book_id)]
@@ -966,7 +968,7 @@ def get_download_link(book_id, book_format, client):
 
 
 def get_calibre_binarypath(binary):
-        binariesdir = config.config_binariesdir
+        binariesdir = CONFIG.config_binariesdir
         if binariesdir:
             try:
                 return os.path.join(binariesdir, SUPPORTED_CALIBRE_BINARIES[binary])
@@ -976,12 +978,12 @@ def get_calibre_binarypath(binary):
 
 
 def clear_cover_thumbnail_cache(book_id) -> None:
-    if config.schedule_generate_book_covers:
+    if CONFIG.schedule_generate_book_covers:
         WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
 
 
 def replace_cover_thumbnail_cache(book_id) -> None:
-    if config.schedule_generate_book_covers:
+    if CONFIG.schedule_generate_book_covers:
         WorkerThread.add(None, TaskClearCoverThumbnailCache(book_id), hidden=True)
         WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
 
@@ -991,12 +993,12 @@ def delete_thumbnail_cache() -> None:
 
 
 def add_book_to_thumbnail_cache(book_id) -> None:
-    if config.schedule_generate_book_covers:
+    if CONFIG.schedule_generate_book_covers:
         WorkerThread.add(None, TaskGenerateCoverThumbnails(book_id), hidden=True)
 
 
 def update_thumbnail_cache() -> None:
-    if config.schedule_generate_book_covers:
+    if CONFIG.schedule_generate_book_covers:
         WorkerThread.add(None, TaskGenerateCoverThumbnails())
 
 

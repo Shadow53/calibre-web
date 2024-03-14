@@ -47,7 +47,9 @@ from sqlalchemy.sql.expression import and_, false, func, not_, or_, text
 from sqlalchemy.sql.functions import coalesce
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from . import app, calibre_db, config, constants, db, isoLanguages, kobo_sync_status, limiter, logger, services, ub
+from . import app, constants, db, isoLanguages, kobo_sync_status, limiter, logger, services, ub
+from .db import calibre_db
+from .config_sql import CONFIG
 from .babel import get_available_locale
 from .helper import (
     check_email,
@@ -101,7 +103,7 @@ except ImportError:
 
 @app.after_request
 def add_security_headers(resp):
-    default_src = ([host.strip() for host in config.config_trustedhosts.split(",") if host] +
+    default_src = ([host.strip() for host in CONFIG.config_trustedhosts.split(",") if host] +
                    ["'self'", "'unsafe-inline'", "'unsafe-eval'"])
     csp = "default-src " + " ".join(default_src) + "; "
     csp += "font-src 'self' data:"
@@ -230,7 +232,7 @@ def get_comic_book(book_id, book_format, page):
                 cbr_file = os.path.join(config.config_calibre_dir, book.path, bookformat.name) + "." + book_format
                 if book_format in ("cbr", "rar"):
                     if feature_support['rar'] == True:
-                        rarfile.UNRAR_TOOL = config.config_rarfile_location
+                        rarfile.UNRAR_TOOL = CONFIG.config_rarfile_location
                         try:
                             rf = rarfile.RarFile(cbr_file)
                             names = sort(rf.namelist())
@@ -414,15 +416,15 @@ def render_books_list(data, sort_param, book_id, page):
     elif data == "search":
         term = request.args.get("query", None)
         offset = int(int(config.config_books_per_page) * (page - 1))
-        return render_search_results(term, offset, order, config.config_books_per_page)
+        return render_search_results(term, offset, order, CONFIG.config_books_per_page)
     elif data == "advsearch":
         term = json.loads(flask_session.get("query", "{}"))
         offset = int(int(config.config_books_per_page) * (page - 1))
-        return render_adv_search_results(term, offset, order, config.config_books_per_page)
+        return render_adv_search_results(term, offset, order, CONFIG.config_books_per_page)
     else:
         website = data or "newest"
         entries, random, pagination = calibre_db.fill_indexpage(page, 0, db.Books, True, order[0],
-                                                                True, config.config_read_column,
+                                                                True, CONFIG.config_read_column,
                                                                 db.books_series_link,
                                                                 db.Books.id == db.books_series_link.c.book,
                                                                 db.Series)
@@ -436,7 +438,7 @@ def render_rated_books(page, book_id, order):
                                                                 db.Books,
                                                                 db.Books.ratings.any(db.Ratings.rating > 9),
                                                                 order[0],
-                                                                True, config.config_read_column,
+                                                                True, CONFIG.config_read_column,
                                                                 db.books_series_link,
                                                                 db.Books.id == db.books_series_link.c.book,
                                                                 db.Series)
@@ -453,7 +455,7 @@ def render_discover_books(book_id):
         entries, __, ___ = calibre_db.fill_indexpage(1, 0, db.Books, True, [func.randomblob(2)],
                                                             join_archive_read=True,
                                                             config_read_column=config.config_read_column)
-        pagination = Pagination(1, config.config_books_per_page, config.config_books_per_page)
+        pagination = Pagination(1, CONFIG.config_books_per_page, CONFIG.config_books_per_page)
         return render_title_template("index.html", random=false(), entries=entries, pagination=pagination, id=book_id,
                                      title=_("Discover (Random Books)"), page="discover")
     else:
@@ -490,7 +492,7 @@ def render_hot_books(page, order):
             else:
                 ub.delete_download(book.Downloads.book_id)
         num_books = entries.__len__()
-        pagination = Pagination(page, config.config_books_per_page, num_books)
+        pagination = Pagination(page, CONFIG.config_books_per_page, num_books)
         return render_title_template("index.html", random=random, entries=entries, pagination=pagination,
                                      title=_("Hot Books (Most Downloaded)"), page="hot", order=order[1])
     else:
@@ -507,7 +509,7 @@ def render_downloaded_books(page, order, user_id):
                                                             db.Books,
                                                             ub.Downloads.user_id == user_id,
                                                             order[0],
-                                                            True, config.config_read_column,
+                                                            True, CONFIG.config_read_column,
                                                             db.books_series_link,
                                                             db.Books.id == db.books_series_link.c.book,
                                                             db.Series,
@@ -534,7 +536,7 @@ def render_author_books(page, author_id, order):
                                                         db.Books,
                                                         db.Books.authors.any(db.Authors.id == author_id),
                                                         [order[0][0], db.Series.name, db.Books.series_index],
-                                                        True, config.config_read_column,
+                                                        True, CONFIG.config_read_column,
                                                         db.books_series_link,
                                                         db.books_series_link.c.book == db.Books.id,
                                                         db.Series)
@@ -561,7 +563,7 @@ def render_publisher_books(page, book_id, order):
                                                                 db.Books,
                                                                 db.Publishers.name is None,
                                                                 [db.Series.name, order[0][0], db.Books.series_index],
-                                                                True, config.config_read_column,
+                                                                True, CONFIG.config_read_column,
                                                                 db.books_publishers_link,
                                                                 db.Books.id == db.books_publishers_link.c.book,
                                                                 db.Publishers,
@@ -578,7 +580,7 @@ def render_publisher_books(page, book_id, order):
                                                                         db.Publishers.id == book_id),
                                                                     [db.Series.name, order[0][0],
                                                                      db.Books.series_index],
-                                                                    True, config.config_read_column,
+                                                                    True, CONFIG.config_read_column,
                                                                     db.books_series_link,
                                                                     db.Books.id == db.books_series_link.c.book,
                                                                     db.Series)
@@ -598,7 +600,7 @@ def render_series_books(page, book_id, order):
                                                                 db.Books,
                                                                 db.Series.name is None,
                                                                 [order[0][0]],
-                                                                True, config.config_read_column,
+                                                                True, CONFIG.config_read_column,
                                                                 db.books_series_link,
                                                                 db.Books.id == db.books_series_link.c.book,
                                                                 db.Series)
@@ -610,7 +612,7 @@ def render_series_books(page, book_id, order):
                                                                     db.Books,
                                                                     db.Books.series.any(db.Series.id == book_id),
                                                                     [order[0][0]],
-                                                                    True, config.config_read_column)
+                                                                    True, CONFIG.config_read_column)
             series_name = series_name.name
         else:
             abort(404)
@@ -625,7 +627,7 @@ def render_ratings_books(page, book_id, order):
                                                                 db.Books,
                                                                 db_filter,
                                                                 [order[0][0]],
-                                                                True, config.config_read_column,
+                                                                True, CONFIG.config_read_column,
                                                                 db.books_ratings_link,
                                                                 db.Books.id == db.books_ratings_link.c.book,
                                                                 db.Ratings)
@@ -637,7 +639,7 @@ def render_ratings_books(page, book_id, order):
                                                                     db.Books,
                                                                     db.Books.ratings.any(db.Ratings.id == book_id),
                                                                     [order[0][0]],
-                                                                    True, config.config_read_column)
+                                                                    True, CONFIG.config_read_column)
             title = _("Rating: %(rating)s stars", rating=int(name.rating / 2))
         else:
             abort(404)
@@ -652,7 +654,7 @@ def render_formats_books(page, book_id, order):
                                                                 db.Books,
                                                                 db.Data.format is None,
                                                                 [order[0][0]],
-                                                                True, config.config_read_column,
+                                                                True, CONFIG.config_read_column,
                                                                 db.Data)
 
     else:
@@ -664,7 +666,7 @@ def render_formats_books(page, book_id, order):
                                                                     db.Books.data.any(
                                                                         db.Data.format == book_id.upper()),
                                                                     [order[0][0]],
-                                                                    True, config.config_read_column)
+                                                                    True, CONFIG.config_read_column)
         else:
             abort(404)
 
@@ -680,7 +682,7 @@ def render_category_books(page, book_id, order):
                                                                 db.Books,
                                                                 db.Tags.name is None,
                                                                 [order[0][0], db.Series.name, db.Books.series_index],
-                                                                True, config.config_read_column,
+                                                                True, CONFIG.config_read_column,
                                                                 db.books_tags_link,
                                                                 db.Books.id == db.books_tags_link.c.book,
                                                                 db.Tags,
@@ -696,7 +698,7 @@ def render_category_books(page, book_id, order):
                                                                     db.Books.tags.any(db.Tags.id == book_id),
                                                                     [order[0][0], db.Series.name,
                                                                      db.Books.series_index],
-                                                                    True, config.config_read_column,
+                                                                    True, CONFIG.config_read_column,
                                                                     db.books_series_link,
                                                                     db.Books.id == db.books_series_link.c.book,
                                                                     db.Series)
@@ -722,7 +724,7 @@ def render_language_books(page, name, order):
                                                                 db.Books,
                                                                 db.Languages.lang_code is None,
                                                                 [order[0][0]],
-                                                                True, config.config_read_column,
+                                                                True, CONFIG.config_read_column,
                                                                 db.books_languages_link,
                                                                 db.Books.id == db.books_languages_link.c.book,
                                                                 db.Languages)
@@ -731,14 +733,14 @@ def render_language_books(page, name, order):
                                                                 db.Books,
                                                                 db.Books.languages.any(db.Languages.lang_code == name),
                                                                 [order[0][0]],
-                                                                True, config.config_read_column)
+                                                                True, CONFIG.config_read_column)
     return render_title_template("index.html", random=random, entries=entries, pagination=pagination, id=name,
                                  title=_("Language: %(name)s", name=lang_name), page="language", order=order[1])
 
 
 def render_read_books(page, are_read, as_xml=False, order=None):
     sort_param = order[0] if order else []
-    if not config.config_read_column:
+    if not CONFIG.config_read_column:
         if are_read:
             db_filter = and_(ub.ReadBook.user_id == int(current_user.id),
                              ub.ReadBook.read_status == ub.ReadBook.STATUS_FINISHED)
@@ -763,7 +765,7 @@ def render_read_books(page, are_read, as_xml=False, order=None):
                                                             db.Books,
                                                             db_filter,
                                                             sort_param,
-                                                            True, config.config_read_column,
+                                                            True, CONFIG.config_read_column,
                                                             db.books_series_link,
                                                             db.Books.id == db.books_series_link.c.book,
                                                             db.Series)
@@ -796,7 +798,7 @@ def render_archived_books(page, sort_param):
                                                                                 archived_filter,
                                                                                 order,
                                                                                 True,
-                                                                                True, config.config_read_column)
+                                                                                True, CONFIG.config_read_column)
 
     name = _("Archived Books") + " (" + str(len(archived_book_ids)) + ")"
     page_name = "archived"
@@ -837,7 +839,7 @@ def books_table():
 @login_required
 def list_books():
     off = int(request.args.get("offset") or 0)
-    limit = int(request.args.get("limit") or config.config_books_per_page)
+    limit = int(request.args.get("limit") or CONFIG.config_books_per_page)
     search_param = request.args.get("search")
     sort_param = request.args.get("sort", "id")
     order = request.args.get("order", "").lower()
@@ -893,7 +895,7 @@ def list_books():
                                                                         order,
                                                                         True,
                                                                         True,
-                                                                        config.config_read_column,
+                                                                        CONFIG.config_read_column,
                                                                         *join)
 
     result = []
@@ -1248,11 +1250,11 @@ def download_link(book_id: int, book_format: str, _anyname: Optional[str]) -> st
 @login_required_if_no_ano
 @download_required
 def send_to_ereader(book_id: int, book_format: str, convert: int):
-    if not config.get_mail_server_configured():
+    if not CONFIG.get_mail_server_configured():
         response = [{"type": "danger", "message": _("Please configure the SMTP mail settings first...")}]
         return Response(json.dumps(response), mimetype="application/json")
     if current_user.kindle_mail:
-        result = send_mail(book_id, book_format, convert, current_user.kindle_mail, config.get_book_path(),
+        result = send_mail(book_id, book_format, convert, current_user.kindle_mail, CONFIG.get_book_path(),
                            current_user.name)
         if result is None:
             ub.update_download(book_id, int(current_user.id))
@@ -1271,7 +1273,7 @@ def send_to_ereader(book_id: int, book_format: str, convert: int):
 @limiter.limit("40/day", key_func=get_remote_address)
 @limiter.limit("3/minute", key_func=get_remote_address)
 def register_post():
-    if not config.config_public_reg:
+    if not CONFIG.config_public_reg:
         abort(404)
     to_save = request.form.to_dict()
     try:
@@ -1281,10 +1283,10 @@ def register_post():
         return render_title_template("register.html", config=config, title=_("Register"), page="register")
     if current_user is not None and current_user.is_authenticated:
         return redirect(url_for("web.index"))
-    if not config.get_mail_server_configured():
+    if not CONFIG.get_mail_server_configured():
         flash(_("Oops! Email server is not configured, please contact your administrator."), category="error")
         return render_title_template("register.html", title=_("Register"), page="register")
-    nickname = to_save.get("email", "").strip() if config.config_register_email else to_save.get("name")
+    nickname = to_save.get("email", "").strip() if CONFIG.config_register_email else to_save.get("name")
     if not nickname or not to_save.get("email"):
         flash(_("Oops! Please complete all fields."), category="error")
         return render_title_template("register.html", title=_("Register"), page="register")
@@ -1301,9 +1303,9 @@ def register_post():
         content.email = email
         password = generate_random_password(config.config_password_min_length)
         content.password = generate_password_hash(password)
-        content.role = config.config_default_role
-        content.locale = config.config_default_locale
-        content.sidebar_view = config.config_default_show
+        content.role = CONFIG.config_default_role
+        content.locale = CONFIG.config_default_locale
+        content.sidebar_view = CONFIG.config_default_show
         try:
             ub.session.add(content)
             ub.session.commit()
@@ -1324,11 +1326,11 @@ def register_post():
 
 @web.route("/register", methods=["GET"])
 def register():
-    if not config.config_public_reg:
+    if not CONFIG.config_public_reg:
         abort(404)
     if current_user is not None and current_user.is_authenticated:
         return redirect(url_for("web.index"))
-    if not config.get_mail_server_configured():
+    if not CONFIG.get_mail_server_configured():
         flash(_("Oops! Email server is not configured, please contact your administrator."), category="error")
         return render_title_template("register.html", title=_("Register"), page="register")
     if feature_support["oauth"]:
@@ -1399,7 +1401,7 @@ def login_post():
             flash(_("Please enter valid username to reset password"), category="error")
             log.warning("Username missing for password reset IP-address: %s", ip_address)
     elif user and check_password_hash(str(user.password), form["password"]) and user.name != "Guest":
-        config.config_is_initial = False
+        CONFIG.config_is_initial = False
         log.debug(f"You are now logged in as: '{user.name}'")
         return handle_login_user(user,
                                  remember_me,
@@ -1499,8 +1501,8 @@ def change_profile(
 def profile():
     languages = calibre_db.speaking_language()
     translations = get_available_locale()
-    kobo_support = feature_support["kobo"] and config.config_kobo_sync
-    if feature_support["oauth"] and config.config_login_type == constants.LOGIN_OAUTH:
+    kobo_support = feature_support["kobo"] and CONFIG.config_kobo_sync
+    if feature_support["oauth"] and CONFIG.config_login_type == constants.LOGIN_OAUTH:
         oauth_status = get_oauth_status()
         local_oauth_check = oauth_check
     else:
@@ -1583,7 +1585,7 @@ def read_book(book_id: int, book_format: str):
 @web.route("/book/<int:book_id>")
 @login_required_if_no_ano
 def show_book(book_id: int):
-    entries = calibre_db.get_book_read_archived(book_id, config.config_read_column, allow_show_archived=True)
+    entries = calibre_db.get_book_read_archived(book_id, CONFIG.config_read_column, allow_show_archived=True)
     if entries:
         read_book = entries[1]
         archived_book = entries[2]

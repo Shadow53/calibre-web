@@ -23,6 +23,12 @@ import sys
 from .constants import CONFIG_DIR as _CONFIG_DIR
 from .constants import DEFAULT_SETTINGS_FILE, VERSION_STRING
 
+cli_param = None
+
+
+def init():
+    cli_param = CliParameter()
+
 
 def version_info() -> str:
     return f"Calibre-Web version: {VERSION_STRING}"
@@ -120,3 +126,6 @@ class CliParameter:
 
         if args.f:
             print("Warning: -f flag is depreciated and will be removed in next version")
+
+
+init()

@@ -43,9 +43,6 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.expression import func, or_, text
 
 from . import (
-    calibre_db,
-    cli_param,
-    config,
     constants,
     db,
     debug_info,
@@ -55,10 +52,12 @@ from . import (
     schedule,
     services,
     ub,
-    updater_thread,
-    web_server,
 )
+from .app import updater_thread, web_server
+from .cli import cli_param
+from .db import calibre_db
 from .babel import get_available_locale, get_available_translations, get_user_locale_language
+from .config_sql import CONFIG
 from .helper import (
     check_email,
     check_username,
@@ -119,17 +118,17 @@ def before_request():
     try:
         if not ub.check_user_session(current_user.id,
                                      flask_session.get("_id")) and "opds" not in request.path \
-          and config.config_session == 1:
+          and CONFIG.config_session == 1:
             logout_user()
     except AttributeError:
         pass    # ? fails on requesting /ajax/emailstat during restart ?
     g.constants = constants
-    g.allow_registration = config.config_public_reg
-    g.allow_anonymous = config.config_anonbrowse
-    g.allow_upload = config.config_uploading
-    g.current_theme = config.config_theme
-    g.config_authors_max = config.config_authors_max
-    if "/static/" not in request.path and not config.db_configured and \
+    g.allow_registration = CONFIG.config_public_reg
+    g.allow_anonymous = CONFIG.config_anonbrowse
+    g.allow_upload = CONFIG.config_uploading
+    g.current_theme = CONFIG.config_theme
+    g.config_authors_max = CONFIG.config_authors_max
+    if "/static/" not in request.path and not CONFIG.db_configured and \
         request.endpoint not in ("admin.ajax_db_config",
                                  "admin.simulatedbchange",
                                  "admin.db_configuration",
@@ -205,7 +204,7 @@ def reconnect():
 @admin_required
 @login_required
 def update_thumbnails() -> str:
-    content = config.get_scheduled_task_settings()
+    content = CONFIG.get_scheduled_task_settings()
     if content["schedule_generate_book_covers"]:
         log.info("Update of Cover cache requested")
         helper.update_thumbnail_cache()
@@ -317,13 +316,13 @@ def edit_user_table():
         .filter(calibre_db.common_filters()) \
         .group_by(text("books_tags_link.tag")) \
         .order_by(db.Tags.name).all()
-    if config.config_restricted_column:
+    if CONFIG.config_restricted_column:
         custom_values = calibre_db.session.query(db.cc_classes[config.config_restricted_column]).all()
     else:
         custom_values = []
-    if not config.config_anonbrowse:
+    if not CONFIG.config_anonbrowse:
         all_user = all_user.filter(ub.User.role.op("&")(constants.ROLE_ANONYMOUS) != constants.ROLE_ANONYMOUS)
-    kobo_support = feature_support["kobo"] and config.config_kobo_sync
+    kobo_support = feature_support["kobo"] and CONFIG.config_kobo_sync
     return render_title_template("user_table.html",
                                  users=all_user.all(),
                                  tags=tags,
@@ -359,7 +358,7 @@ def list_users():
         order = ub.User.id.asc()
 
     all_user = ub.session.query(ub.User)
-    if not config.config_anonbrowse:
+    if not CONFIG.config_anonbrowse:
         all_user = all_user.filter(ub.User.role.op("&")(constants.ROLE_ANONYMOUS) != constants.ROLE_ANONYMOUS)
 
     total_count = filtered_count = all_user.count()
@@ -453,7 +452,7 @@ def table_get_default_lang():
 def edit_list_user(param):
     vals = request.form.to_dict(flat=False)
     all_user = ub.session.query(ub.User)
-    if not config.config_anonbrowse:
+    if not CONFIG.config_anonbrowse:
         all_user = all_user.filter(ub.User.role.op("&")(constants.ROLE_ANONYMOUS) != constants.ROLE_ANONYMOUS)
     # only one user is posted
     if "pk" in vals:
@@ -596,14 +595,14 @@ def update_view_configuration():
     _config_string(to_save, "config_default_language")
     _config_string(to_save, "config_default_locale")
 
-    config.config_default_role = constants.selected_roles(to_save)
-    config.config_default_role &= ~constants.ROLE_ANONYMOUS
+    CONFIG.config_default_role = constants.selected_roles(to_save)
+    CONFIG.config_default_role &= ~constants.ROLE_ANONYMOUS
 
-    config.config_default_show = sum(int(k[5:]) for k in to_save if k.startswith("show_"))
+    CONFIG.config_default_show = sum(int(k[5:]) for k in to_save if k.startswith("show_"))
     if "Show_detail_random" in to_save:
-        config.config_default_show |= constants.DETAIL_RANDOM
+        CONFIG.config_default_show |= constants.DETAIL_RANDOM
 
-    config.save()
+    CONFIG.save()
     flash(_("Calibre-Web configuration updated"), category="success")
     log.debug("Calibre-Web configuration updated")
     before_request()
@@ -713,15 +712,15 @@ def edit_restriction(res_type, user_id) -> str:
     element = request.form.to_dict()
     if element["id"].startswith("a"):
         if res_type == 0:  # Tags as template
-            elementlist = config.list_allowed_tags()
+            elementlist = CONFIG.list_allowed_tags()
             elementlist[int(element["id"][1:])] = element["Element"]
-            config.config_allowed_tags = ",".join(elementlist)
-            config.save()
+            CONFIG.config_allowed_tags = ",".join(elementlist)
+            CONFIG.save()
         if res_type == 1:  # CustomC
-            elementlist = config.list_allowed_column_values()
+            elementlist = CONFIG.list_allowed_column_values()
             elementlist[int(element["id"][1:])] = element["Element"]
-            config.config_allowed_column_value = ",".join(elementlist)
-            config.save()
+            CONFIG.config_allowed_column_value = ",".join(elementlist)
+            CONFIG.save()
         if res_type == 2:  # Tags per user
             if isinstance(user_id, int):
                 usr = ub.session.query(ub.User).filter(ub.User.id == int(user_id)).first()
@@ -742,15 +741,15 @@ def edit_restriction(res_type, user_id) -> str:
             ub.session_commit(f"Changed allowed columns of user {usr.name} to {usr.allowed_column_value}")
     if element["id"].startswith("d"):
         if res_type == 0:  # Tags as template
-            elementlist = config.list_denied_tags()
+            elementlist = CONFIG.list_denied_tags()
             elementlist[int(element["id"][1:])] = element["Element"]
-            config.config_denied_tags = ",".join(elementlist)
-            config.save()
+            CONFIG.config_denied_tags = ",".join(elementlist)
+            CONFIG.save()
         if res_type == 1:  # CustomC
-            elementlist = config.list_denied_column_values()
+            elementlist = CONFIG.list_denied_column_values()
             elementlist[int(element["id"][1:])] = element["Element"]
-            config.config_denied_column_value = ",".join(elementlist)
-            config.save()
+            CONFIG.config_denied_column_value = ",".join(elementlist)
+            CONFIG.save()
         if res_type == 2:  # Tags per user
             if isinstance(user_id, int):
                 usr = ub.session.query(ub.User).filter(ub.User.id == int(user_id)).first()
@@ -786,18 +785,18 @@ def add_restriction(res_type, user_id) -> str:
     element = request.form.to_dict()
     if res_type == 0:  # Tags as template
         if "submit_allow" in element:
-            config.config_allowed_tags = restriction_addition(element, config.list_allowed_tags)
-            config.save()
+            CONFIG.config_allowed_tags = restriction_addition(element, CONFIG.list_allowed_tags)
+            CONFIG.save()
         elif "submit_deny" in element:
-            config.config_denied_tags = restriction_addition(element, config.list_denied_tags)
-            config.save()
+            CONFIG.config_denied_tags = restriction_addition(element, CONFIG.list_denied_tags)
+            CONFIG.save()
     if res_type == 1:  # CCustom as template
         if "submit_allow" in element:
-            config.config_allowed_column_value = restriction_addition(element, config.list_denied_column_values)
-            config.save()
+            CONFIG.config_allowed_column_value = restriction_addition(element, CONFIG.list_denied_column_values)
+            CONFIG.save()
         elif "submit_deny" in element:
-            config.config_denied_column_value = restriction_addition(element, config.list_allowed_column_values)
-            config.save()
+            CONFIG.config_denied_column_value = restriction_addition(element, CONFIG.list_allowed_column_values)
+            CONFIG.save()
     if res_type == 2:  # Tags per user
         if isinstance(user_id, int):
             usr = ub.session.query(ub.User).filter(ub.User.id == int(user_id)).first()
@@ -837,18 +836,18 @@ def delete_restriction(res_type, user_id) -> str:
     element = request.form.to_dict()
     if res_type == 0:  # Tags as template
         if element["id"].startswith("a"):
-            config.config_allowed_tags = restriction_deletion(element, config.list_allowed_tags)
-            config.save()
+            CONFIG.config_allowed_tags = restriction_deletion(element, CONFIG.list_allowed_tags)
+            CONFIG.save()
         elif element["id"].startswith("d"):
-            config.config_denied_tags = restriction_deletion(element, config.list_denied_tags)
-            config.save()
+            CONFIG.config_denied_tags = restriction_deletion(element, CONFIG.list_denied_tags)
+            CONFIG.save()
     elif res_type == 1:  # CustomC as template
         if element["id"].startswith("a"):
-            config.config_allowed_column_value = restriction_deletion(element, config.list_allowed_column_values)
-            config.save()
+            CONFIG.config_allowed_column_value = restriction_deletion(element, CONFIG.list_allowed_column_values)
+            CONFIG.save()
         elif element["id"].startswith("d"):
-            config.config_denied_column_value = restriction_deletion(element, config.list_denied_column_values)
-            config.save()
+            CONFIG.config_denied_column_value = restriction_deletion(element, CONFIG.list_denied_column_values)
+            CONFIG.save()
     elif res_type == 2:  # Tags per user
         if isinstance(user_id, int):
             usr = ub.session.query(ub.User).filter(ub.User.id == int(user_id)).first()
@@ -1094,19 +1093,19 @@ def pathchooser():
 
 
 def _config_int(to_save, x, func=int):
-    return config.set_from_dictionary(to_save, x, func)
+    return CONFIG.set_from_dictionary(to_save, x, func)
 
 
 def _config_checkbox(to_save, x):
-    return config.set_from_dictionary(to_save, x, lambda y: y == "on", False)
+    return CONFIG.set_from_dictionary(to_save, x, lambda y: y == "on", False)
 
 
 def _config_checkbox_int(to_save, x):
-    return config.set_from_dictionary(to_save, x, lambda y: 1 if (y == "on") else 0, 0)
+    return CONFIG.set_from_dictionary(to_save, x, lambda y: 1 if (y == "on") else 0, 0)
 
 
 def _config_string(to_save, x):
-    return config.set_from_dictionary(to_save, x, lambda y: y.strip().strip("\u200B\u200C\u200D\ufeff") if y else y)
+    return CONFIG.set_from_dictionary(to_save, x, lambda y: y.strip().strip("\u200B\u200C\u200D\ufeff") if y else y)
 
 
 def _configuration_oauth_helper(to_save):
@@ -1174,15 +1173,15 @@ def new_user():
     content = ub.User()
     languages = calibre_db.speaking_language()
     translations = get_available_locale()
-    kobo_support = feature_support["kobo"] and config.config_kobo_sync
+    kobo_support = feature_support["kobo"] and CONFIG.config_kobo_sync
     if request.method == "POST":
         to_save = request.form.to_dict()
         _handle_new_user(to_save, content, languages, translations, kobo_support)
     else:
-        content.role = config.config_default_role
-        content.sidebar_view = config.config_default_show
-        content.locale = config.config_default_locale
-        content.default_language = config.config_default_language
+        content.role = CONFIG.config_default_role
+        content.sidebar_view = CONFIG.config_default_show
+        content.locale = CONFIG.config_default_locale
+        content.default_language = CONFIG.config_default_language
     return render_title_template("user_edit.html", new_user=1, content=content,
                                  config=config, translations=translations,
                                  languages=languages, title=_("Add New User"), page="newuser",
@@ -1193,7 +1192,7 @@ def new_user():
 @login_required
 @admin_required
 def edit_mailsettings():
-    content = config.get_mail_settings()
+    content = CONFIG.get_mail_settings()
     return render_title_template("email_edit.html", content=content, title=_("Edit Email Server Settings"),
                                  page="mailset", feature_support=feature_support)
 
@@ -1209,11 +1208,11 @@ def update_mailsettings():
     if to_save.get("mail_password_e", ""):
         _config_string(to_save, "mail_password_e")
     _config_int(to_save, "mail_size", lambda y: int(y) * 1024 * 1024)
-    config.mail_server = to_save.get("mail_server", "").strip()
-    config.mail_from = to_save.get("mail_from", "").strip()
-    config.mail_login = to_save.get("mail_login", "").strip()
+    CONFIG.mail_server = to_save.get("mail_server", "").strip()
+    CONFIG.mail_from = to_save.get("mail_from", "").strip()
+    CONFIG.mail_login = to_save.get("mail_login", "").strip()
     try:
-        config.save()
+        CONFIG.save()
     except (OperationalError, InvalidRequestError) as e:
         ub.session.rollback()
         log.error_or_exception(f"Settings Database error: {e}")
@@ -1243,7 +1242,7 @@ def update_mailsettings():
 @login_required
 @admin_required
 def edit_scheduledtasks():
-    content = config.get_scheduled_task_settings()
+    content = CONFIG.get_scheduled_task_settings()
     time_field = []
     duration_field = []
 
@@ -1283,7 +1282,7 @@ def update_scheduledtasks():
 
     if not error:
         try:
-            config.save()
+            CONFIG.save()
             flash(_("Scheduled tasks settings updated"), category="success")
 
             # Cancel any running tasks
@@ -1308,12 +1307,12 @@ def update_scheduledtasks():
 @admin_required
 def edit_user(user_id):
     content = ub.session.query(ub.User).filter(ub.User.id == int(user_id)).first()  # type: ub.User
-    if not content or (not config.config_anonbrowse and content.name == "Guest"):
+    if not content or (not CONFIG.config_anonbrowse and content.name == "Guest"):
         flash(_("User not found"), category="error")
         return redirect(url_for("admin.admin"))
     languages = calibre_db.speaking_language(return_all_languages=True)
     translations = get_available_locale()
-    kobo_support = feature_support["kobo"] and config.config_kobo_sync
+    kobo_support = feature_support["kobo"] and CONFIG.config_kobo_sync
     if request.method == "POST":
         to_save = request.form.to_dict()
         resp = _handle_edit_user(to_save, content, languages, translations, kobo_support)
@@ -1472,8 +1471,8 @@ def _db_simulate_change():
                                            flags=re.IGNORECASE).strip()
     db_valid, db_change = calibre_db.check_valid_db(to_save["config_calibre_dir"],
                                                     ub.app_DB_path,
-                                                    config.config_calibre_uuid)
-    db_change = bool(db_change and config.config_calibre_dir)
+                                                    CONFIG.config_calibre_uuid)
+    db_change = bool(db_change and CONFIG.config_calibre_dir)
     return db_change, db_valid
 
 
@@ -1497,13 +1496,13 @@ def _db_configuration_update_helper():
     except Exception as ex:
         return _db_configuration_result(f"{ex}")
 
-    if db_change or not db_valid or not config.db_configured \
-       or config.config_calibre_dir != to_save["config_calibre_dir"]:
+    if db_change or not db_valid or not CONFIG.db_configured \
+       or CONFIG.config_calibre_dir != to_save["config_calibre_dir"]:
         if not os.path.exists(metadata_db) or not to_save["config_calibre_dir"]:
             return _db_configuration_result(_("DB Location is not Valid, Please Enter Correct Path"))
         else:
             calibre_db.setup_db(to_save["config_calibre_dir"], ub.app_DB_path)
-        config.store_calibre_uuid(calibre_db, db.Library_Id)
+        CONFIG.store_calibre_uuid(calibre_db, db.Library_Id)
         # if db changed -> delete shelfs, delete download books, delete read books, kobo sync...
         if db_change:
             log.info("Calibre Database changed, all Calibre-Web info related to old Database gets deleted")
@@ -1522,9 +1521,9 @@ def _db_configuration_update_helper():
         if not os.access(os.path.join(config.config_calibre_dir, "metadata.db"), os.W_OK):
             flash(_("DB is not Writeable"), category="warning")
     _config_string(to_save, "config_calibre_split_dir")
-    config.config_calibre_split = to_save.get("config_calibre_split", 0) == "on"
+    CONFIG.config_calibre_split = to_save.get("config_calibre_split", 0) == "on"
     calibre_db.update_config(config)
-    config.save()
+    CONFIG.save()
     return _db_configuration_result(None)
 
 
@@ -1535,11 +1534,11 @@ def _configuration_update_helper():
         reboot_required |= _config_int(to_save, "config_port")
         reboot_required |= _config_string(to_save, "config_trustedhosts")
         reboot_required |= _config_string(to_save, "config_keyfile")
-        if config.config_keyfile and not os.path.isfile(config.config_keyfile):
+        if CONFIG.config_keyfile and not os.path.isfile(config.config_keyfile):
             return _configuration_result(_("Keyfile Location is not Valid, Please Enter Correct Path"))
 
         reboot_required |= _config_string(to_save, "config_certfile")
-        if config.config_certfile and not os.path.isfile(config.config_certfile):
+        if CONFIG.config_certfile and not os.path.isfile(config.config_certfile):
             return _configuration_result(_("Certfile Location is not Valid, Please Enter Correct Path"))
 
         _config_checkbox_int(to_save, "config_uploading")
@@ -1555,7 +1554,7 @@ def _configuration_update_helper():
             to_save["config_upload_formats"] = ",".join(
                 helper.uniq([x.lstrip().rstrip().lower() for x in to_save["config_upload_formats"].split(",")]))
             _config_string(to_save, "config_upload_formats")
-            constants.EXTENSIONS_UPLOAD = config.config_upload_formats.split(",")
+            constants.EXTENSIONS_UPLOAD = CONFIG.config_upload_formats.split(",")
 
         _config_string(to_save, "config_calibre")
         _config_string(to_save, "config_binariesdir")
@@ -1571,7 +1570,7 @@ def _configuration_update_helper():
 
         # Remote login configuration
         _config_checkbox(to_save, "config_remote_login")
-        if not config.config_remote_login:
+        if not CONFIG.config_remote_login:
             ub.session.query(ub.RemoteAuthToken).filter(ub.RemoteAuthToken.token_type == 0).delete()
 
         _config_int(to_save, "config_updatechannel")
@@ -1581,7 +1580,7 @@ def _configuration_update_helper():
         _config_string(to_save, "config_reverse_proxy_login_header_name")
 
         # OAuth configuration
-        if config.config_login_type == constants.LOGIN_OAUTH:
+        if CONFIG.config_login_type == constants.LOGIN_OAUTH:
             reboot_required |= _configuration_oauth_helper(to_save)
 
         # logfile configuration
@@ -1614,7 +1613,7 @@ def _configuration_update_helper():
         log.error_or_exception(f"Settings Database error: {e}")
         _configuration_result(_("Oops! Database Error: %(error)s.", error=e.orig))
 
-    config.save()
+    CONFIG.save()
     if reboot_required:
         web_server.stop(True)
 
@@ -1625,19 +1624,19 @@ def _configuration_result(error_flash=None, reboot=False):
     resp = {}
     if error_flash:
         log.error(error_flash)
-        config.load()
+        CONFIG.load()
         resp["result"] = [{"type": "danger", "message": error_flash}]
     else:
         resp["result"] = [{"type": "success", "message": _("Calibre-Web configuration updated")}]
     resp["reboot"] = reboot
-    resp["config_upload"] = config.config_upload_formats
+    resp["config_upload"] = CONFIG.config_upload_formats
     return Response(json.dumps(resp), mimetype="application/json")
 
 
 def _db_configuration_result(error_flash=None):
     if error_flash:
         log.error(error_flash)
-        config.load()
+        CONFIG.load()
         flash(error_flash, category="error")
     elif request.method == "POST":
         flash(_("Database Settings updated"), category="success")
@@ -1667,7 +1666,7 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
         content.name = check_username(to_save["name"])
         if to_save.get("kindle_mail"):
             content.kindle_mail = valid_email(to_save["kindle_mail"])
-        if config.config_public_reg and not check_valid_domain(content.email):
+        if CONFIG.config_public_reg and not check_valid_domain(content.email):
             log.info(f"E-mail: {content.email} for new user is not from valid domain")
             raise Exception(_("E-mail is not from valid domain"))
     except Exception as ex:
@@ -1678,10 +1677,10 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
                                      languages=languages, title=_("Add new user"), page="newuser",
                                      kobo_support=kobo_support, registered_oauth=oauth_check)
     try:
-        content.allowed_tags = config.config_allowed_tags
-        content.denied_tags = config.config_denied_tags
-        content.allowed_column_value = config.config_allowed_column_value
-        content.denied_column_value = config.config_denied_column_value
+        content.allowed_tags = CONFIG.config_allowed_tags
+        content.denied_tags = CONFIG.config_denied_tags
+        content.allowed_column_value = CONFIG.config_allowed_column_value
+        content.denied_column_value = CONFIG.config_denied_column_value
         # No default value for kobo sync shelf setting
         content.kobo_only_shelves_sync = to_save.get("kobo_only_shelves_sync", 0) == "on"
         ub.session.add(content)

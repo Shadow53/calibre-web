@@ -22,7 +22,8 @@ from shutil import copyfile
 from flask_babel import lazy_gettext as N_
 from sqlalchemy import func, or_, text
 
-from calibre_web import config, db, fs, logger, ub
+from calibre_web import db, fs, logger, ub
+from calibre_web.config_sql import CONFIG
 from calibre_web.services.worker import STAT_CANCELLED, STAT_ENDED, CalibreTask
 
 from .. import constants

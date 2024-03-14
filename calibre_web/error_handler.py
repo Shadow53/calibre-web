@@ -35,7 +35,7 @@ def error_http(error):
                            error_code=f"Error {error.code}",
                            error_name=error.name,
                            issue=False,
-                           unconfigured=not config.db_configured,
+                           unconfigured=not CONFIG.db_configured,
                            instance=config.config_calibre_web_title
                            ), error.code
 
