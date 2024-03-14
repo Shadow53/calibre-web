@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2021 OzzieIsaacs
 #
@@ -32,16 +31,11 @@ class ComicVine(Metadata):
     DESCRIPTION = "ComicVine Books"
     META_URL = "https://comicvine.gamespot.com/"
     API_KEY = "57558043c53943d5d1e96a9ad425b0eb85532ee6"
-    BASE_URL = (
-        f"https://comicvine.gamespot.com/api/search?api_key={API_KEY}"
-        f"&resources=issue&query="
-    )
+    BASE_URL = f"https://comicvine.gamespot.com/api/search?api_key={API_KEY}" f"&resources=issue&query="
     QUERY_PARAMS = "&sort=name:desc&format=json"
     HEADERS = {"User-Agent": "Not Evil Browser"}
 
-    def search(
-        self, query: str, generic_cover: str = "", locale: str = "en"
-    ) -> Optional[List[MetaRecord]]:
+    def search(self, query: str, generic_cover: str = "", locale: str = "en") -> Optional[List[MetaRecord]]:
         val = []
         if self.active:
             title_tokens = list(self.get_title_tokens(query, strip_joiners=False))
@@ -58,15 +52,11 @@ class ComicVine(Metadata):
                 log.warning(e)
                 return None
             for result in result.json()["results"]:
-                match = self._parse_search_result(
-                    result=result, generic_cover=generic_cover, locale=locale
-                )
+                match = self._parse_search_result(result=result, generic_cover=generic_cover, locale=locale)
                 val.append(match)
         return val
 
-    def _parse_search_result(
-        self, result: Dict, generic_cover: str, locale: str
-    ) -> MetaRecord:
+    def _parse_search_result(self, result: Dict, generic_cover: str, locale: str) -> MetaRecord:
         series = result["volume"].get("name", "")
         series_index = result.get("issue_number", 0)
         issue_name = result.get("name", "")

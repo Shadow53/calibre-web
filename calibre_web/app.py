@@ -30,11 +30,13 @@ from .web import web
 
 try:
     from flask_limiter import Limiter
+
     limiter_present = True
 except ImportError:
     limiter_present = False
 try:
     from flask_wtf.csrf import CSRFProtect
+
     wtf_present = True
 except ImportError:
     wtf_present = False
@@ -69,7 +71,7 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
     REMEMBER_COOKIE_SAMESITE="Lax",  # will be available in flask-login 0.5.1 earliest
-    WTF_CSRF_SSL_STRICT=False
+    WTF_CSRF_SSL_STRICT=False,
 )
 
 lm = MyLoginManager()
@@ -101,17 +103,25 @@ def create_app():
     ub.password_change(cli_param.user_credentials)
 
     if not limiter:
-        log.info('*** "flask-limiter" is needed for calibre-web to run. '
-                 'Please install it using pip: "pip install flask-limiter" ***')
-        print('*** "flask-limiter" is needed for calibre-web to run. '
-              'Please install it using pip: "pip install flask-limiter" ***')
+        log.info(
+            '*** "flask-limiter" is needed for calibre-web to run. '
+            'Please install it using pip: "pip install flask-limiter" ***'
+        )
+        print(
+            '*** "flask-limiter" is needed for calibre-web to run. '
+            'Please install it using pip: "pip install flask-limiter" ***'
+        )
         web_server.stop(restart=True)
         sys.exit(8)
     if not wtf_present:
-        log.info('*** "flask-WTF" is needed for calibre-web to run. '
-                 'Please install it using pip: "pip install flask-WTF" ***')
-        print('*** "flask-WTF" is needed for calibre-web to run. '
-              'Please install it using pip: "pip install flask-WTF" ***')
+        log.info(
+            '*** "flask-WTF" is needed for calibre-web to run. '
+            'Please install it using pip: "pip install flask-WTF" ***'
+        )
+        print(
+            '*** "flask-WTF" is needed for calibre-web to run. '
+            'Please install it using pip: "pip install flask-WTF" ***'
+        )
         web_server.stop(restart=True)
         sys.exit(7)
 
@@ -146,7 +156,6 @@ def create_app():
     else:
         babel.init_app(app, locale_selector=get_locale)
 
-
     CONFIG.store_calibre_uuid(calibre_db, db.Library_Id)
     # Configure rate limiter
     app.config.update(RATELIMIT_ENABLED=CONFIG.config_ratelimiter)
@@ -154,6 +163,7 @@ def create_app():
 
     # Register scheduled tasks
     from .schedule import register_scheduled_tasks, register_startup_tasks
+
     register_scheduled_tasks(CONFIG.schedule_reconnect)
     register_startup_tasks()
 
@@ -171,12 +181,14 @@ def main():
 
         from .kobo import get_kobo_activated, kobo
         from .kobo_auth import kobo_auth
+
         kobo_available = get_kobo_activated()
     except (ImportError, AttributeError):  # Catch also error for not installed flask-WTF (missing csrf decorator)
         kobo_available = False
 
     try:
         from .oauth_bb import oauth
+
         oauth_available = True
     except ImportError:
         oauth_available = False

@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2021 OzzieIsaacs
 #
@@ -20,7 +19,7 @@ from urllib.parse import quote, unquote
 
 try:
     from fake_useragent.errors import FakeUserAgentError
-except (ImportError):
+except ImportError:
     FakeUserAgentError = BaseException
 try:
     from scholarly import scholarly
@@ -39,9 +38,7 @@ class scholar(Metadata):
     __id__ = "googlescholar"
     META_URL = "https://scholar.google.com/"
 
-    def search(
-        self, query: str, generic_cover: str = "", locale: str = "en"
-    ) -> Optional[List[MetaRecord]]:
+    def search(self, query: str, generic_cover: str = "", locale: str = "en") -> Optional[List[MetaRecord]]:
         val = []
         if self.active:
             title_tokens = list(self.get_title_tokens(query, strip_joiners=False))
@@ -56,23 +53,17 @@ class scholar(Metadata):
                 log.warning(e)
                 return []
             for result in scholar_gen:
-                match = self._parse_search_result(
-                    result=result, generic_cover="", locale=locale
-                )
+                match = self._parse_search_result(result=result, generic_cover="", locale=locale)
                 val.append(match)
         return val
 
-    def _parse_search_result(
-        self, result: Dict, generic_cover: str, locale: str
-    ) -> MetaRecord:
+    def _parse_search_result(self, result: Dict, generic_cover: str, locale: str) -> MetaRecord:
         match = MetaRecord(
             id=result.get("pub_url", result.get("eprint_url", "")),
             title=result["bib"].get("title"),
             authors=result["bib"].get("author", []),
             url=result.get("pub_url", result.get("eprint_url", "")),
-            source=MetaSourceInfo(
-                id=self.__id__, description=self.__name__, link=scholar.META_URL
-            ),
+            source=MetaSourceInfo(id=self.__id__, description=self.__name__, link=scholar.META_URL),
         )
 
         match.cover = result.get("image", {}).get("original_url", generic_cover)

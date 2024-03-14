@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs
 #
@@ -34,7 +33,7 @@ def process_open(command, quotes=(), env=None, sout=subprocess.PIPE, serr=subpro
     else:
         exc_command = list(command)
 
-    return subprocess.Popen(exc_command, shell=False, stdout=sout, stderr=serr, universal_newlines=newlines, env=env) # nosec
+    return subprocess.Popen(exc_command, shell=False, stdout=sout, stderr=serr, universal_newlines=newlines, env=env)  # nosec
 
 
 def process_wait(command, serr=subprocess.PIPE, pattern=""):

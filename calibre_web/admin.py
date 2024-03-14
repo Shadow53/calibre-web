@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs, cervinko, jkrehm, bodybybuddha, ok11,
 #                            andy29485, idalin, Kyosfonica, wuqi, Kennyl, lemmsh,
@@ -116,27 +115,35 @@ def admin_required(f):
 @admi.before_app_request
 def before_request():
     try:
-        if not ub.check_user_session(current_user.id,
-                                     flask_session.get("_id")) and "opds" not in request.path \
-          and CONFIG.config_session == 1:
+        if (
+            not ub.check_user_session(current_user.id, flask_session.get("_id"))
+            and "opds" not in request.path
+            and CONFIG.config_session == 1
+        ):
             logout_user()
     except AttributeError:
-        pass    # ? fails on requesting /ajax/emailstat during restart ?
+        pass  # ? fails on requesting /ajax/emailstat during restart ?
     g.constants = constants
     g.allow_registration = CONFIG.config_public_reg
     g.allow_anonymous = CONFIG.config_anonbrowse
     g.allow_upload = CONFIG.config_uploading
     g.current_theme = CONFIG.config_theme
     g.config_authors_max = CONFIG.config_authors_max
-    if "/static/" not in request.path and not CONFIG.db_configured and \
-        request.endpoint not in ("admin.ajax_db_config",
-                                 "admin.simulatedbchange",
-                                 "admin.db_configuration",
-                                 "web.login",
-                                 "web.login_post",
-                                 "web.logout",
-                                 "admin.load_dialogtexts",
-                                 "admin.ajax_pathchooser"):
+    if (
+        "/static/" not in request.path
+        and not CONFIG.db_configured
+        and request.endpoint
+        not in (
+            "admin.ajax_db_config",
+            "admin.simulatedbchange",
+            "admin.db_configuration",
+            "web.login",
+            "web.login_post",
+            "web.logout",
+            "admin.load_dialogtexts",
+            "admin.ajax_pathchooser",
+        )
+    ):
         return redirect(url_for("admin.db_configuration"))
     return None
 
@@ -236,12 +243,19 @@ def admin():
     # email_settings = mail_config.get_mail_settings()
     schedule_time = format_time(datetime_time(hour=CONFIG.schedule_start_time), format="short")
     t = timedelta(hours=CONFIG.schedule_duration // 60, minutes=CONFIG.schedule_duration % 60)
-    schedule_duration = format_timedelta(t, threshold=.99)
+    schedule_duration = format_timedelta(t, threshold=0.99)
 
-    return render_title_template("admin.html", allUser=all_user, config=CONFIG, commit=commit,
-                                 feature_support=feature_support, schedule_time=schedule_time,
-                                 schedule_duration=schedule_duration,
-                                 title=_("Admin page"), page="admin")
+    return render_title_template(
+        "admin.html",
+        allUser=all_user,
+        config=CONFIG,
+        commit=commit,
+        feature_support=feature_support,
+        schedule_time=schedule_time,
+        schedule_duration=schedule_duration,
+        title=_("Admin page"),
+        page="admin",
+    )
 
 
 @admi.route("/admin/dbconfig", methods=["GET", "POST"])
@@ -257,11 +271,14 @@ def db_configuration():
 @login_required
 @admin_required
 def configuration():
-    return render_title_template("config_edit.html",
-                                 config=CONFIG,
-                                 provider=oauthblueprints,
-                                 feature_support=feature_support,
-                                 title=_("Basic Configuration"), page="config")
+    return render_title_template(
+        "config_edit.html",
+        config=CONFIG,
+        provider=oauthblueprints,
+        feature_support=feature_support,
+        title=_("Basic Configuration"),
+        page="config",
+    )
 
 
 @admi.route("/admin/ajaxconfig", methods=["POST"])
@@ -289,17 +306,28 @@ def calibreweb_alive():
 @login_required
 @admin_required
 def view_configuration():
-    read_column = calibre_db.session.query(db.CustomColumns) \
-        .filter(and_(db.CustomColumns.datatype == "bool", db.CustomColumns.mark_for_delete == 0)).all()
-    restrict_columns = calibre_db.session.query(db.CustomColumns) \
-        .filter(and_(db.CustomColumns.datatype == "text", db.CustomColumns.mark_for_delete == 0)).all()
+    read_column = (
+        calibre_db.session.query(db.CustomColumns)
+        .filter(and_(db.CustomColumns.datatype == "bool", db.CustomColumns.mark_for_delete == 0))
+        .all()
+    )
+    restrict_columns = (
+        calibre_db.session.query(db.CustomColumns)
+        .filter(and_(db.CustomColumns.datatype == "text", db.CustomColumns.mark_for_delete == 0))
+        .all()
+    )
     languages = calibre_db.speaking_language()
     translations = get_available_locale()
-    return render_title_template("config_view_edit.html", conf=CONFIG, readColumns=read_column,
-                                 restrictColumns=restrict_columns,
-                                 languages=languages,
-                                 translations=translations,
-                                 title=_("UI Configuration"), page="uiconfig")
+    return render_title_template(
+        "config_view_edit.html",
+        conf=CONFIG,
+        readColumns=read_column,
+        restrictColumns=restrict_columns,
+        languages=languages,
+        translations=translations,
+        title=_("UI Configuration"),
+        page="uiconfig",
+    )
 
 
 @admi.route("/admin/usertable")
@@ -310,12 +338,15 @@ def edit_user_table():
     languages = calibre_db.speaking_language()
     translations = get_available_locale()
     all_user = ub.session.query(ub.User)
-    tags = calibre_db.session.query(db.Tags) \
-        .join(db.books_tags_link) \
-        .join(db.Books) \
-        .filter(calibre_db.common_filters()) \
-        .group_by(text("books_tags_link.tag")) \
-        .order_by(db.Tags.name).all()
+    tags = (
+        calibre_db.session.query(db.Tags)
+        .join(db.books_tags_link)
+        .join(db.Books)
+        .filter(calibre_db.common_filters())
+        .group_by(text("books_tags_link.tag"))
+        .order_by(db.Tags.name)
+        .all()
+    )
     if CONFIG.config_restricted_column:
         custom_values = calibre_db.session.query(db.cc_classes[CONFIG.config_restricted_column]).all()
     else:
@@ -323,18 +354,20 @@ def edit_user_table():
     if not CONFIG.config_anonbrowse:
         all_user = all_user.filter(ub.User.role.op("&")(constants.ROLE_ANONYMOUS) != constants.ROLE_ANONYMOUS)
     kobo_support = feature_support["kobo"] and CONFIG.config_kobo_sync
-    return render_title_template("user_table.html",
-                                 users=all_user.all(),
-                                 tags=tags,
-                                 custom_values=custom_values,
-                                 translations=translations,
-                                 languages=languages,
-                                 visiblility=visibility,
-                                 all_roles=constants.ALL_ROLES,
-                                 kobo_support=kobo_support,
-                                 sidebar_settings=constants.sidebar_settings,
-                                 title=_("Edit Users"),
-                                 page="usertable")
+    return render_title_template(
+        "user_table.html",
+        users=all_user.all(),
+        tags=tags,
+        custom_values=custom_values,
+        translations=translations,
+        languages=languages,
+        visiblility=visibility,
+        all_roles=constants.ALL_ROLES,
+        kobo_support=kobo_support,
+        sidebar_settings=constants.sidebar_settings,
+        title=_("Edit Users"),
+        page="usertable",
+    )
 
 
 @admi.route("/ajax/listusers")
@@ -364,9 +397,13 @@ def list_users():
     total_count = filtered_count = all_user.count()
 
     if search:
-        all_user = all_user.filter(or_(func.lower(ub.User.name).ilike("%" + search + "%"),
-                                       func.lower(ub.User.kindle_mail).ilike("%" + search + "%"),
-                                       func.lower(ub.User.email).ilike("%" + search + "%")))
+        all_user = all_user.filter(
+            or_(
+                func.lower(ub.User.name).ilike("%" + search + "%"),
+                func.lower(ub.User.kindle_mail).ilike("%" + search + "%"),
+                func.lower(ub.User.email).ilike("%" + search + "%"),
+            )
+        )
     if state:
         users = calibre_db.get_checkbox_sorted(all_user.all(), state, off, limit, request.args.get("order", "").lower())
     else:
@@ -488,8 +525,11 @@ def edit_list_user(param):
                     user.kindle_mail = valid_email(vals["value"]) if vals["value"] else ""
                 elif param.endswith("role"):
                     value = int(vals["field_index"])
-                    if user.name == "Guest" and value in \
-                        [constants.ROLE_ADMIN, constants.ROLE_PASSWD, constants.ROLE_EDIT_SHELFS]:
+                    if user.name == "Guest" and value in [
+                        constants.ROLE_ADMIN,
+                        constants.ROLE_PASSWD,
+                        constants.ROLE_EDIT_SHELFS,
+                    ]:
                         raise Exception(_("Guest can't have this role"))
                     # check for valid value, last on checks for power of 2 value
                     if value > 0 and value <= constants.ROLE_VIEWER and (value & value - 1 == 0 or value == 1):
@@ -497,13 +537,28 @@ def edit_list_user(param):
                             user.role |= value
                         elif vals["value"] == "false":
                             if value == constants.ROLE_ADMIN:
-                                if not ub.session.query(ub.User). \
-                                    filter(ub.User.role.op("&")(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
-                                           ub.User.id != user.id).count():
+                                if (
+                                    not ub.session.query(ub.User)
+                                    .filter(
+                                        ub.User.role.op("&")(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
+                                        ub.User.id != user.id,
+                                    )
+                                    .count()
+                                ):
                                     return Response(
-                                        json.dumps([{"type": "danger",
-                                                     "message": _("No admin user remaining, can't remove admin role",
-                                                                  nick=user.name)}]), mimetype="application/json")
+                                        json.dumps(
+                                            [
+                                                {
+                                                    "type": "danger",
+                                                    "message": _(
+                                                        "No admin user remaining, can't remove admin role",
+                                                        nick=user.name,
+                                                    ),
+                                                }
+                                            ]
+                                        ),
+                                        mimetype="application/json",
+                                    )
                             user.role &= ~value
                         else:
                             raise Exception(_("Value has to be true or false"))
@@ -531,11 +586,14 @@ def edit_list_user(param):
                     else:
                         raise Exception(_("No Valid Locale Given"))
                 elif param == "default_language":
-                    languages = calibre_db.session.query(db.Languages) \
-                        .join(db.books_languages_link) \
-                        .join(db.Books) \
-                        .filter(calibre_db.common_filters()) \
-                        .group_by(text("books_languages_link.lang_code")).all()
+                    languages = (
+                        calibre_db.session.query(db.Languages)
+                        .join(db.books_languages_link)
+                        .join(db.Books)
+                        .filter(calibre_db.common_filters())
+                        .group_by(text("books_languages_link.lang_code"))
+                        .all()
+                    )
                     lang_codes = [lang.lang_code for lang in languages] + ["all"]
                     if vals["value"] in lang_codes:
                         user.default_language = vals["value"]
@@ -631,18 +689,21 @@ def load_dialogtexts(element_id):
     elif element_id == "restrictions":
         texts["main"] = _("Are you sure you want to change the selected restrictions for the selected user(s)?")
     elif element_id == "sidebar_view":
-        texts["main"] = _("Are you sure you want to change the selected visibility restrictions "
-                          "for the selected user(s)?")
+        texts["main"] = _(
+            "Are you sure you want to change the selected visibility restrictions " "for the selected user(s)?"
+        )
     elif element_id == "kobo_only_shelves_sync":
         texts["main"] = _("Are you sure you want to change shelf sync behavior for the selected user(s)?")
     elif element_id == "db_submit":
         texts["main"] = _("Are you sure you want to change Calibre library location?")
     elif element_id == "admin_refresh_cover_cache":
-        texts["main"] = _("Calibre-Web will search for updated Covers "
-                          "and update Cover Thumbnails, this may take a while?")
+        texts["main"] = _(
+            "Calibre-Web will search for updated Covers " "and update Cover Thumbnails, this may take a while?"
+        )
     elif element_id == "btnfullsync":
-        texts["main"] = _("Are you sure you want delete Calibre-Web's sync database "
-                          "to force a full sync with your Kobo Reader?")
+        texts["main"] = _(
+            "Are you sure you want delete Calibre-Web's sync database " "to force a full sync with your Kobo Reader?"
+        )
     return json.dumps(texts)
 
 
@@ -665,8 +726,12 @@ def edit_domain(allow):
 @admin_required
 def add_domain(allow) -> str:
     domain_name = request.form.to_dict()["domainname"].replace("*", "%").replace("?", "_").lower()
-    check = ub.session.query(ub.Registration).filter(ub.Registration.domain == domain_name) \
-        .filter(ub.Registration.allow == allow).first()
+    check = (
+        ub.session.query(ub.Registration)
+        .filter(ub.Registration.domain == domain_name)
+        .filter(ub.Registration.allow == allow)
+        .first()
+    )
     if not check:
         new_domain = ub.Registration(domain=domain_name, allow=allow)
         ub.session.add(new_domain)
@@ -880,36 +945,60 @@ def delete_restriction(res_type, user_id) -> str:
 @admin_required
 def list_restriction(res_type, user_id):
     if res_type == 0:  # Tags as template
-        restrict = [{"Element": x, "type": _("Deny"), "id": "d" + str(i)}
-                    for i, x in enumerate(CONFIG.list_denied_tags()) if x != ""]
-        allow = [{"Element": x, "type": _("Allow"), "id": "a" + str(i)}
-                 for i, x in enumerate(CONFIG.list_allowed_tags()) if x != ""]
+        restrict = [
+            {"Element": x, "type": _("Deny"), "id": "d" + str(i)}
+            for i, x in enumerate(CONFIG.list_denied_tags())
+            if x != ""
+        ]
+        allow = [
+            {"Element": x, "type": _("Allow"), "id": "a" + str(i)}
+            for i, x in enumerate(CONFIG.list_allowed_tags())
+            if x != ""
+        ]
         json_dumps = restrict + allow
     elif res_type == 1:  # CustomC as template
-        restrict = [{"Element": x, "type": _("Deny"), "id": "d" + str(i)}
-                    for i, x in enumerate(CONFIG.list_denied_column_values()) if x != ""]
-        allow = [{"Element": x, "type": _("Allow"), "id": "a" + str(i)}
-                 for i, x in enumerate(CONFIG.list_allowed_column_values()) if x != ""]
+        restrict = [
+            {"Element": x, "type": _("Deny"), "id": "d" + str(i)}
+            for i, x in enumerate(CONFIG.list_denied_column_values())
+            if x != ""
+        ]
+        allow = [
+            {"Element": x, "type": _("Allow"), "id": "a" + str(i)}
+            for i, x in enumerate(CONFIG.list_allowed_column_values())
+            if x != ""
+        ]
         json_dumps = restrict + allow
     elif res_type == 2:  # Tags per user
         if isinstance(user_id, int):
             usr = ub.session.query(ub.User).filter(ub.User.id == user_id).first()
         else:
             usr = current_user
-        restrict = [{"Element": x, "type": _("Deny"), "id": "d" + str(i)}
-                    for i, x in enumerate(usr.list_denied_tags()) if x != ""]
-        allow = [{"Element": x, "type": _("Allow"), "id": "a" + str(i)}
-                 for i, x in enumerate(usr.list_allowed_tags()) if x != ""]
+        restrict = [
+            {"Element": x, "type": _("Deny"), "id": "d" + str(i)}
+            for i, x in enumerate(usr.list_denied_tags())
+            if x != ""
+        ]
+        allow = [
+            {"Element": x, "type": _("Allow"), "id": "a" + str(i)}
+            for i, x in enumerate(usr.list_allowed_tags())
+            if x != ""
+        ]
         json_dumps = restrict + allow
     elif res_type == 3:  # CustomC per user
         if isinstance(user_id, int):
             usr = ub.session.query(ub.User).filter(ub.User.id == user_id).first()
         else:
             usr = current_user
-        restrict = [{"Element": x, "type": _("Deny"), "id": "d" + str(i)}
-                    for i, x in enumerate(usr.list_denied_column_values()) if x != ""]
-        allow = [{"Element": x, "type": _("Allow"), "id": "a" + str(i)}
-                 for i, x in enumerate(usr.list_allowed_column_values()) if x != ""]
+        restrict = [
+            {"Element": x, "type": _("Deny"), "id": "d" + str(i)}
+            for i, x in enumerate(usr.list_denied_column_values())
+            if x != ""
+        ]
+        allow = [
+            {"Element": x, "type": _("Allow"), "id": "a" + str(i)}
+            for i, x in enumerate(usr.list_allowed_column_values())
+            if x != ""
+        ]
         json_dumps = restrict + allow
     else:
         json_dumps = ""
@@ -947,15 +1036,25 @@ def do_full_kobo_sync(userid):
 
 
 def check_valid_read_column(column) -> bool:
-    if column != "0" and not calibre_db.session.query(db.CustomColumns).filter(db.CustomColumns.id == column) \
-            .filter(and_(db.CustomColumns.datatype == "bool", db.CustomColumns.mark_for_delete == 0)).all():
+    if (
+        column != "0"
+        and not calibre_db.session.query(db.CustomColumns)
+        .filter(db.CustomColumns.id == column)
+        .filter(and_(db.CustomColumns.datatype == "bool", db.CustomColumns.mark_for_delete == 0))
+        .all()
+    ):
         return False
     return True
 
 
 def check_valid_restricted_column(column) -> bool:
-    if column != "0" and not calibre_db.session.query(db.CustomColumns).filter(db.CustomColumns.id == column) \
-            .filter(and_(db.CustomColumns.datatype == "text", db.CustomColumns.mark_for_delete == 0)).all():
+    if (
+        column != "0"
+        and not calibre_db.session.query(db.CustomColumns)
+        .filter(db.CustomColumns.id == column)
+        .filter(and_(db.CustomColumns.datatype == "text", db.CustomColumns.mark_for_delete == 0))
+        .all()
+    ):
         return False
     return True
 
@@ -983,8 +1082,11 @@ def prepare_tags(user, action, tags_name, id_list):
             raise Exception(_("Tag not found"))
         new_tags_list = [x.name for x in tags]
     else:
-        tags = calibre_db.session.query(db.cc_classes[CONFIG.config_restricted_column]) \
-            .filter(db.cc_classes[CONFIG.config_restricted_column].id.in_(id_list)).all()
+        tags = (
+            calibre_db.session.query(db.cc_classes[CONFIG.config_restricted_column])
+            .filter(db.cc_classes[CONFIG.config_restricted_column].id.in_(id_list))
+            .all()
+        )
         new_tags_list = [x.value for x in tags]
     saved_tags_list = user.__dict__[tags_name].split(",") if len(user.__dict__[tags_name]) else []
     if action == "remove":
@@ -1039,8 +1141,9 @@ def pathchooser():
         parent_dir = os.path.relpath(parent_dir) + os.path.sep
 
     files = []
-    if os.path.realpath(cwd) == os.path.realpath("/") \
-            or (sys.platform == "win32" and os.path.realpath(cwd)[1:] == os.path.realpath("/")[1:]):
+    if os.path.realpath(cwd) == os.path.realpath("/") or (
+        sys.platform == "win32" and os.path.realpath(cwd)[1:] == os.path.realpath("/")[1:]
+    ):
         # we are in root
         parent_dir = ""
         if sys.platform == "win32":
@@ -1112,32 +1215,41 @@ def _configuration_oauth_helper(to_save):
     active_oauths = 0
     reboot_required = False
     for element in oauthblueprints:
-        if to_save["config_" + str(element["id"]) + "_oauth_client_id"] != element["oauth_client_id"] \
-            or to_save["config_" + str(element["id"]) + "_oauth_client_secret"] != element["oauth_client_secret"]:
+        if (
+            to_save["config_" + str(element["id"]) + "_oauth_client_id"] != element["oauth_client_id"]
+            or to_save["config_" + str(element["id"]) + "_oauth_client_secret"] != element["oauth_client_secret"]
+        ):
             reboot_required = True
             element["oauth_client_id"] = to_save["config_" + str(element["id"]) + "_oauth_client_id"]
             element["oauth_client_secret"] = to_save["config_" + str(element["id"]) + "_oauth_client_secret"]
-        if to_save["config_" + str(element["id"]) + "_oauth_client_id"] \
-            and to_save["config_" + str(element["id"]) + "_oauth_client_secret"]:
+        if (
+            to_save["config_" + str(element["id"]) + "_oauth_client_id"]
+            and to_save["config_" + str(element["id"]) + "_oauth_client_secret"]
+        ):
             active_oauths += 1
             element["active"] = 1
         else:
             element["active"] = 0
         ub.session.query(ub.OAuthProvider).filter(ub.OAuthProvider.id == element["id"]).update(
-            {"oauth_client_id": to_save["config_" + str(element["id"]) + "_oauth_client_id"],
-             "oauth_client_secret": to_save["config_" + str(element["id"]) + "_oauth_client_secret"],
-             "active": element["active"]})
+            {
+                "oauth_client_id": to_save["config_" + str(element["id"]) + "_oauth_client_id"],
+                "oauth_client_secret": to_save["config_" + str(element["id"]) + "_oauth_client_secret"],
+                "active": element["active"],
+            }
+        )
         if element["id"] == 3:
-            ub.session.query(ub.OAuthProvider).filter(ub.OAuthProvider.id == element["id"]).update({
-             "oauth_base_url": to_save["config_" + str(element["id"]) + "_oauth_base_url"],
-             "oauth_auth_url": to_save["config_" + str(element["id"]) + "_oauth_auth_url"],
-             "oauth_token_url": to_save["config_" + str(element["id"]) + "_oauth_token_url"],
-             "oauth_userinfo_url": to_save["config_" + str(element["id"]) + "_oauth_userinfo_url"],
-             "username_mapper": to_save["config_" + str(element["id"]) + "_username_mapper"],
-             "email_mapper": to_save["config_" + str(element["id"]) + "_email_mapper"],
-             "login_button": to_save["config_" + str(element["id"]) + "_login_button"],
-             "scope": to_save["config_" + str(element["id"]) + "_scope"],
-            })
+            ub.session.query(ub.OAuthProvider).filter(ub.OAuthProvider.id == element["id"]).update(
+                {
+                    "oauth_base_url": to_save["config_" + str(element["id"]) + "_oauth_base_url"],
+                    "oauth_auth_url": to_save["config_" + str(element["id"]) + "_oauth_auth_url"],
+                    "oauth_token_url": to_save["config_" + str(element["id"]) + "_oauth_token_url"],
+                    "oauth_userinfo_url": to_save["config_" + str(element["id"]) + "_oauth_userinfo_url"],
+                    "username_mapper": to_save["config_" + str(element["id"]) + "_username_mapper"],
+                    "email_mapper": to_save["config_" + str(element["id"]) + "_email_mapper"],
+                    "login_button": to_save["config_" + str(element["id"]) + "_login_button"],
+                    "scope": to_save["config_" + str(element["id"]) + "_scope"],
+                }
+            )
 
     return reboot_required
 
@@ -1147,14 +1259,14 @@ def _configuration_logfile_helper(to_save):
     reboot_required |= _config_int(to_save, "config_log_level")
     reboot_required |= _config_string(to_save, "config_logfile")
     if not logger.is_valid_logfile(CONFIG.config_logfile):
-        return reboot_required, \
-               _configuration_result(_("Logfile Location is not Valid, Please Enter Correct Path"))
+        return reboot_required, _configuration_result(_("Logfile Location is not Valid, Please Enter Correct Path"))
 
     reboot_required |= _config_checkbox_int(to_save, "config_access_log")
     reboot_required |= _config_string(to_save, "config_access_logfile")
     if not logger.is_valid_logfile(CONFIG.config_access_logfile):
-        return reboot_required, \
-               _configuration_result(_("Access Logfile Location is not Valid, Please Enter Correct Path"))
+        return reboot_required, _configuration_result(
+            _("Access Logfile Location is not Valid, Please Enter Correct Path")
+        )
     return reboot_required, None
 
 
@@ -1182,10 +1294,18 @@ def new_user():
         content.sidebar_view = CONFIG.config_default_show
         content.locale = CONFIG.config_default_locale
         content.default_language = CONFIG.config_default_language
-    return render_title_template("user_edit.html", new_user=1, content=content,
-                                 config=CONFIG, translations=translations,
-                                 languages=languages, title=_("Add New User"), page="newuser",
-                                 kobo_support=kobo_support, registered_oauth=oauth_check)
+    return render_title_template(
+        "user_edit.html",
+        new_user=1,
+        content=content,
+        config=CONFIG,
+        translations=translations,
+        languages=languages,
+        title=_("Add New User"),
+        page="newuser",
+        kobo_support=kobo_support,
+        registered_oauth=oauth_check,
+    )
 
 
 @admi.route("/admin/mailsettings", methods=["GET"])
@@ -1193,8 +1313,13 @@ def new_user():
 @admin_required
 def edit_mailsettings():
     content = CONFIG.get_mail_settings()
-    return render_title_template("email_edit.html", content=content, title=_("Edit Email Server Settings"),
-                                 page="mailset", feature_support=feature_support)
+    return render_title_template(
+        "email_edit.html",
+        content=content,
+        title=_("Edit Email Server Settings"),
+        page="mailset",
+        feature_support=feature_support,
+    )
 
 
 @admi.route("/admin/mailsettings", methods=["POST"])
@@ -1226,8 +1351,13 @@ def update_mailsettings():
         if current_user.email:
             result = send_test_mail(current_user.email, current_user.name)
             if result is None:
-                flash(_("Test e-mail queued for sending to %(email)s, please check Tasks for result",
-                        email=current_user.email), category="info")
+                flash(
+                    _(
+                        "Test e-mail queued for sending to %(email)s, please check Tasks for result",
+                        email=current_user.email,
+                    ),
+                    category="info",
+                )
             else:
                 flash(_("There was an error sending the Test e-mail: %(res)s", res=result), category="error")
         else:
@@ -1247,16 +1377,26 @@ def edit_scheduledtasks():
     duration_field = []
 
     for n in range(24):
-        time_field.append((n, format_time(datetime_time(hour=n), format="short", )))
+        time_field.append(
+            (
+                n,
+                format_time(
+                    datetime_time(hour=n),
+                    format="short",
+                ),
+            )
+        )
     for n in range(5, 65, 5):
         t = timedelta(hours=n // 60, minutes=n % 60)
-        duration_field.append((n, format_timedelta(t, threshold=.97)))
+        duration_field.append((n, format_timedelta(t, threshold=0.97)))
 
-    return render_title_template("schedule_edit.html",
-                                 config=content,
-                                 starttime=time_field,
-                                 duration=duration_field,
-                                 title=_("Edit Scheduled Tasks Settings"))
+    return render_title_template(
+        "schedule_edit.html",
+        config=content,
+        starttime=time_field,
+        duration=duration_field,
+        title=_("Edit Scheduled Tasks Settings"),
+    )
 
 
 @admi.route("/admin/scheduledtasks", methods=["POST"])
@@ -1266,7 +1406,7 @@ def update_scheduledtasks():
     error = False
     to_save = request.form.to_dict()
     if 0 <= int(to_save.get("schedule_start_time")) <= 23:
-        _config_int( to_save, "schedule_start_time")
+        _config_int(to_save, "schedule_start_time")
     else:
         flash(_("Invalid start time for task specified"), category="error")
         error = True
@@ -1318,17 +1458,19 @@ def edit_user(user_id):
         resp = _handle_edit_user(to_save, content, languages, translations, kobo_support)
         if resp:
             return resp
-    return render_title_template("user_edit.html",
-                                 translations=translations,
-                                 languages=languages,
-                                 new_user=0,
-                                 content=content,
-                                 config=CONFIG,
-                                 registered_oauth=oauth_check,
-                                 mail_configured=CONFIG.get_mail_server_configured(),
-                                 kobo_support=kobo_support,
-                                 title=_("Edit User %(nick)s", nick=content.name),
-                                 page="edituser")
+    return render_title_template(
+        "user_edit.html",
+        translations=translations,
+        languages=languages,
+        new_user=0,
+        content=content,
+        config=CONFIG,
+        registered_oauth=oauth_check,
+        mail_configured=CONFIG.get_mail_server_configured(),
+        kobo_support=kobo_support,
+        title=_("Edit User %(nick)s", nick=content.name),
+        page="edituser",
+    )
 
 
 @admi.route("/admin/resetpassword/<int:user_id>", methods=["POST"])
@@ -1353,14 +1495,15 @@ def reset_user_password(user_id):
 @login_required
 @admin_required
 def view_logfile():
-    logfiles = {0: logger.get_logfile(CONFIG.config_logfile),
-                1: logger.get_accesslogfile(CONFIG.config_access_logfile)}
-    return render_title_template("logviewer.html",
-                                 title=_("Logfile viewer"),
-                                 accesslog_enable=CONFIG.config_access_log,
-                                 log_enable=bool(CONFIG.config_logfile != logger.LOG_TO_STDOUT),
-                                 logfiles=logfiles,
-                                 page="logfile")
+    logfiles = {0: logger.get_logfile(CONFIG.config_logfile), 1: logger.get_accesslogfile(CONFIG.config_access_logfile)}
+    return render_title_template(
+        "logviewer.html",
+        title=_("Logfile viewer"),
+        accesslog_enable=CONFIG.config_access_log,
+        log_enable=bool(CONFIG.config_logfile != logger.LOG_TO_STDOUT),
+        logfiles=logfiles,
+        page="logfile",
+    )
 
 
 @admi.route("/ajax/log/<int:logtype>")
@@ -1369,12 +1512,10 @@ def view_logfile():
 def send_logfile(logtype):
     if logtype == 1:
         logfile = logger.get_accesslogfile(CONFIG.config_access_logfile)
-        return send_from_directory(os.path.dirname(logfile),
-                                   os.path.basename(logfile))
+        return send_from_directory(os.path.dirname(logfile), os.path.basename(logfile))
     if logtype == 0:
         logfile = logger.get_logfile(CONFIG.config_logfile)
-        return send_from_directory(os.path.dirname(logfile),
-                                   os.path.basename(logfile))
+        return send_from_directory(os.path.dirname(logfile), os.path.basename(logfile))
     else:
         return ""
 
@@ -1435,7 +1576,7 @@ def get_updater_status():
                     "10": _("Update failed:") + " " + _("Timeout while establishing connection"),
                     "11": _("Update failed:") + " " + _("General error"),
                     "12": _("Update failed:") + " " + _("Update file could not be saved in temp dir"),
-                    "13": _("Update failed:") + " " + _("Files could not be replaced during update")
+                    "13": _("Update failed:") + " " + _("Files could not be replaced during update"),
                 }
                 status["text"] = txt
                 updater_thread.status = 0
@@ -1465,13 +1606,12 @@ def cancel_task() -> str:
 def _db_simulate_change():
     param = request.form.to_dict()
     to_save = {}
-    to_save["config_calibre_dir"] = re.sub(r"[\\/]metadata\.db$",
-                                           "",
-                                           param["config_calibre_dir"],
-                                           flags=re.IGNORECASE).strip()
-    db_valid, db_change = calibre_db.check_valid_db(to_save["config_calibre_dir"],
-                                                    ub.app_DB_path,
-                                                    CONFIG.config_calibre_uuid)
+    to_save["config_calibre_dir"] = re.sub(
+        r"[\\/]metadata\.db$", "", param["config_calibre_dir"], flags=re.IGNORECASE
+    ).strip()
+    db_valid, db_change = calibre_db.check_valid_db(
+        to_save["config_calibre_dir"], ub.app_DB_path, CONFIG.config_calibre_uuid
+    )
     db_change = bool(db_change and CONFIG.config_calibre_dir)
     return db_change, db_valid
 
@@ -1480,10 +1620,9 @@ def _db_configuration_update_helper():
     db_change = False
     to_save = request.form.to_dict()
 
-    to_save["config_calibre_dir"] = re.sub(r"[\\/]metadata\.db$",
-                                           "",
-                                           to_save["config_calibre_dir"],
-                                           flags=re.IGNORECASE)
+    to_save["config_calibre_dir"] = re.sub(
+        r"[\\/]metadata\.db$", "", to_save["config_calibre_dir"], flags=re.IGNORECASE
+    )
     db_valid = False
     try:
         db_change, db_valid = _db_simulate_change()
@@ -1496,8 +1635,12 @@ def _db_configuration_update_helper():
     except Exception as ex:
         return _db_configuration_result(f"{ex}")
 
-    if db_change or not db_valid or not CONFIG.db_configured \
-       or CONFIG.config_calibre_dir != to_save["config_calibre_dir"]:
+    if (
+        db_change
+        or not db_valid
+        or not CONFIG.db_configured
+        or CONFIG.config_calibre_dir != to_save["config_calibre_dir"]
+    ):
         if not os.path.exists(metadata_db) or not to_save["config_calibre_dir"]:
             return _db_configuration_result(_("DB Location is not Valid, Please Enter Correct Path"))
         else:
@@ -1552,7 +1695,8 @@ def _configuration_update_helper():
 
         if "config_upload_formats" in to_save:
             to_save["config_upload_formats"] = ",".join(
-                helper.uniq([x.lstrip().rstrip().lower() for x in to_save["config_upload_formats"].split(",")]))
+                helper.uniq([x.lstrip().rstrip().lower() for x in to_save["config_upload_formats"].split(",")])
+            )
             _config_string(to_save, "config_upload_formats")
             constants.EXTENSIONS_UPLOAD = CONFIG.config_upload_formats.split(",")
 
@@ -1641,10 +1785,13 @@ def _db_configuration_result(error_flash=None):
     elif request.method == "POST":
         flash(_("Database Settings updated"), category="success")
 
-    return render_title_template("config_db.html",
-                                 config=CONFIG,
-                                 feature_support=feature_support,
-                                 title=_("Database Configuration"), page="dbconfig")
+    return render_title_template(
+        "config_db.html",
+        config=CONFIG,
+        feature_support=feature_support,
+        title=_("Database Configuration"),
+        page="dbconfig",
+    )
 
 
 def _handle_new_user(to_save, content, languages, translations, kobo_support):
@@ -1671,11 +1818,18 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
             raise Exception(_("E-mail is not from valid domain"))
     except Exception as ex:
         flash(str(ex), category="error")
-        return render_title_template("user_edit.html", new_user=1, content=content,
-                                     config=CONFIG,
-                                     translations=translations,
-                                     languages=languages, title=_("Add new user"), page="newuser",
-                                     kobo_support=kobo_support, registered_oauth=oauth_check)
+        return render_title_template(
+            "user_edit.html",
+            new_user=1,
+            content=content,
+            config=CONFIG,
+            translations=translations,
+            languages=languages,
+            title=_("Add new user"),
+            page="newuser",
+            kobo_support=kobo_support,
+            registered_oauth=oauth_check,
+        )
     try:
         content.allowed_tags = CONFIG.config_allowed_tags
         content.denied_tags = CONFIG.config_denied_tags
@@ -1699,8 +1853,11 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
 
 
 def _delete_user(content):
-    if ub.session.query(ub.User).filter(ub.User.role.op("&")(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
-                                        ub.User.id != content.id).count():
+    if (
+        ub.session.query(ub.User)
+        .filter(ub.User.role.op("&")(constants.ROLE_ADMIN) == constants.ROLE_ADMIN, ub.User.id != content.id)
+        .count()
+    ):
         if content.name != "Guest":
             # Delete all books in shelfs belonging to user, all shelfs of user, downloadstat of user, read status
             # and user itself
@@ -1739,8 +1896,12 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             flash(str(ex), category="error")
         return redirect(url_for("admin.admin"))
     else:
-        if not ub.session.query(ub.User).filter(ub.User.role.op("&")(constants.ROLE_ADMIN) == constants.ROLE_ADMIN,
-                                                ub.User.id != content.id).count() and "admin_role" not in to_save:
+        if (
+            not ub.session.query(ub.User)
+            .filter(ub.User.role.op("&")(constants.ROLE_ADMIN) == constants.ROLE_ADMIN, ub.User.id != content.id)
+            .count()
+            and "admin_role" not in to_save
+        ):
             log.warning(f"No admin user remaining, can't remove admin role from {content.name}")
             flash(_("No admin user remaining, can't remove admin role"), category="error")
             return redirect(url_for("admin.admin"))
@@ -1795,17 +1956,19 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
         except Exception as ex:
             log.exception(ex)
             flash(str(ex), category="error")
-            return render_title_template("user_edit.html",
-                                         translations=translations,
-                                         languages=languages,
-                                         mail_configured=CONFIG.get_mail_server_configured(),
-                                         kobo_support=kobo_support,
-                                         new_user=0,
-                                         content=content,
-                                         config=CONFIG,
-                                         registered_oauth=oauth_check,
-                                         title=_("Edit User %(nick)s", nick=content.name),
-                                         page="edituser")
+            return render_title_template(
+                "user_edit.html",
+                translations=translations,
+                languages=languages,
+                mail_configured=CONFIG.get_mail_server_configured(),
+                kobo_support=kobo_support,
+                new_user=0,
+                content=content,
+                config=CONFIG,
+                registered_oauth=oauth_check,
+                title=_("Edit User %(nick)s", nick=content.name),
+                page="edituser",
+            )
     try:
         ub.session_commit()
         flash(_("User '%(nick)s' updated", nick=content.name), category="success")

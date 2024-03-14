@@ -1,4 +1,3 @@
-
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2019 OzzieIsaacs, pwr
 #
@@ -39,6 +38,7 @@ CONFIG = None
 log = logger.create()
 _Base = declarative_base()
 
+
 def init():
     global CONFIG
     CONFIG = ConfigSQL()
@@ -67,7 +67,7 @@ class _Settings(_Base):
     mail_password_e = Column(String)
     mail_password = Column(String)
     mail_from = Column(String, default="automailer <mail@example.com>")
-    mail_size = Column(Integer, default=25*1024*1024)
+    mail_size = Column(Integer, default=25 * 1024 * 1024)
     mail_server_type = Column(SmallInteger, default=0)
 
     config_calibre_dir = Column(String)
@@ -84,7 +84,9 @@ class _Settings(_Base):
     config_random_books = Column(Integer, default=4)
     config_authors_max = Column(Integer, default=0)
     config_read_column = Column(Integer, default=0)
-    config_title_regex = Column(String, default=r"^(A|The|An|Der|Die|Das|Den|Ein|Eine|Einen|Dem|Des|Einem|Eines|Le|La|Les|L\'|Un|Une)\s+")
+    config_title_regex = Column(
+        String, default=r"^(A|The|An|Der|Die|Das|Den|Ein|Eine|Einen|Dem|Des|Einem|Eines|Le|La|Les|L\'|Un|Une)\s+"
+    )
     config_theme = Column(Integer, default=0)
 
     config_log_level = Column(SmallInteger, default=logger.DEFAULT_LOG_LEVEL)
@@ -165,7 +167,7 @@ class ConfigSQL:
 
         change = False
 
-        if self.config_binariesdir is None: # pylint: disable=access-member-before-definition
+        if self.config_binariesdir is None:  # pylint: disable=access-member-before-definition
             change = True
             self.config_binariesdir = autodetect_calibre_binaries()
             self.config_converterpath = autodetect_converter_binary(self.config_binariesdir)
@@ -259,7 +261,7 @@ class ConfigSQL:
         return {k: v for k, v in self.__dict__.items() if k.startswith("mail_")}
 
     def get_mail_server_configured(self):
-        return (self.mail_server != constants.DEFAULT_MAIL_SERVER and self.mail_server_type == 0)
+        return self.mail_server != constants.DEFAULT_MAIL_SERVER and self.mail_server_type == 0
 
     def get_scheduled_task_settings(self):
         return {k: v for k, v in self.__dict__.items() if k.startswith("schedule_")}
@@ -320,6 +322,7 @@ class ConfigSQL:
         self.db_configured = have_metadata_db
         constants.EXTENSIONS_UPLOAD = [x.lstrip().rstrip().lower() for x in self.config_upload_formats.split(",")]
         from .cli import cli_param
+
         if os.environ.get("FLASK_DEBUG"):
             logfile = logger.setup(logger.LOG_TO_STDOUT, logger.logging.DEBUG)
         else:
@@ -395,7 +398,8 @@ def _encrypt_fields(session, secret_key) -> None:
         settings = session.query(_Settings.mail_password).first()
         if settings.mail_password:
             session.query(_Settings).update(
-                {_Settings.mail_password_e: crypter.encrypt(settings.mail_password.encode())})
+                {_Settings.mail_password_e: crypter.encrypt(settings.mail_password.encode())}
+            )
         session.commit()
 
 
@@ -417,10 +421,11 @@ def _migrate_table(session, orm_class, secret_key=None) -> None:
                 else:
                     column_default = f"DEFAULT `{column.default.arg}`"
                 column_type = "JSON" if isinstance(column.type, JSON) else column.type
-                alter_table = text("ALTER TABLE {} ADD COLUMN `{}` {} {}".format(orm_class.__tablename__,
-                                                                             column_name,
-                                                                             column_type,
-                                                                             column_default))
+                alter_table = text(
+                    "ALTER TABLE {} ADD COLUMN `{}` {} {}".format(
+                        orm_class.__tablename__, column_name, column_type, column_default
+                    )
+                )
                 log.debug(alter_table)
                 session.execute(alter_table)
                 changed = True
@@ -437,16 +442,25 @@ def _migrate_table(session, orm_class, secret_key=None) -> None:
 
 def autodetect_calibre_binaries():
     if sys.platform == "win32":
-        calibre_path = ["C:\\program files\\calibre\\",
-                        "C:\\program files(x86)\\calibre\\",
-                        "C:\\program files(x86)\\calibre2\\",
-                        "C:\\program files\\calibre2\\"]
+        calibre_path = [
+            "C:\\program files\\calibre\\",
+            "C:\\program files(x86)\\calibre\\",
+            "C:\\program files(x86)\\calibre2\\",
+            "C:\\program files\\calibre2\\",
+        ]
     else:
         calibre_path = ["/opt/calibre/"]
     for element in calibre_path:
-        supported_binary_paths = [os.path.join(element, binary) for binary in constants.SUPPORTED_CALIBRE_BINARIES.values()]
-        if all(os.path.isfile(binary_path) and os.access(binary_path, os.X_OK) for binary_path in supported_binary_paths):
-            values = [process_wait([binary_path, "--version"], pattern=r"\(calibre (.*)\)") for binary_path in supported_binary_paths]
+        supported_binary_paths = [
+            os.path.join(element, binary) for binary in constants.SUPPORTED_CALIBRE_BINARIES.values()
+        ]
+        if all(
+            os.path.isfile(binary_path) and os.access(binary_path, os.X_OK) for binary_path in supported_binary_paths
+        ):
+            values = [
+                process_wait([binary_path, "--version"], pattern=r"\(calibre (.*)\)")
+                for binary_path in supported_binary_paths
+            ]
             if all(values):
                 version = values[0].group(1)
                 log.debug("calibre version %s", version)
@@ -466,8 +480,7 @@ def autodetect_converter_binary(calibre_path):
 
 def autodetect_unrar_binary():
     if sys.platform == "win32":
-        calibre_path = ["C:\\program files\\WinRar\\unRAR.exe",
-                        "C:\\program files(x86)\\WinRar\\unRAR.exe"]
+        calibre_path = ["C:\\program files\\WinRar\\unRAR.exe", "C:\\program files(x86)\\WinRar\\unRAR.exe"]
     else:
         calibre_path = ["/usr/bin/unrar"]
     for element in calibre_path:
@@ -478,8 +491,10 @@ def autodetect_unrar_binary():
 
 def autodetect_kepubify_binary():
     if sys.platform == "win32":
-        calibre_path = ["C:\\program files\\kepubify\\kepubify-windows-64Bit.exe",
-                        "C:\\program files(x86)\\kepubify\\kepubify-windows-64Bit.exe"]
+        calibre_path = [
+            "C:\\program files\\kepubify\\kepubify-windows-64Bit.exe",
+            "C:\\program files(x86)\\kepubify\\kepubify-windows-64Bit.exe",
+        ]
     else:
         calibre_path = ["/opt/kepubify/kepubify-linux-64bit", "/opt/kepubify/kepubify-linux-32bit"]
     for element in calibre_path:

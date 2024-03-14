@@ -1,4 +1,3 @@
-
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2020 mmonkey
 #
@@ -30,7 +29,6 @@ class TaskReconnectDatabase(CalibreTask):
         self.log = logger.create()
         self.listen_address = CONFIG.get_config_ipaddress()
         self.listen_port = CONFIG.config_port
-
 
     def run(self, worker_thread) -> None:
         address = self.listen_address if self.listen_address else "localhost"

@@ -1,4 +1,3 @@
-
 # Flask License
 #
 # Copyright © 2010 by the Pallets team.
@@ -39,13 +38,13 @@ def is_safe_url(target):
 
 def remove_prefix(text, prefix):
     if text.startswith(prefix):
-        return text[len(prefix):]
+        return text[len(prefix) :]
     return ""
 
 
 def redirect_back(endpoint, **values):
     target = request.form.get("next", None) or url_for(endpoint, **values)
     adapter = current_app.url_map.bind(urlparse(request.host_url).netloc)
-    if not len(adapter.allowed_methods(remove_prefix(target, request.environ.get("HTTP_X_SCRIPT_NAME","")))):
+    if not len(adapter.allowed_methods(remove_prefix(target, request.environ.get("HTTP_X_SCRIPT_NAME", "")))):
         target = url_for(endpoint, **values)
     return redirect(target)

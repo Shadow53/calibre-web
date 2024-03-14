@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2012-2019 janeczku, OzzieIsaacs, andrerfcsantos, idalin
 #
@@ -31,6 +30,7 @@ try:
     from greenlet import GreenletExit
 
     from .gevent_wsgi import MyWSGIHandler
+
     VERSION = "Gevent " + _version
     _GEVENT = True
 except ImportError:
@@ -40,6 +40,7 @@ except ImportError:
     from tornado.ioloop import IOLoop
 
     from .tornado_wsgi import MyWSGIContainer
+
     VERSION = "Tornado " + _version
     _GEVENT = False
 
@@ -48,6 +49,7 @@ from .config_sql import CONFIG
 
 log = logger.create()
 web_server = None
+
 
 def init():
     global web_server
@@ -61,7 +63,6 @@ def _readable_listen_address(address, port) -> str:
 
 
 class WebServer:
-
     def __init__(self) -> None:
         signal.signal(signal.SIGINT, self._killServer)
         signal.signal(signal.SIGTERM, self._killServer)
@@ -97,8 +98,10 @@ class WebServer:
             if os.path.isfile(certfile_path) and os.path.isfile(keyfile_path):
                 self.ssl_args = {"certfile": certfile_path, "keyfile": keyfile_path}
             else:
-                log.warning("The specified paths for the ssl certificate file and/or key file seem to be broken. "
-                            "Ignoring ssl.")
+                log.warning(
+                    "The specified paths for the ssl certificate file and/or key file seem to be broken. "
+                    "Ignoring ssl."
+                )
                 log.warning("Cert path: %s", certfile_path)
                 log.warning("Key path:  %s", keyfile_path)
 
@@ -136,13 +139,17 @@ class WebServer:
                 return unix_sock, "unix:" + unix_socket_file
 
         if self.listen_address:
-            return ((self.listen_address, self.listen_port),
-                    _readable_listen_address(self.listen_address, self.listen_port))
+            return (
+                (self.listen_address, self.listen_port),
+                _readable_listen_address(self.listen_address, self.listen_port),
+            )
 
         if os.name == "nt":
             self.listen_address = "0.0.0.0"
-            return ((self.listen_address, self.listen_port),
-                    _readable_listen_address(self.listen_address, self.listen_port))
+            return (
+                (self.listen_address, self.listen_port),
+                _readable_listen_address(self.listen_address, self.listen_port),
+            )
 
         try:
             address = ("::", self.listen_port)
@@ -185,10 +192,7 @@ class WebServer:
                 if not os.path.exists(py_script) and os.path.exists(f"{py_script}.exe"):
                     py_script += ".exe"
 
-                if (
-                        os.path.splitext(sys.executable)[1] == ".exe"
-                        and os.path.splitext(py_script)[1] == ".exe"
-                ):
+                if os.path.splitext(sys.executable)[1] == ".exe" and os.path.splitext(py_script)[1] == ".exe":
                     rv.pop(0)
 
             rv.append(py_script)
@@ -219,11 +223,18 @@ class WebServer:
         try:
             sock, output = self._make_gevent_listener()
             log.info("Starting Gevent server on %s", output)
-            self.wsgiserver = WSGIServer(sock, self.app, log=self.access_logger, handler_class=MyWSGIHandler,
-                                         error_log=log,
-                                         spawn=Pool(), **ssl_args)
+            self.wsgiserver = WSGIServer(
+                sock,
+                self.app,
+                log=self.access_logger,
+                handler_class=MyWSGIHandler,
+                error_log=log,
+                spawn=Pool(),
+                **ssl_args,
+            )
             if ssl_args:
                 wrap_socket = self.wsgiserver.wrap_socket
+
                 def my_wrap_socket(*args, **kwargs):
                     try:
                         return wrap_socket(*args, **kwargs)
@@ -241,12 +252,11 @@ class WebServer:
     def _start_tornado(self) -> None:
         if os.name == "nt" and sys.version_info > (3, 7):
             import asyncio
+
             asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         try:
             # Max Buffersize set to 200MB
-            http_server = HTTPServer(MyWSGIContainer(self.app),
-                                     max_buffer_size=209700000,
-                                     ssl_options=self.ssl_args)
+            http_server = HTTPServer(MyWSGIContainer(self.app), max_buffer_size=209700000, ssl_options=self.ssl_args)
 
             unix_socket_file = os.environ.get("CALIBRE_UNIX_SOCKET")
             if os.environ.get("LISTEN_FDS") and os.name != "nt":
@@ -254,7 +264,7 @@ class WebServer:
                 sock = socket.socket(fileno=SD_LISTEN_FDS_START)
                 http_server.add_socket(sock)
                 sock.setblocking(0)
-                socket_name =sock.getsockname()
+                socket_name = sock.getsockname()
                 output = "systemd-socket:" + _readable_listen_address(socket_name[0], socket_name[1])
             elif unix_socket_file and os.name != "nt":
                 self._prepare_unix_socket(unix_socket_file)
@@ -309,6 +319,7 @@ class WebServer:
     @staticmethod
     def shutdown_scheduler() -> None:
         from .services.background_scheduler import BackgroundScheduler
+
         scheduler = BackgroundScheduler()
         if scheduler:
             scheduler.scheduler.shutdown()
@@ -318,6 +329,7 @@ class WebServer:
 
     def stop(self, restart=False) -> None:
         from .app import updater_thread
+
         updater_thread.stop()
 
         log.info("webserver stop (restart=%s)", restart)

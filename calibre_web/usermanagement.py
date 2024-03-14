@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2020 OzzieIsaacs
 #
@@ -28,6 +27,7 @@ from .config_sql import CONFIG
 
 log = logger.create()
 
+
 def login_required_if_no_ano(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
@@ -36,6 +36,7 @@ def login_required_if_no_ano(func):
         return login_required(func)(*args, **kwargs)
 
     return decorated_view
+
 
 def requires_basic_auth_if_no_ano(f):
     @wraps(f)
@@ -53,6 +54,7 @@ def requires_basic_auth_if_no_ano(f):
         if not user:
             return _authenticate()
         return f(*args, **kwargs)
+
     return decorated
 
 
@@ -71,9 +73,10 @@ def _load_user_from_auth_header(username, password):
 
 def _authenticate():
     return Response(
-        "Could not verify your access level for that URL.\n"
-        "You have to login with proper credentials", 401,
-        {"WWW-Authenticate": 'Basic realm="Login Required"'})
+        "Could not verify your access level for that URL.\n" "You have to login with proper credentials",
+        401,
+        {"WWW-Authenticate": 'Basic realm="Login Required"'},
+    )
 
 
 def _fetch_user_by_name(username):
@@ -98,4 +101,3 @@ def load_user_from_reverse_proxy_header(req):
                     login_user(user)
                     return user
     return None
-

@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2020 OzzieIsaacs
 #
@@ -30,27 +29,37 @@ from .config_sql import CONFIG
 
 log = logger.create()
 
+
 # custom error page
 def error_http(error):
-    return render_template("http_error.html",
-                           error_code=f"Error {error.code}",
-                           error_name=error.name,
-                           issue=False,
-                           unconfigured=not CONFIG.db_configured,
-                           instance=CONFIG.config_calibre_web_title
-                           ), error.code
+    return (
+        render_template(
+            "http_error.html",
+            error_code=f"Error {error.code}",
+            error_name=error.name,
+            issue=False,
+            unconfigured=not CONFIG.db_configured,
+            instance=CONFIG.config_calibre_web_title,
+        ),
+        error.code,
+    )
 
 
 def internal_error(error):
-    return render_template("http_error.html",
-                           error_code="500 Internal Server Error",
-                           error_name="The server encountered an internal error and was unable to complete your "
-                                      "request. There is an error in the application.",
-                           issue=True,
-                           unconfigured=False,
-                           error_stack=traceback.format_exc().split("\n"),
-                           instance=CONFIG.config_calibre_web_title
-                           ), 500
+    return (
+        render_template(
+            "http_error.html",
+            error_code="500 Internal Server Error",
+            error_name="The server encountered an internal error and was unable to complete your "
+            "request. There is an error in the application.",
+            issue=True,
+            unconfigured=False,
+            error_stack=traceback.format_exc().split("\n"),
+            instance=CONFIG.config_calibre_web_title,
+        ),
+        500,
+    )
+
 
 def init_errorhandler() -> None:
     # http error handling
@@ -59,4 +68,3 @@ def init_errorhandler() -> None:
             app.register_error_handler(ex, error_http)
         elif ex == 500:
             app.register_error_handler(ex, internal_error)
-

@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2020 pwr
 #
@@ -38,8 +37,10 @@ from calibre_web.ub import init_db_thread
 
 log = logger.create()
 
+
 def current_milli_time():
     return int(round(time() * 1000))
+
 
 class TaskConvert(CalibreTask):
     def __init__(self, file_path, book_id, task_message, settings, ereader_mail, user=None) -> None:
@@ -62,15 +63,19 @@ class TaskConvert(CalibreTask):
                 # TODO: figure out how to incorporate this into the progress
                 try:
                     EmailText = N_("%(book)s send to E-Reader", book=escape(self.title))
-                    worker_thread.add(self.user, TaskEmail(self.settings["subject"],
-                                                           self.results["path"],
-                                                           filename,
-                                                           self.settings,
-                                                           self.ereader_mail,
-                                                           EmailText,
-                                                           self.settings["body"],
-                                                           internal=True)
-                                      )
+                    worker_thread.add(
+                        self.user,
+                        TaskEmail(
+                            self.settings["subject"],
+                            self.results["path"],
+                            filename,
+                            self.settings,
+                            self.ereader_mail,
+                            EmailText,
+                            self.settings["body"],
+                            internal=True,
+                        ),
+                    )
                 except Exception as ex:
                     return self._handleError(str(ex))
             return None
@@ -87,19 +92,27 @@ class TaskConvert(CalibreTask):
         # check to see if destination format already exists - or if book is in database
         # if it does - mark the conversion task as complete and return a success
         # this will allow to send to E-Reader workflow to continue to work
-        if os.path.isfile(file_path + format_new_ext) or\
-                local_db.get_book_format(self.book_id, self.settings["new_book_format"]):
+        if os.path.isfile(file_path + format_new_ext) or local_db.get_book_format(
+            self.book_id, self.settings["new_book_format"]
+        ):
             log.info("Book id %d already converted to %s", book_id, format_new_ext)
             cur_book = local_db.get_book(book_id)
             self.title = cur_book.title
             self.results["path"] = cur_book.path
             self.results["title"] = self.title
-            new_format = local_db.session.query(db.Data).filter(db.Data.book == book_id)\
-                .filter(db.Data.format == self.settings["new_book_format"].upper()).one_or_none()
+            new_format = (
+                local_db.session.query(db.Data)
+                .filter(db.Data.book == book_id)
+                .filter(db.Data.format == self.settings["new_book_format"].upper())
+                .one_or_none()
+            )
             if not new_format:
-                new_format = db.Data(name=os.path.basename(file_path),
-                                     book_format=self.settings["new_book_format"].upper(),
-                                     book=book_id, uncompressed_size=os.path.getsize(file_path + format_new_ext))
+                new_format = db.Data(
+                    name=os.path.basename(file_path),
+                    book_format=self.settings["new_book_format"].upper(),
+                    book=book_id,
+                    uncompressed_size=os.path.getsize(file_path + format_new_ext),
+                )
                 try:
                     local_db.session.merge(new_format)
                     local_db.session.commit()
@@ -113,14 +126,12 @@ class TaskConvert(CalibreTask):
                 local_db.session.close()
                 return os.path.basename(file_path + format_new_ext)
         else:
-            log.info("Book id %d - target format of %s does not exist. Moving forward with convert.",
-                     book_id,
-                     format_new_ext)
+            log.info(
+                "Book id %d - target format of %s does not exist. Moving forward with convert.", book_id, format_new_ext
+            )
 
         if CONFIG.config_kepubifypath and format_old_ext == ".epub" and format_new_ext == ".kepub":
-            check, error_message = self._convert_kepubify(file_path,
-                                                          format_old_ext,
-                                                          format_new_ext)
+            check, error_message = self._convert_kepubify(file_path, format_old_ext, format_new_ext)
         else:
             # check if calibre converter-executable is existing
             if not os.path.exists(CONFIG.config_converterpath):
@@ -132,12 +143,19 @@ class TaskConvert(CalibreTask):
         if check == 0:
             cur_book = local_db.get_book(book_id)
             if os.path.isfile(file_path + format_new_ext):
-                new_format = local_db.session.query(db.Data).filter(db.Data.book == book_id) \
-                    .filter(db.Data.format == self.settings["new_book_format"].upper()).one_or_none()
+                new_format = (
+                    local_db.session.query(db.Data)
+                    .filter(db.Data.book == book_id)
+                    .filter(db.Data.format == self.settings["new_book_format"].upper())
+                    .one_or_none()
+                )
                 if not new_format:
-                    new_format = db.Data(name=cur_book.data[0].name,
-                                         book_format=self.settings["new_book_format"].upper(),
-                                         book=book_id, uncompressed_size=os.path.getsize(file_path + format_new_ext))
+                    new_format = db.Data(
+                        name=cur_book.data[0].name,
+                        book_format=self.settings["new_book_format"].upper(),
+                        book=book_id,
+                        uncompressed_size=os.path.getsize(file_path + format_new_ext),
+                    )
                     try:
                         local_db.session.merge(new_format)
                         local_db.session.commit()
@@ -200,8 +218,10 @@ class TaskConvert(CalibreTask):
                 copyfile(converted_file[0], (file_path + format_new_ext))
                 os.unlink(converted_file[0])
             else:
-                return 1, N_("Converted file not found or more than one file in folder %(folder)s",
-                            folder=os.path.dirname(file_path))
+                return 1, N_(
+                    "Converted file not found or more than one file in folder %(folder)s",
+                    folder=os.path.dirname(file_path),
+                )
         return check, None
 
     def _convert_calibre(self, file_path, format_old_ext, format_new_ext, has_cover):
@@ -218,8 +238,14 @@ class TaskConvert(CalibreTask):
                 else:
                     library_path = CONFIG.config_calibre_dir
 
-                opf_command = [calibredb_binarypath, "show_metadata", "--as-opf", str(self.book_id),
-                               "--with-library", library_path]
+                opf_command = [
+                    calibredb_binarypath,
+                    "show_metadata",
+                    "--as-opf",
+                    str(self.book_id),
+                    "--with-library",
+                    library_path,
+                ]
                 p = process_open(opf_command, quotes, my_env)
                 p.wait()
                 path_tmp_opf = os.path.join(tmp_dir, "metadata_" + str(uuid4()) + ".opf")
@@ -227,8 +253,7 @@ class TaskConvert(CalibreTask):
                     copyfileobj(p.stdout, fd)
 
             quotes = [1, 2, 4, 6]
-            command = [CONFIG.config_converterpath, (file_path + format_old_ext),
-                       (file_path + format_new_ext)]
+            command = [CONFIG.config_converterpath, (file_path + format_old_ext), (file_path + format_new_ext)]
             if CONFIG.config_embed_metadata:
                 command.extend(["--from-opf", path_tmp_opf])
             if has_cover:

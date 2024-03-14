@@ -1,4 +1,3 @@
-
 #  Flask License
 #
 #  Copyright © 2010 by the Pallets team, cervinko, janeczku, OzzieIsaacs
@@ -37,7 +36,6 @@
 
 
 class ReverseProxied:
-
     """Wrap the application in this middleware and configure the
     front-end server to add these headers, to let you quietly bind
     this to a URL other than / and to an HTTP scheme that is
@@ -67,7 +65,7 @@ class ReverseProxied:
             environ["SCRIPT_NAME"] = script_name
             path_info = environ.get("PATH_INFO", "")
             if path_info and path_info.startswith(script_name):
-                environ["PATH_INFO"] = path_info[len(script_name):]
+                environ["PATH_INFO"] = path_info[len(script_name) :]
 
         scheme = environ.get("HTTP_X_SCHEME", "")
         if scheme:

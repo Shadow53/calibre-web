@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2021 OzzieIsaacs
 #
@@ -60,15 +59,11 @@ class Metadata:
         self.active = state
 
     @abc.abstractmethod
-    def search(
-        self, query: str, generic_cover: str = "", locale: str = "en"
-    ) -> Optional[List[MetaRecord]]:
+    def search(self, query: str, generic_cover: str = "", locale: str = "en") -> Optional[List[MetaRecord]]:
         pass
 
     @staticmethod
-    def get_title_tokens(
-        title: str, strip_joiners: bool = True
-    ) -> Generator[str, None, None]:
+    def get_title_tokens(title: str, strip_joiners: bool = True) -> Generator[str, None, None]:
         """Taken from calibre source code
         It's a simplified (cut out what is unnecessary) version of
         https://github.com/kovidgoyal/calibre/blob/99d85b97918625d172227c8ffb7e0c71794966c0/
@@ -103,7 +98,5 @@ class Metadata:
         tokens = title.split()
         for token in tokens:
             token = token.strip().strip('"').strip("'")
-            if token and (
-                not strip_joiners or token.lower() not in ("a", "and", "the", "&")
-            ):
+            if token and (not strip_joiners or token.lower() not in ("a", "and", "the", "&")):
                 yield token

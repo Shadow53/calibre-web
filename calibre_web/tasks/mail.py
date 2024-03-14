@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2020 pwr
 #
@@ -39,7 +38,6 @@ CHUNKSIZE = 8192
 
 # Class for sending email with ability to get current progress
 class EmailBase:
-
     transferSize = 0
     progress = 0
 
@@ -55,15 +53,15 @@ class EmailBase:
         if hasattr(self, "sock") and self.sock:
             try:
                 if self.transferSize:
-                    lock=threading.Lock()
+                    lock = threading.Lock()
                     lock.acquire()
                     self.transferSize = len(strg)
                     lock.release()
                     for i in range(0, self.transferSize, CHUNKSIZE):
                         if isinstance(strg, bytes):
-                            self.sock.send(strg[i:i + CHUNKSIZE])
+                            self.sock.send(strg[i : i + CHUNKSIZE])
                         else:
-                            self.sock.send((strg[i:i + CHUNKSIZE]).encode("utf-8"))
+                            self.sock.send((strg[i : i + CHUNKSIZE]).encode("utf-8"))
                         lock.acquire()
                         self.progress = i
                         lock.release()
@@ -85,7 +83,7 @@ class EmailBase:
         if self.transferSize:
             lock2 = threading.Lock()
             lock2.acquire()
-            value = int((float(self.progress) / float(self.transferSize))*100)
+            value = int((float(self.progress) / float(self.transferSize)) * 100)
             lock2.release()
             return value / 100
         else:
@@ -94,14 +92,12 @@ class EmailBase:
 
 # Class for sending email with ability to get current progress, derived from emailbase class
 class Email(EmailBase, smtplib.SMTP):
-
     def __init__(self, *args, **kwargs) -> None:
         smtplib.SMTP.__init__(self, *args, **kwargs)
 
 
 # Class for sending ssl encrypted email with ability to get current progress, , derived from emailbase class
 class EmailSSL(EmailBase, smtplib.SMTP_SSL):
-
     def __init__(self, *args, **kwargs) -> None:
         smtplib.SMTP_SSL.__init__(self, *args, **kwargs)
 
@@ -138,7 +134,9 @@ class TaskEmail(CalibreTask):
         message["To"] = self.recipient
         message["Subject"] = self.subject
         message["Date"] = formatdate(localtime=True)
-        message["Message-Id"] = f"{uuid.uuid4()}@{self.get_msgid_domain()}" # f"<{uuid.uuid4()}@{get_msgid_domain(from_)}>" # make_msgid('calibre-web')
+        message[
+            "Message-Id"
+        ] = f"{uuid.uuid4()}@{self.get_msgid_domain()}"  # f"<{uuid.uuid4()}@{get_msgid_domain(from_)}>" # make_msgid('calibre-web')
         message.set_content(self.text.encode("UTF-8"), "text", "plain")
         if self.attachment:
             data = self._get_attachment(self.filepath, self.attachment)
@@ -173,7 +171,7 @@ class TaskEmail(CalibreTask):
             else:
                 text = ""
             self._handleError(f"Smtplib Error sending e-mail: {text}")
-        except (OSError) as e:
+        except OSError as e:
             log.error_or_exception(e, stacklevel=3)
             self._handleError(f"Socket Error sending e-mail: {e.strerror}")
         except Exception as ex:
@@ -188,8 +186,9 @@ class TaskEmail(CalibreTask):
         log.debug("Start sending e-mail")
         if use_ssl == 2:
             context = ssl.create_default_context()
-            self.asyncSMTP = EmailSSL(self.settings["mail_server"], self.settings["mail_port"],
-                                       timeout=timeout, context=context)
+            self.asyncSMTP = EmailSSL(
+                self.settings["mail_server"], self.settings["mail_port"], timeout=timeout, context=context
+            )
         else:
             self.asyncSMTP = Email(self.settings["mail_server"], self.settings["mail_port"], timeout=timeout)
 

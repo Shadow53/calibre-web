@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2012-2019 cervinko, idalin, SiphonSquirrel, ouzklcn, akushsky,
 #                            OzzieIsaacs, bodybybuddha, jkrehm, matthazinski, janeczku
@@ -32,12 +31,14 @@ from .config_sql import CONFIG
 
 log = logger.create()
 
+
 class lazyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, LazyString):
             return str(obj)
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
+
 
 def assemble_logfiles(file_name):
     log_list = sorted(glob.glob(file_name + "*"), reverse=True)
@@ -47,13 +48,9 @@ def assemble_logfiles(file_name):
             shutil.copyfileobj(fd, wfd)
     wfd.seek(0)
     if int(__version__.split(".")[0]) < 2:
-        return send_file(wfd,
-                         as_attachment=True,
-                         attachment_filename=os.path.basename(file_name))
+        return send_file(wfd, as_attachment=True, attachment_filename=os.path.basename(file_name))
     else:
-        return send_file(wfd,
-                         as_attachment=True,
-                         download_name=os.path.basename(file_name))
+        return send_file(wfd, as_attachment=True, download_name=os.path.basename(file_name))
 
 
 def send_debug():
@@ -70,10 +67,6 @@ def send_debug():
             zf.write(fp, os.path.basename(fp))
     memory_zip.seek(0)
     if int(__version__.split(".")[0]) < 2:
-        return send_file(memory_zip,
-                         as_attachment=True,
-                         attachment_filename="Calibre-Web-debug-pack.zip")
+        return send_file(memory_zip, as_attachment=True, attachment_filename="Calibre-Web-debug-pack.zip")
     else:
-        return send_file(memory_zip,
-                         as_attachment=True,
-                         download_name="Calibre-Web-debug-pack.zip")
+        return send_file(memory_zip, as_attachment=True, download_name="Calibre-Web-debug-pack.zip")

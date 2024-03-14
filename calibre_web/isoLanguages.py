@@ -1,4 +1,3 @@
-
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2019 pwr
 #
@@ -23,11 +22,14 @@ log = logger.create()
 
 try:
     from iso639 import __version__, languages
+
     get = languages.get
 except ImportError:
     from pycountry import languages as pyc_languages
+
     try:
         import pkg_resources
+
         __version__ = pkg_resources.get_distribution("pycountry").version + " (PyCountry)"
         del pkg_resources
     except (ImportError, Exception):
@@ -71,7 +73,6 @@ def get_language_codes(locale, language_names, remainder=None):
     if remainder is not None and language_names:
         remainder.extend(language_names)
     return lang
-
 
 
 def get_valid_language_codes(locale, language_names, remainder=None):

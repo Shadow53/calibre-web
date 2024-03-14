@@ -1,4 +1,3 @@
-
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2020 monkey
 #
@@ -28,11 +27,9 @@ from ..epub_helper import create_new_metadata_backup
 
 
 class TaskBackupMetadata(CalibreTask):
-
-    def __init__(self, export_language="en",
-                 translated_title="Cover",
-                 set_dirty=False,
-                 task_message=N_("Backing up Metadata")) -> None:
+    def __init__(
+        self, export_language="en", translated_title="Cover", set_dirty=False, task_message=N_("Backing up Metadata")
+    ) -> None:
         super().__init__(task_message)
         self.log = logger.create()
         self.calibre_db = db.CalibreDB(expire_on_commit=False, init=True)
@@ -62,16 +59,20 @@ class TaskBackupMetadata(CalibreTask):
     def backup_metadata(self) -> None:
         try:
             metadata_backup = self.calibre_db.session.query(db.Metadata_Dirtied).all()
-            custom_columns = (self.calibre_db.session.query(db.CustomColumns)
-                              .filter(db.CustomColumns.mark_for_delete == 0)
-                              .filter(db.CustomColumns.datatype.notin_(db.cc_exceptions))
-                              .order_by(db.CustomColumns.label).all())
+            custom_columns = (
+                self.calibre_db.session.query(db.CustomColumns)
+                .filter(db.CustomColumns.mark_for_delete == 0)
+                .filter(db.CustomColumns.datatype.notin_(db.cc_exceptions))
+                .order_by(db.CustomColumns.label)
+                .all()
+            )
             count = len(metadata_backup)
             i = 0
             for backup in metadata_backup:
                 book = self.calibre_db.session.query(db.Books).filter(db.Books.id == backup.book).one_or_none()
                 self.calibre_db.session.query(db.Metadata_Dirtied).filter(
-                    db.Metadata_Dirtied.book == backup.book).delete()
+                    db.Metadata_Dirtied.book == backup.book
+                ).delete()
                 self.calibre_db.session.commit()
                 if book:
                     self.open_metadata(book, custom_columns)

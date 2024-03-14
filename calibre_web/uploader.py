@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2012-2019 lemmsh cervinko Kennyl matthazinski OzzieIsaacs
 #
@@ -31,6 +30,7 @@ try:
     from wand import version as ImageVersion
     from wand.exceptions import PolicyError
     from wand.image import Color, Image
+
     use_generic_pdf_cover = False
 except (ImportError, RuntimeError) as e:
     log.debug("Cannot import Image, generating pdf covers for pdf uploads will not work: %s", e)
@@ -38,17 +38,20 @@ except (ImportError, RuntimeError) as e:
 
 try:
     from pypdf import PdfReader
+
     use_pdf_meta = True
 except ImportError as ex:
     log.debug("PyPDF is recommended for best performance in metadata extracting from pdf files: %s", ex)
     try:
         from PyPDF2 import PdfReader
+
         use_pdf_meta = True
     except ImportError as ex:
         log.debug("PyPDF is recommended for best performance in metadata extracting from pdf files: %s", ex)
         log.debug("PyPdf2 is also possible for metadata extracting from pdf files, but not recommended anymore")
         try:
             from PyPDF3 import PdfFileReader as PdfReader
+
             use_pdf_meta = True
         except ImportError as e:
             log.debug("Cannot import PyPDF3/PyPDF2, extracting pdf metadata will not work: %s / %s", e)
@@ -56,6 +59,7 @@ except ImportError as ex:
 
 try:
     from . import epub
+
     use_epub_meta = True
 except ImportError as e:
     log.debug("Cannot import epub, extracting epub metadata will not work: %s", e)
@@ -63,6 +67,7 @@ except ImportError as e:
 
 try:
     from . import fb2
+
     use_fb2_meta = True
 except ImportError as e:
     log.debug("Cannot import fb2, extracting fb2 metadata will not work: %s", e)
@@ -80,10 +85,7 @@ def process(tmp_file_path, original_file_name, original_file_extension, rar_exec
         elif extension_upper == ".FB2" and use_fb2_meta is True:
             meta = fb2.get_fb2_info(tmp_file_path, original_file_extension)
         elif extension_upper in [".CBZ", ".CBT", ".CBR", ".CB7"]:
-            meta = comic.get_comic_info(tmp_file_path,
-                                        original_file_name,
-                                        original_file_extension,
-                                        rar_executable)
+            meta = comic.get_comic_info(tmp_file_path, original_file_name, original_file_extension, rar_executable)
     except Exception as ex:
         log.warning("cannot parse metadata, using default: %s", ex)
 
@@ -108,8 +110,8 @@ def default_meta(tmp_file_path, original_file_name, original_file_extension):
         languages="",
         publisher="",
         pubdate="",
-        identifiers=[]
-        )
+        identifiers=[],
+    )
 
 
 def parse_xmp(pdf_file):
@@ -122,7 +124,7 @@ def parse_xmp(pdf_file):
 
     if xmp_info:
         try:
-            xmp_author = xmp_info.dc_creator # list
+            xmp_author = xmp_info.dc_creator  # list
         except AttributeError:
             xmp_author = ["Unknown"]
 
@@ -140,13 +142,14 @@ def parse_xmp(pdf_file):
         xmp_tags = ", ".join(xmp_info.dc_subject)
         xmp_publisher = ", ".join(xmp_info.dc_publisher)
 
-        return {"author": xmp_author,
-                "title": xmp_title,
-                "subject": xmp_description,
-                "tags": xmp_tags,
-                "languages": languages,
-                "publisher": xmp_publisher
-                }
+        return {
+            "author": xmp_author,
+            "title": xmp_title,
+            "subject": xmp_description,
+            "tags": xmp_tags,
+            "languages": languages,
+            "publisher": xmp_publisher,
+        }
     return None
 
 
@@ -206,7 +209,8 @@ def pdf_meta(tmp_file_path, original_file_name, original_file_extension):
         languages=",".join(languages),
         publisher=publisher,
         pubdate="",
-        identifiers=[])
+        identifiers=[],
+    )
 
 
 def pdf_preview(tmp_file_path, tmp_dir):

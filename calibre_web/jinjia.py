@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs, cervinko, jkrehm, bodybybuddha, ok11,
 #                            andy29485, idalin, Kyosfonica, wuqi, Kennyl, lemmsh,
@@ -60,8 +59,8 @@ def shortentitle_filter(s, nchar=20):
         # if word longer than 20 chars truncate line and append '...', otherwise add whole word to result
         # string, and summarize total length to stop at chars given by nchar
         if len(line) > nchar:
-            res += line[:(nchar-3)] + "[..] "
-            suml += nchar+3
+            res += line[: (nchar - 3)] + "[..] "
+            suml += nchar + 3
         else:
             res += line + " "
             suml += len(line) + 1
@@ -78,10 +77,9 @@ def formatdate_filter(val):
     try:
         return format_date(val, format="medium")
     except AttributeError as e:
-        log.exception("Babel error: %s, Current user locale: %s, Current User: %s", e,
-                  current_user.locale,
-                  current_user.name
-                  )
+        log.exception(
+            "Babel error: %s, Current user locale: %s, Current User: %s", e, current_user.locale, current_user.name
+        )
         return val
 
 
@@ -93,9 +91,7 @@ def format_date_input(val):
 
 @jinjia.app_template_filter("strftime")
 def timestamptodate(date, fmt=None):
-    date = datetime.datetime.fromtimestamp(
-        int(date)/1000
-    )
+    date = datetime.datetime.fromtimestamp(int(date) / 1000)
     native = date.replace(tzinfo=None)
     time_format = fmt if fmt else "%d %m %Y - %H:%S"
     return native.strftime(time_format)
@@ -156,7 +152,7 @@ def get_cover_srcset(book):
     resolutions = {
         constants.COVER_THUMBNAIL_SMALL: "sm",
         constants.COVER_THUMBNAIL_MEDIUM: "md",
-        constants.COVER_THUMBNAIL_LARGE: "lg"
+        constants.COVER_THUMBNAIL_LARGE: "lg",
     }
     for resolution, shortname in resolutions.items():
         url = url_for("web.get_cover", book_id=book.id, resolution=shortname, c=book_last_modified(book))
@@ -170,7 +166,7 @@ def get_series_srcset(series):
     resolutions = {
         constants.COVER_THUMBNAIL_SMALL: "sm",
         constants.COVER_THUMBNAIL_MEDIUM: "md",
-        constants.COVER_THUMBNAIL_LARGE: "lg"
+        constants.COVER_THUMBNAIL_LARGE: "lg",
     }
     for resolution, shortname in resolutions.items():
         url = url_for("web.get_series_cover", series_id=series.id, resolution=shortname, c=cache_timestamp())

@@ -44,19 +44,25 @@ def simple_search():
     if term:
         return redirect(url_for("web.books_list", data="search", sort_param="stored", query=term.strip()))
     else:
-        return render_title_template("search.html",
-                                     searchterm="",
-                                     result_count=0,
-                                     title=_("Search"),
-                                     page="search")
+        return render_title_template("search.html", searchterm="", result_count=0, title=_("Search"), page="search")
 
 
 @search.route("/advsearch", methods=["POST"])
 @login_required_if_no_ano
 def advanced_search():
     values = dict(request.form)
-    params = ["include_tag", "exclude_tag", "include_serie", "exclude_serie", "include_shelf", "exclude_shelf",
-              "include_language", "exclude_language", "include_extension", "exclude_extension"]
+    params = [
+        "include_tag",
+        "exclude_tag",
+        "include_serie",
+        "exclude_serie",
+        "include_shelf",
+        "exclude_shelf",
+        "include_language",
+        "exclude_language",
+        "include_extension",
+        "exclude_extension",
+    ]
     for param in params:
         values[param] = list(request.form.getlist(param))
     flask_session["query"] = json.dumps(values)
@@ -77,26 +83,42 @@ def adv_search_custom_columns(cc, term, q):
             custom_start = term.get("custom_column_" + str(c.id) + "_start")
             custom_end = term.get("custom_column_" + str(c.id) + "_end")
             if custom_start:
-                q = q.filter(getattr(db.Books, "custom_column_" + str(c.id)).any(
-                    func.datetime(db.cc_classes[c.id].value) >= func.datetime(custom_start)))
+                q = q.filter(
+                    getattr(db.Books, "custom_column_" + str(c.id)).any(
+                        func.datetime(db.cc_classes[c.id].value) >= func.datetime(custom_start)
+                    )
+                )
             if custom_end:
-                q = q.filter(getattr(db.Books, "custom_column_" + str(c.id)).any(
-                    func.datetime(db.cc_classes[c.id].value) <= func.datetime(custom_end)))
+                q = q.filter(
+                    getattr(db.Books, "custom_column_" + str(c.id)).any(
+                        func.datetime(db.cc_classes[c.id].value) <= func.datetime(custom_end)
+                    )
+                )
         else:
             custom_query = term.get("custom_column_" + str(c.id))
             if custom_query != "" and custom_query is not None:
                 if c.datatype == "bool":
-                    q = q.filter(getattr(db.Books, "custom_column_" + str(c.id)).any(
-                        db.cc_classes[c.id].value == (custom_query == "True")))
+                    q = q.filter(
+                        getattr(db.Books, "custom_column_" + str(c.id)).any(
+                            db.cc_classes[c.id].value == (custom_query == "True")
+                        )
+                    )
                 elif c.datatype in ("int", "float"):
-                    q = q.filter(getattr(db.Books, "custom_column_" + str(c.id)).any(
-                        db.cc_classes[c.id].value == custom_query))
+                    q = q.filter(
+                        getattr(db.Books, "custom_column_" + str(c.id)).any(db.cc_classes[c.id].value == custom_query)
+                    )
                 elif c.datatype == "rating":
-                    q = q.filter(getattr(db.Books, "custom_column_" + str(c.id)).any(
-                        db.cc_classes[c.id].value == int(float(custom_query) * 2)))
+                    q = q.filter(
+                        getattr(db.Books, "custom_column_" + str(c.id)).any(
+                            db.cc_classes[c.id].value == int(float(custom_query) * 2)
+                        )
+                    )
                 else:
-                    q = q.filter(getattr(db.Books, "custom_column_" + str(c.id)).any(
-                        func.lower(db.cc_classes[c.id].value).ilike("%" + custom_query + "%")))
+                    q = q.filter(
+                        getattr(db.Books, "custom_column_" + str(c.id)).any(
+                            func.lower(db.cc_classes[c.id].value).ilike("%" + custom_query + "%")
+                        )
+                    )
     return q
 
 
@@ -124,8 +146,9 @@ def adv_search_ratings(q, rating_high, rating_low):
 def adv_search_read_status(read_status):
     if not CONFIG.config_read_column:
         if read_status == "True":
-            db_filter = and_(ub.ReadBook.user_id == int(current_user.id),
-                             ub.ReadBook.read_status == ub.ReadBook.STATUS_FINISHED)
+            db_filter = and_(
+                ub.ReadBook.user_id == int(current_user.id), ub.ReadBook.read_status == ub.ReadBook.STATUS_FINISHED
+            )
         else:
             db_filter = coalesce(ub.ReadBook.read_status, 0) != ub.ReadBook.STATUS_FINISHED
     else:
@@ -136,9 +159,10 @@ def adv_search_read_status(read_status):
                 db_filter = coalesce(db.cc_classes[CONFIG.config_read_column].value, False) is not True
         except (KeyError, AttributeError, IndexError):
             log.exception(f"Custom Column No.{CONFIG.config_read_column} does not exist in calibre database")
-            flash(_("Custom Column No.%(column)d does not exist in calibre database",
-                    column=CONFIG.config_read_column),
-                  category="error")
+            flash(
+                _("Custom Column No.%(column)d does not exist in calibre database", column=CONFIG.config_read_column),
+                category="error",
+            )
             return true()
     return db_filter
 
@@ -166,52 +190,54 @@ def adv_search_serie(q, include_series_inputs, exclude_series_inputs):
         q = q.filter(not_(db.Books.series.any(db.Series.id == serie)))
     return q
 
+
 def adv_search_shelf(q, include_shelf_inputs, exclude_shelf_inputs):
-    q = q.outerjoin(ub.BookShelf, db.Books.id == ub.BookShelf.book_id)\
-        .filter(or_(ub.BookShelf.shelf is None, ub.BookShelf.shelf.notin_(exclude_shelf_inputs)))
+    q = q.outerjoin(ub.BookShelf, db.Books.id == ub.BookShelf.book_id).filter(
+        or_(ub.BookShelf.shelf is None, ub.BookShelf.shelf.notin_(exclude_shelf_inputs))
+    )
     if len(include_shelf_inputs) > 0:
         q = q.filter(ub.BookShelf.shelf.in_(include_shelf_inputs))
     return q
 
-def extend_search_term(searchterm,
-                       author_name,
-                       book_title,
-                       publisher,
-                       pub_start,
-                       pub_end,
-                       tags,
-                       rating_high,
-                       rating_low,
-                       read_status,
-                       ):
+
+def extend_search_term(
+    searchterm,
+    author_name,
+    book_title,
+    publisher,
+    pub_start,
+    pub_end,
+    tags,
+    rating_high,
+    rating_low,
+    read_status,
+):
     searchterm.extend((author_name.replace("|", ","), book_title, publisher))
     if pub_start:
         try:
-            searchterm.extend([_("Published after ") +
-                               format_date(datetime.strptime(pub_start, "%Y-%m-%d"),
-                                           format="medium")])
+            searchterm.extend(
+                [_("Published after ") + format_date(datetime.strptime(pub_start, "%Y-%m-%d"), format="medium")]
+            )
         except ValueError:
             pub_start = ""
     if pub_end:
         try:
-            searchterm.extend([_("Published before ") +
-                               format_date(datetime.strptime(pub_end, "%Y-%m-%d"),
-                                           format="medium")])
+            searchterm.extend(
+                [_("Published before ") + format_date(datetime.strptime(pub_end, "%Y-%m-%d"), format="medium")]
+            )
         except ValueError:
             pub_end = ""
-    elements = {"tag": db.Tags, "serie":db.Series, "shelf":ub.Shelf}
+    elements = {"tag": db.Tags, "serie": db.Series, "shelf": ub.Shelf}
     for key, db_element in elements.items():
         tag_names = calibre_db.session.query(db_element).filter(db_element.id.in_(tags["include_" + key])).all()
         searchterm.extend(tag.name for tag in tag_names)
         tag_names = calibre_db.session.query(db_element).filter(db_element.id.in_(tags["exclude_" + key])).all()
         searchterm.extend(tag.name for tag in tag_names)
-    language_names = calibre_db.session.query(db.Languages). \
-        filter(db.Languages.id.in_(tags["include_language"])).all()
+    language_names = calibre_db.session.query(db.Languages).filter(db.Languages.id.in_(tags["include_language"])).all()
     if language_names:
         language_names = calibre_db.speaking_language(language_names)
     searchterm.extend(language.name for language in language_names)
-    language_names = calibre_db.session.query(db.Languages). \
-        filter(db.Languages.id.in_(tags["exclude_language"])).all()
+    language_names = calibre_db.session.query(db.Languages).filter(db.Languages.id.in_(tags["exclude_language"])).all()
     if language_names:
         language_names = calibre_db.speaking_language(language_names)
     searchterm.extend(language.name for language in language_names)
@@ -235,9 +261,11 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
     cc = calibre_db.get_cc_columns(CONFIG, filter_config_custom_read=True)
     calibre_db.session.connection().connection.connection.create_function("lower", 1, db.lcase)
     query = calibre_db.generate_linked_query(CONFIG.config_read_column, db.Books)
-    q = query.outerjoin(db.books_series_link, db.Books.id == db.books_series_link.c.book)\
-        .outerjoin(db.Series)\
+    q = (
+        query.outerjoin(db.books_series_link, db.Books.id == db.books_series_link.c.book)
+        .outerjoin(db.Series)
         .filter(calibre_db.common_filters(True))
+    )
 
     # parse multi selects to a complete dict
     tags = {}
@@ -269,33 +297,52 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
             column_start = term.get("custom_column_" + str(c.id) + "_start")
             column_end = term.get("custom_column_" + str(c.id) + "_end")
             if column_start:
-                search_term.extend(["{} >= {}".format(c.name,
-                                                       format_date(datetime.strptime(column_start, "%Y-%m-%d").date(),
-                                                                   format="medium")
-                                                       )])
+                search_term.extend(
+                    [
+                        "{} >= {}".format(
+                            c.name, format_date(datetime.strptime(column_start, "%Y-%m-%d").date(), format="medium")
+                        )
+                    ]
+                )
                 cc_present = True
             if column_end:
-                search_term.extend(["{} <= {}".format(c.name,
-                                                       format_date(datetime.strptime(column_end, "%Y-%m-%d").date(),
-                                                                   format="medium")
-                                                       )])
+                search_term.extend(
+                    [
+                        "{} <= {}".format(
+                            c.name, format_date(datetime.strptime(column_end, "%Y-%m-%d").date(), format="medium")
+                        )
+                    ]
+                )
                 cc_present = True
         elif term.get("custom_column_" + str(c.id)):
             search_term.extend([("{}: {}".format(c.name, term.get("custom_column_" + str(c.id))))])
             cc_present = True
 
-    if any(tags.values()) or author_name or book_title or publisher or pub_start or pub_end or rating_low \
-       or rating_high or description or cc_present or read_status != "Any":
-        search_term, pub_start, pub_end = extend_search_term(search_term,
-                                                             author_name,
-                                                             book_title,
-                                                             publisher,
-                                                             pub_start,
-                                                             pub_end,
-                                                             tags,
-                                                             rating_high,
-                                                             rating_low,
-                                                             read_status)
+    if (
+        any(tags.values())
+        or author_name
+        or book_title
+        or publisher
+        or pub_start
+        or pub_end
+        or rating_low
+        or rating_high
+        or description
+        or cc_present
+        or read_status != "Any"
+    ):
+        search_term, pub_start, pub_end = extend_search_term(
+            search_term,
+            author_name,
+            book_title,
+            publisher,
+            pub_start,
+            pub_end,
+            tags,
+            rating_high,
+            rating_low,
+            read_status,
+        )
         if author_name:
             q = q.filter(db.Books.authors.any(func.lower(db.Authors.name).ilike("%" + author_name + "%")))
         if book_title:
@@ -337,66 +384,85 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
         offset = 0
         limit_all = result_count
     entries = calibre_db.order_authors(q[offset:limit_all], list_return=True, combined=True)
-    return render_title_template("search.html",
-                                 adv_searchterm=search_term,
-                                 pagination=pagination,
-                                 entries=entries,
-                                 result_count=result_count,
-                                 title=_("Advanced Search"), page="advsearch",
-                                 order=order[1])
+    return render_title_template(
+        "search.html",
+        adv_searchterm=search_term,
+        pagination=pagination,
+        entries=entries,
+        result_count=result_count,
+        title=_("Advanced Search"),
+        page="advsearch",
+        order=order[1],
+    )
 
 
 def render_prepare_search_form(cc):
     # prepare data for search-form
-    tags = calibre_db.session.query(db.Tags)\
-        .join(db.books_tags_link)\
-        .join(db.Books)\
-        .filter(calibre_db.common_filters()) \
-        .group_by(text("books_tags_link.tag"))\
-        .order_by(db.Tags.name).all()
-    series = calibre_db.session.query(db.Series)\
-        .join(db.books_series_link)\
-        .join(db.Books)\
-        .filter(calibre_db.common_filters()) \
-        .group_by(text("books_series_link.series"))\
-        .order_by(db.Series.name)\
-        .filter(calibre_db.common_filters()).all()
-    shelves = ub.session.query(ub.Shelf)\
-        .filter(or_(ub.Shelf.is_public == 1, ub.Shelf.user_id == int(current_user.id)))\
-        .order_by(ub.Shelf.name).all()
-    extensions = calibre_db.session.query(db.Data)\
-        .join(db.Books)\
-        .filter(calibre_db.common_filters()) \
-        .group_by(db.Data.format)\
-        .order_by(db.Data.format).all()
+    tags = (
+        calibre_db.session.query(db.Tags)
+        .join(db.books_tags_link)
+        .join(db.Books)
+        .filter(calibre_db.common_filters())
+        .group_by(text("books_tags_link.tag"))
+        .order_by(db.Tags.name)
+        .all()
+    )
+    series = (
+        calibre_db.session.query(db.Series)
+        .join(db.books_series_link)
+        .join(db.Books)
+        .filter(calibre_db.common_filters())
+        .group_by(text("books_series_link.series"))
+        .order_by(db.Series.name)
+        .filter(calibre_db.common_filters())
+        .all()
+    )
+    shelves = (
+        ub.session.query(ub.Shelf)
+        .filter(or_(ub.Shelf.is_public == 1, ub.Shelf.user_id == int(current_user.id)))
+        .order_by(ub.Shelf.name)
+        .all()
+    )
+    extensions = (
+        calibre_db.session.query(db.Data)
+        .join(db.Books)
+        .filter(calibre_db.common_filters())
+        .group_by(db.Data.format)
+        .order_by(db.Data.format)
+        .all()
+    )
     languages = calibre_db.speaking_language() if current_user.filter_language() == "all" else None
-    return render_title_template("search_form.html", tags=tags, languages=languages, extensions=extensions,
-                                 series=series,shelves=shelves, title=_("Advanced Search"), cc=cc, page="advsearch")
+    return render_title_template(
+        "search_form.html",
+        tags=tags,
+        languages=languages,
+        extensions=extensions,
+        series=series,
+        shelves=shelves,
+        title=_("Advanced Search"),
+        cc=cc,
+        page="advsearch",
+    )
 
 
 def render_search_results(term, offset=None, order=None, limit=None):
     if term:
         join = db.books_series_link, db.Books.id == db.books_series_link.c.book, db.Series
-        entries, result_count, pagination = calibre_db.get_search_results(term,
-                                                                          CONFIG,
-                                                                          offset,
-                                                                          order,
-                                                                          limit,
-                                                                          *join)
+        entries, result_count, pagination = calibre_db.get_search_results(term, CONFIG, offset, order, limit, *join)
     else:
         entries = []
         order = [None, None]
         pagination = result_count = None
 
-    return render_title_template("search.html",
-                                 searchterm=term,
-                                 pagination=pagination,
-                                 query=term,
-                                 adv_searchterm=term,
-                                 entries=entries,
-                                 result_count=result_count,
-                                 title=_("Search"),
-                                 page="search",
-                                 order=order[1])
-
-
+    return render_title_template(
+        "search.html",
+        searchterm=term,
+        pagination=pagination,
+        query=term,
+        adv_searchterm=term,
+        entries=entries,
+        result_count=result_count,
+        title=_("Search"),
+        page="search",
+        order=order[1],
+    )

@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2022 OzzieIsaacs
 #
@@ -27,8 +26,8 @@ from tornado.wsgi import WSGIContainer
 if typing.TYPE_CHECKING:
     from typing import Type
 
-class MyWSGIContainer(WSGIContainer):
 
+class MyWSGIContainer(WSGIContainer):
     def __call__(self, request: httputil.HTTPServerRequest) -> None:
         if tornado.version_info < (6, 3, 0, -99):
             data = {}  # type: Dict[str, Any]
@@ -49,9 +48,7 @@ class MyWSGIContainer(WSGIContainer):
                 data["headers"] = headers
                 return response.append
 
-            app_response = self.wsgi_application(
-                MyWSGIContainer.environ(self, request), start_response
-            )
+            app_response = self.wsgi_application(MyWSGIContainer.environ(self, request), start_response)
             try:
                 response.extend(app_response)
                 body = b"".join(response)
@@ -86,7 +83,6 @@ class MyWSGIContainer(WSGIContainer):
         else:
             IOLoop.current().spawn_callback(self.handle_request, request)
 
-
     def environ(self, request: httputil.HTTPServerRequest) -> Dict[str, Any]:
         try:
             environ = WSGIContainer.environ(self, request)
@@ -94,4 +90,3 @@ class MyWSGIContainer(WSGIContainer):
             environ = WSGIContainer.environ(request)
         environ["RAW_URI"] = request.path
         return environ
-

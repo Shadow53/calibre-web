@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs, cervinko, jkrehm, bodybybuddha, ok11,
 #                            andy29485, idalin, Kyosfonica, wuqi, Kennyl, lemmsh,
@@ -51,6 +50,7 @@ def remote_login_required(f):
 
     return inner
 
+
 @remotelogin.route("/remote/login")
 @remote_login_required
 def remote_login():
@@ -59,8 +59,9 @@ def remote_login():
     ub.session_commit()
     verify_url = url_for("remotelogin.verify_token", token=auth_token.auth_token, _external=true)
     log.debug("Remot Login request with token: %s", auth_token.auth_token)
-    return render_title_template("remote_login.html", title=_("Login"), token=auth_token.auth_token,
-                                 verify_url=verify_url, page="remotelogin")
+    return render_title_template(
+        "remote_login.html", title=_("Login"), token=auth_token.auth_token, verify_url=verify_url, page="remotelogin"
+    )
 
 
 @remotelogin.route("/verify/<token>")

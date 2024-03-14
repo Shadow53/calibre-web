@@ -1,4 +1,3 @@
-
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2018-2022 OzzieIsaacs
 #
@@ -31,6 +30,7 @@ log = logger.create()
 
 try:
     from comicapi.comicarchive import ComicArchive, MetaDataStyle
+
     use_comic_meta = True
     try:
         from comicapi import __version__ as comic_version
@@ -39,6 +39,7 @@ try:
     try:
         import comicapi.utils
         from comicapi.comicarchive import load_archive_plugins
+
         comicapi.utils.add_rar_paths()
     except ImportError:
         load_archive_plugins = None
@@ -46,14 +47,17 @@ except (ImportError, LookupError) as e:
     log.debug("Cannot import comicapi, extracting comic metadata will not work: %s", e)
     import tarfile
     import zipfile
+
     try:
         import rarfile
+
         use_rarfile = True
     except (ImportError, SyntaxError) as e:
         log.debug("Cannot import rarfile, extracting cover files from rar files will not work: %s", e)
         use_rarfile = False
     try:
         import py7zr
+
         use_7zip = True
     except (ImportError, SyntaxError) as e:
         log.debug("Cannot import py7zr, extracting cover files from CB7 files will not work: %s", e)
@@ -160,8 +164,10 @@ def get_comic_info(tmp_file_path, original_file_name, original_file_extension, r
                 file_path=tmp_file_path,
                 extension=original_file_extension,
                 title=loaded_metadata.title or original_file_name,
-                author=" & ".join([credit["person"]
-                                   for credit in loaded_metadata.credits if credit["role"] == "Writer"]) or "Unknown",
+                author=" & ".join(
+                    [credit["person"] for credit in loaded_metadata.credits if credit["role"] == "Writer"]
+                )
+                or "Unknown",
                 cover=_extract_cover(tmp_file_path, original_file_extension, rar_executable),
                 description=loaded_metadata.comments or "",
                 tags="",
@@ -170,7 +176,8 @@ def get_comic_info(tmp_file_path, original_file_name, original_file_extension, r
                 languages=loaded_metadata.language,
                 publisher="",
                 pubdate="",
-                identifiers=[])
+                identifiers=[],
+            )
 
     return BookMeta(
         file_path=tmp_file_path,
@@ -185,4 +192,5 @@ def get_comic_info(tmp_file_path, original_file_name, original_file_extension, r
         languages="",
         publisher="",
         pubdate="",
-        identifiers=[])
+        identifiers=[],
+    )

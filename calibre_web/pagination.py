@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs, cervinko, jkrehm, bodybybuddha, ok11,
 #                            andy29485, idalin, Kyosfonica, wuqi, Kennyl, lemmsh,
@@ -60,8 +59,7 @@ class Pagination:
     # left_edge: first left_edges count of all pages are shown as number                                    -> 1,2 shown
     # left_current: left_current count below current page are shown as number, means if current page 5      -> 3,4 shown
     # left_current: right_current count above current page are shown as number, means if current page 5     -> 6,7 shown
-    def iter_pages(self, left_edge=2, left_current=2,
-                   right_current=4, right_edge=2):
+    def iter_pages(self, left_edge=2, left_current=2, right_current=4, right_edge=2):
         last = 0
         left_current = self.page - left_current - 1
         right_current = self.page + right_current + 1

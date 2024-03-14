@@ -1,4 +1,3 @@
-
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2020 mmonkey
 #
@@ -23,6 +22,7 @@ try:
     from apscheduler.schedulers.background import BackgroundScheduler as BScheduler
     from apscheduler.triggers.cron import CronTrigger
     from apscheduler.triggers.date import DateTrigger
+
     use_APScheduler = True
 except (ImportError, RuntimeError):
     use_APScheduler = False
@@ -53,10 +53,12 @@ class BackgroundScheduler:
     # Expects a lambda expression for the task
     def schedule_task(self, task, user=None, name=None, hidden=False, trigger=None):
         if use_APScheduler:
+
             def scheduled_task() -> None:
                 worker_task = task()
                 worker_task.scheduled = True
                 WorkerThread.add(user, worker_task, hidden=hidden)
+
             return self.schedule(func=scheduled_task, trigger=trigger, name=name)
         return None
 
@@ -69,8 +71,10 @@ class BackgroundScheduler:
     # Expects a lambda expression for the task
     def schedule_task_immediately(self, task, user=None, name=None, hidden=False):
         if use_APScheduler:
+
             def immediate_task() -> None:
                 WorkerThread.add(user, task(), hidden)
+
             return self.schedule(func=immediate_task, trigger=DateTrigger(), name=name)
         return None
 

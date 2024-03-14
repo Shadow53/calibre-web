@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs, cervinko, jkrehm, bodybybuddha, ok11,
 #                            andy29485, idalin, Kyosfonica, wuqi, Kennyl, lemmsh,
@@ -30,8 +29,7 @@ class MyLoginManager(LoginManager):
     def _session_protection_failed(self) -> bool:
         sess = session._get_current_object()
         ident = self._session_identifier_generator()
-        if(sess and not (len(sess) == 1
-                             and sess.get("csrf_token", None))) and ident != sess.get("_id", None):
+        if (sess and not (len(sess) == 1 and sess.get("csrf_token", None))) and ident != sess.get("_id", None):
             return super()._session_protection_failed()
         return False
 

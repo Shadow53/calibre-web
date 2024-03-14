@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018 lemmsh, Kennyl, Kyosfonica, matthazinski
 #
@@ -45,9 +44,11 @@ def _extract_cover(zip_file, cover_file, cover_path, tmp_file_name):
         cf = zip_file.read(zip_cover_path)
     return cover.cover_processing(tmp_file_name, cf, extension)
 
+
 def get_epub_layout(book, book_data):
-    file_path = os.path.normpath(os.path.join(CONFIG.get_book_path(),
-                                              book.path, book_data.name + "." + book_data.format.lower()))
+    file_path = os.path.normpath(
+        os.path.join(CONFIG.get_book_path(), book.path, book_data.name + "." + book_data.format.lower())
+    )
 
     try:
         tree, __ = get_content_opf(file_path, default_ns)
@@ -68,7 +69,7 @@ def get_epub_info(tmp_file_path, original_file_name, original_file_extension):
     ns = {
         "n": "urn:oasis:names:tc:opendocument:xmlns:container",
         "pkg": "http://www.idpf.org/2007/opf",
-        "dc": "http://purl.org/dc/elements/1.1/"
+        "dc": "http://purl.org/dc/elements/1.1/",
     }
 
     tree, cf_name = get_content_opf(tmp_file_path, ns)
@@ -143,7 +144,8 @@ def get_epub_info(tmp_file_path, original_file_name, original_file_extension):
         languages=epub_metadata["language"],
         publisher=epub_metadata["publisher"].encode("utf-8").decode("utf-8"),
         pubdate=epub_metadata["date"],
-        identifiers=identifiers)
+        identifiers=identifiers,
+    )
 
 
 def parse_epub_cover(ns, tree, epub_zip, cover_path, tmp_file_path):
@@ -156,10 +158,12 @@ def parse_epub_cover(ns, tree, epub_zip, cover_path, tmp_file_path):
     meta_cover = tree.xpath("/pkg:package/pkg:metadata/pkg:meta[@name='cover']/@content", namespaces=ns)
     if len(meta_cover) > 0:
         cover_section = tree.xpath(
-            "/pkg:package/pkg:manifest/pkg:item[@id='"+meta_cover[0]+"']/@href", namespaces=ns)
+            "/pkg:package/pkg:manifest/pkg:item[@id='" + meta_cover[0] + "']/@href", namespaces=ns
+        )
         if not cover_section:
             cover_section = tree.xpath(
-                "/pkg:package/pkg:manifest/pkg:item[@properties='" + meta_cover[0] + "']/@href", namespaces=ns)
+                "/pkg:package/pkg:manifest/pkg:item[@properties='" + meta_cover[0] + "']/@href", namespaces=ns
+            )
     else:
         cover_section = tree.xpath("/pkg:package/pkg:guide/pkg:reference/@href", namespaces=ns)
 
@@ -175,8 +179,9 @@ def parse_epub_cover(ns, tree, epub_zip, cover_path, tmp_file_path):
                 img_src = markup_tree.xpath("//attribute::*[contains(local-name(), 'href')]")
             if len(img_src):
                 # img_src maybe start with "../"" so fullpath join then relpath to cwd
-                filename = os.path.relpath(os.path.join(os.path.dirname(os.path.join(cover_path, cover_section[0])),
-                                                        img_src[0]))
+                filename = os.path.relpath(
+                    os.path.join(os.path.dirname(os.path.join(cover_path, cover_section[0])), img_src[0])
+                )
                 cover_file = _extract_cover(epub_zip, filename, "", tmp_file_path)
         else:
             cover_file = _extract_cover(epub_zip, cs, cover_path, tmp_file_path)

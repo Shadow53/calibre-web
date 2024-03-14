@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs, cervinko, jkrehm, bodybybuddha, ok11,
 #                            andy29485, idalin, Kyosfonica, wuqi, Kennyl, lemmsh,
@@ -53,10 +52,12 @@ def collect_stats():
         calibre_web_version += " - pyPi"
 
     _VERSIONS = {"Calibre Web": calibre_web_version}
-    _VERSIONS.update(OrderedDict(
-        Python=sys.version,
-        Platform="{0[0]} {0[2]} {0[3]} {0[4]} {0[5]}".format(platform.uname()),
-    ))
+    _VERSIONS.update(
+        OrderedDict(
+            Python=sys.version,
+            Platform="{0[0]} {0[2]} {0[3]} {0[4]} {0[5]}".format(platform.uname()),
+        )
+    )
     _VERSIONS.update(uploader.get_magick_version())
     _VERSIONS["Unrar"] = converter.get_unrar_version()
     _VERSIONS["Ebook converter"] = converter.get_calibre_version()
@@ -72,5 +73,13 @@ def stats():
     authors = calibre_db.session.query(db.Authors).count()
     categories = calibre_db.session.query(db.Tags).count()
     series = calibre_db.session.query(db.Series).count()
-    return render_title_template("stats.html", bookcounter=counter, authorcounter=authors, versions=collect_stats(),
-                                 categorycounter=categories, seriecounter=series, title=_("Statistics"), page="stat")
+    return render_title_template(
+        "stats.html",
+        bookcounter=counter,
+        authorcounter=authors,
+        versions=collect_stats(),
+        categorycounter=categories,
+        seriecounter=series,
+        title=_("Statistics"),
+        page="stat",
+    )

@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2020 pwr
 #
@@ -87,13 +86,7 @@ class WorkerThread(threading.Thread):
         ins.num += 1
         username = user if user is not None else "System"
         log.debug(f"Add Task for user: {username} - {task}")
-        ins.queue.put(QueuedTask(
-            num=ins.num,
-            user=username,
-            added=datetime.now(),
-            task=task,
-            hidden=hidden
-        ))
+        ins.queue.put(QueuedTask(num=ins.num, user=username, added=datetime.now(), task=task, hidden=hidden))
 
     @property
     def tasks(self):

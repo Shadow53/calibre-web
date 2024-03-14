@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018 lemmsh, cervinko, OzzieIsaacs
 #
@@ -21,7 +20,6 @@ from .constants import BookMeta
 
 
 def get_fb2_info(tmp_file_path, original_file_extension):
-
     ns = {
         "fb": "http://www.gribuser.ru/xml/fictionbook/2.0",
         "l": "http://www.w3.org/1999/xlink",
@@ -39,9 +37,7 @@ def get_fb2_info(tmp_file_path, original_file_extension):
         middle_name = middle_name[0] if len(middle_name) else ""
         first_name = element.xpath("fb:first-name/text()", namespaces=ns)
         first_name = first_name[0] if len(first_name) else ""
-        return (first_name + " "
-                + middle_name + " "
-                + last_name)
+        return first_name + " " + middle_name + " " + last_name
 
     author = str(", ".join(map(get_author, authors)))
 
@@ -63,4 +59,5 @@ def get_fb2_info(tmp_file_path, original_file_extension):
         languages="",
         publisher="",
         pubdate="",
-        identifiers=[])
+        identifiers=[],
+    )

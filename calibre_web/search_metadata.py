@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2021 OzzieIsaacs
 #
@@ -43,8 +42,12 @@ log = logger.create()
 try:
     from dataclasses import asdict
 except ImportError:
-    log.info('*** "dataclasses" is needed for calibre-web to run. Please install it using pip: "pip install dataclasses" ***')
-    print('*** "dataclasses" is needed for calibre-web to run. Please install it using pip: "pip install dataclasses" ***')
+    log.info(
+        '*** "dataclasses" is needed for calibre-web to run. Please install it using pip: "pip install dataclasses" ***'
+    )
+    print(
+        '*** "dataclasses" is needed for calibre-web to run. Please install it using pip: "pip install dataclasses" ***'
+    )
     web_server.stop(True)
     sys.exit(6)
 
@@ -66,14 +69,8 @@ for f in modules:
 def list_classes(provider_list):
     classes = []
     for element in provider_list:
-        for name, obj in inspect.getmembers(
-            sys.modules["calibre_web.metadata_provider." + element]
-        ):
-            if (
-                inspect.isclass(obj)
-                and name != "Metadata"
-                and issubclass(obj, Metadata)
-            ):
+        for name, obj in inspect.getmembers(sys.modules["calibre_web.metadata_provider." + element]):
+            if inspect.isclass(obj) and name != "Metadata" and issubclass(obj, Metadata):
                 classes.append(obj())
     return classes
 
@@ -88,9 +85,7 @@ def metadata_provider():
     provider = []
     for c in cl:
         ac = active.get(c.__id__, True)
-        provider.append(
-            {"name": c.__name__, "active": ac, "initial": ac, "id": c.__id__}
-        )
+        provider.append({"name": c.__name__, "active": ac, "initial": ac, "id": c.__id__})
     return Response(json.dumps(provider), mimetype="application/json")
 
 
@@ -114,9 +109,7 @@ def metadata_change_active_provider(prov_name):
         provider = next((c for c in cl if c.__id__ == prov_name), None)
         if provider is not None:
             data = provider.search(new_state.get("query", ""))
-        return Response(
-            json.dumps([asdict(x) for x in data]), mimetype="application/json"
-        )
+        return Response(json.dumps([asdict(x) for x in data]), mimetype="application/json")
     return ""
 
 
@@ -131,11 +124,7 @@ def metadata_search():
         static_cover = url_for("static", filename="generic_cover.jpg")
         # start = current_milli_time()
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            meta = {
-                executor.submit(c.search, query, static_cover, locale): c
-                for c in cl
-                if active.get(c.__id__, True)
-            }
+            meta = {executor.submit(c.search, query, static_cover, locale): c for c in cl if active.get(c.__id__, True)}
             for future in concurrent.futures.as_completed(meta):
                 data.extend([asdict(x) for x in future.result() if x])
     # log.info({'Time elapsed {}'.format(current_milli_time()-start)})

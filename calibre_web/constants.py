@@ -1,4 +1,3 @@
-
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2019 OzzieIsaacs, pwr
 #
@@ -22,10 +21,10 @@ from collections import namedtuple
 
 from sqlalchemy import __version__ as sql_version
 
-sqlalchemy_version2 = ([int(x) for x in sql_version.split(".")] >= [2, 0, 0])
+sqlalchemy_version2 = [int(x) for x in sql_version.split(".")] >= [2, 0, 0]
 
 # APP_MODE - production, development, or test
-APP_MODE             = os.environ.get("APP_MODE", "production")
+APP_MODE = os.environ.get("APP_MODE", "production")
 
 # if installed via pip this variable is set to true (empty file with name .HOMEDIR present)
 HOME_CONFIG = os.path.isfile(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".HOMEDIR"))
@@ -34,16 +33,16 @@ HOME_CONFIG = os.path.isfile(os.path.join(os.path.dirname(os.path.abspath(__file
 UPDATER_AVAILABLE = True
 
 # Base dir is parent of current file, necessary if called from different folder
-BASE_DIR            = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir))
 # if executable file the files should be placed in the parent dir (parallel to the exe file)
 
-STATIC_DIR          = os.path.join(BASE_DIR, "calibre-web", "static")
-TEMPLATES_DIR       = os.path.join(BASE_DIR, "calibre-web", "templates")
-TRANSLATIONS_DIR    = os.path.join(BASE_DIR, "calibre-web", "translations")
+STATIC_DIR = os.path.join(BASE_DIR, "calibre-web", "static")
+TEMPLATES_DIR = os.path.join(BASE_DIR, "calibre-web", "templates")
+TRANSLATIONS_DIR = os.path.join(BASE_DIR, "calibre-web", "translations")
 
 # Cache dir - use CACHE_DIR environment variable, otherwise use the default directory: calibre-web/cache
-DEFAULT_CACHE_DIR   = os.path.join(BASE_DIR, "calibre-web", "cache")
-CACHE_DIR           = os.environ.get("CACHE_DIR", DEFAULT_CACHE_DIR)
+DEFAULT_CACHE_DIR = os.path.join(BASE_DIR, "calibre-web", "cache")
+CACHE_DIR = os.environ.get("CACHE_DIR", DEFAULT_CACHE_DIR)
 
 if HOME_CONFIG:
     home_dir = os.path.join(os.path.expanduser("~"), ".calibre-web")
@@ -58,82 +57,82 @@ else:
 
 DEFAULT_SETTINGS_FILE = "app.db"
 
-ROLE_USER               = 0 << 0
-ROLE_ADMIN              = 1 << 0
-ROLE_DOWNLOAD           = 1 << 1
-ROLE_UPLOAD             = 1 << 2
-ROLE_EDIT               = 1 << 3
-ROLE_PASSWD             = 1 << 4
-ROLE_ANONYMOUS          = 1 << 5
-ROLE_EDIT_SHELFS        = 1 << 6
-ROLE_DELETE_BOOKS       = 1 << 7
-ROLE_VIEWER             = 1 << 8
+ROLE_USER = 0 << 0
+ROLE_ADMIN = 1 << 0
+ROLE_DOWNLOAD = 1 << 1
+ROLE_UPLOAD = 1 << 2
+ROLE_EDIT = 1 << 3
+ROLE_PASSWD = 1 << 4
+ROLE_ANONYMOUS = 1 << 5
+ROLE_EDIT_SHELFS = 1 << 6
+ROLE_DELETE_BOOKS = 1 << 7
+ROLE_VIEWER = 1 << 8
 
 ALL_ROLES = {
-                "admin_role": ROLE_ADMIN,
-                "download_role": ROLE_DOWNLOAD,
-                "upload_role": ROLE_UPLOAD,
-                "edit_role": ROLE_EDIT,
-                "passwd_role": ROLE_PASSWD,
-                "edit_shelf_role": ROLE_EDIT_SHELFS,
-                "delete_role": ROLE_DELETE_BOOKS,
-                "viewer_role": ROLE_VIEWER,
-            }
+    "admin_role": ROLE_ADMIN,
+    "download_role": ROLE_DOWNLOAD,
+    "upload_role": ROLE_UPLOAD,
+    "edit_role": ROLE_EDIT,
+    "passwd_role": ROLE_PASSWD,
+    "edit_shelf_role": ROLE_EDIT_SHELFS,
+    "delete_role": ROLE_DELETE_BOOKS,
+    "viewer_role": ROLE_VIEWER,
+}
 
-DETAIL_RANDOM           = 1 <<  0
-SIDEBAR_LANGUAGE        = 1 <<  1
-SIDEBAR_SERIES          = 1 <<  2
-SIDEBAR_CATEGORY        = 1 <<  3
-SIDEBAR_HOT             = 1 <<  4
-SIDEBAR_RANDOM          = 1 <<  5
-SIDEBAR_AUTHOR          = 1 <<  6
-SIDEBAR_BEST_RATED      = 1 <<  7
-SIDEBAR_READ_AND_UNREAD = 1 <<  8
-SIDEBAR_RECENT          = 1 <<  9
-SIDEBAR_SORTED          = 1 << 10
-MATURE_CONTENT          = 1 << 11
-SIDEBAR_PUBLISHER       = 1 << 12
-SIDEBAR_RATING          = 1 << 13
-SIDEBAR_FORMAT          = 1 << 14
-SIDEBAR_ARCHIVED        = 1 << 15
-SIDEBAR_DOWNLOAD        = 1 << 16
-SIDEBAR_LIST            = 1 << 17
+DETAIL_RANDOM = 1 << 0
+SIDEBAR_LANGUAGE = 1 << 1
+SIDEBAR_SERIES = 1 << 2
+SIDEBAR_CATEGORY = 1 << 3
+SIDEBAR_HOT = 1 << 4
+SIDEBAR_RANDOM = 1 << 5
+SIDEBAR_AUTHOR = 1 << 6
+SIDEBAR_BEST_RATED = 1 << 7
+SIDEBAR_READ_AND_UNREAD = 1 << 8
+SIDEBAR_RECENT = 1 << 9
+SIDEBAR_SORTED = 1 << 10
+MATURE_CONTENT = 1 << 11
+SIDEBAR_PUBLISHER = 1 << 12
+SIDEBAR_RATING = 1 << 13
+SIDEBAR_FORMAT = 1 << 14
+SIDEBAR_ARCHIVED = 1 << 15
+SIDEBAR_DOWNLOAD = 1 << 16
+SIDEBAR_LIST = 1 << 17
 
 sidebar_settings = {
-                "detail_random": DETAIL_RANDOM,
-                "sidebar_language": SIDEBAR_LANGUAGE,
-                "sidebar_series": SIDEBAR_SERIES,
-                "sidebar_category": SIDEBAR_CATEGORY,
-                "sidebar_random": SIDEBAR_RANDOM,
-                "sidebar_author": SIDEBAR_AUTHOR,
-                "sidebar_best_rated": SIDEBAR_BEST_RATED,
-                "sidebar_read_and_unread": SIDEBAR_READ_AND_UNREAD,
-                "sidebar_recent": SIDEBAR_RECENT,
-                "sidebar_sorted": SIDEBAR_SORTED,
-                "sidebar_publisher": SIDEBAR_PUBLISHER,
-                "sidebar_rating": SIDEBAR_RATING,
-                "sidebar_format": SIDEBAR_FORMAT,
-                "sidebar_archived": SIDEBAR_ARCHIVED,
-                "sidebar_download": SIDEBAR_DOWNLOAD,
-                "sidebar_list": SIDEBAR_LIST,
-            }
+    "detail_random": DETAIL_RANDOM,
+    "sidebar_language": SIDEBAR_LANGUAGE,
+    "sidebar_series": SIDEBAR_SERIES,
+    "sidebar_category": SIDEBAR_CATEGORY,
+    "sidebar_random": SIDEBAR_RANDOM,
+    "sidebar_author": SIDEBAR_AUTHOR,
+    "sidebar_best_rated": SIDEBAR_BEST_RATED,
+    "sidebar_read_and_unread": SIDEBAR_READ_AND_UNREAD,
+    "sidebar_recent": SIDEBAR_RECENT,
+    "sidebar_sorted": SIDEBAR_SORTED,
+    "sidebar_publisher": SIDEBAR_PUBLISHER,
+    "sidebar_rating": SIDEBAR_RATING,
+    "sidebar_format": SIDEBAR_FORMAT,
+    "sidebar_archived": SIDEBAR_ARCHIVED,
+    "sidebar_download": SIDEBAR_DOWNLOAD,
+    "sidebar_list": SIDEBAR_LIST,
+}
 
 
-ADMIN_USER_ROLES        = sum(r for r in ALL_ROLES.values()) & ~ROLE_ANONYMOUS
-ADMIN_USER_SIDEBAR      = (SIDEBAR_LIST << 1) - 1
+ADMIN_USER_ROLES = sum(r for r in ALL_ROLES.values()) & ~ROLE_ANONYMOUS
+ADMIN_USER_SIDEBAR = (SIDEBAR_LIST << 1) - 1
 
-UPDATE_STABLE       = 0 << 0
-AUTO_UPDATE_STABLE  = 1 << 0
-UPDATE_NIGHTLY      = 1 << 1
+UPDATE_STABLE = 0 << 0
+AUTO_UPDATE_STABLE = 1 << 0
+UPDATE_NIGHTLY = 1 << 1
 AUTO_UPDATE_NIGHTLY = 1 << 2
 
-LOGIN_STANDARD      = 0
-LOGIN_OAUTH         = 2
+LOGIN_STANDARD = 0
+LOGIN_OAUTH = 2
 
 DEFAULT_MAIL_SERVER = "mail.example.org"
 
-DEFAULT_PASSWORD    = "admin123"  # nosec
-DEFAULT_PORT        = 8083
+DEFAULT_PASSWORD = "admin123"  # nosec
+DEFAULT_PORT = 8083
 env_CALIBRE_PORT = os.environ.get("CALIBRE_PORT", DEFAULT_PORT)
 try:
     DEFAULT_PORT = int(env_CALIBRE_PORT)
@@ -143,30 +142,91 @@ del env_CALIBRE_PORT
 
 
 EXTENSIONS_AUDIO = {"mp3", "mp4", "ogg", "opus", "wav", "flac", "m4a", "m4b"}
-EXTENSIONS_CONVERT_FROM = ["pdf", "epub", "mobi", "azw3", "docx", "rtf", "fb2", "lit", "lrf",
-                           "txt", "htmlz", "rtf", "odt", "cbz", "cbr", "prc"]
-EXTENSIONS_CONVERT_TO = ["pdf", "epub", "mobi", "azw3", "docx", "rtf", "fb2",
-                         "lit", "lrf", "txt", "htmlz", "rtf", "odt"]
-EXTENSIONS_UPLOAD = {"txt", "pdf", "epub", "kepub", "mobi", "azw", "azw3", "cbr", "cbz", "cbt", "cb7", "djvu", "djv",
-                     "prc", "doc", "docx", "fb2", "html", "rtf", "lit", "odt", "mp3", "mp4", "ogg",
-                     "opus", "wav", "flac", "m4a", "m4b"}
+EXTENSIONS_CONVERT_FROM = [
+    "pdf",
+    "epub",
+    "mobi",
+    "azw3",
+    "docx",
+    "rtf",
+    "fb2",
+    "lit",
+    "lrf",
+    "txt",
+    "htmlz",
+    "rtf",
+    "odt",
+    "cbz",
+    "cbr",
+    "prc",
+]
+EXTENSIONS_CONVERT_TO = [
+    "pdf",
+    "epub",
+    "mobi",
+    "azw3",
+    "docx",
+    "rtf",
+    "fb2",
+    "lit",
+    "lrf",
+    "txt",
+    "htmlz",
+    "rtf",
+    "odt",
+]
+EXTENSIONS_UPLOAD = {
+    "txt",
+    "pdf",
+    "epub",
+    "kepub",
+    "mobi",
+    "azw",
+    "azw3",
+    "cbr",
+    "cbz",
+    "cbt",
+    "cb7",
+    "djvu",
+    "djv",
+    "prc",
+    "doc",
+    "docx",
+    "fb2",
+    "html",
+    "rtf",
+    "lit",
+    "odt",
+    "mp3",
+    "mp4",
+    "ogg",
+    "opus",
+    "wav",
+    "flac",
+    "m4a",
+    "m4b",
+}
 
 _extension = ""
 if sys.platform == "win32":
     _extension = ".exe"
-SUPPORTED_CALIBRE_BINARIES = {binary:binary + _extension for binary in ["ebook-convert", "calibredb"]}
+SUPPORTED_CALIBRE_BINARIES = {binary: binary + _extension for binary in ["ebook-convert", "calibredb"]}
 
 
 def has_flag(value, bit_flag):
     return bit_flag == (bit_flag & (value or 0))
+
 
 def selected_roles(dictionary):
     return sum(v for k, v in ALL_ROLES.items() if k in dictionary)
 
 
 # :rtype: BookMeta
-BookMeta = namedtuple("BookMeta", "file_path, extension, title, author, cover, description, tags, series, "
-                                  "series_id, languages, publisher, pubdate, identifiers")
+BookMeta = namedtuple(
+    "BookMeta",
+    "file_path, extension, title, author, cover, description, tags, series, "
+    "series_id, languages, publisher, pubdate, identifiers",
+)
 
 # python build process likes to have x.y.zbw -> b for beta and w a counting number
 VERSION = importlib.metadata.version(__package__)
@@ -177,18 +237,18 @@ NIGHTLY_VERSION[0] = "$Format:%H$"
 NIGHTLY_VERSION[1] = "$Format:%cI$"
 
 # CACHE
-CACHE_TYPE_THUMBNAILS    = "thumbnails"
+CACHE_TYPE_THUMBNAILS = "thumbnails"
 
 # Thumbnail Types
-THUMBNAIL_TYPE_COVER     = 1
-THUMBNAIL_TYPE_SERIES    = 2
-THUMBNAIL_TYPE_AUTHOR    = 3
+THUMBNAIL_TYPE_COVER = 1
+THUMBNAIL_TYPE_SERIES = 2
+THUMBNAIL_TYPE_AUTHOR = 3
 
 # Thumbnails Sizes
 COVER_THUMBNAIL_ORIGINAL = 0
-COVER_THUMBNAIL_SMALL    = 1
-COVER_THUMBNAIL_MEDIUM   = 2
-COVER_THUMBNAIL_LARGE    = 3
+COVER_THUMBNAIL_SMALL = 1
+COVER_THUMBNAIL_MEDIUM = 2
+COVER_THUMBNAIL_LARGE = 3
 
 # clean-up the module namespace
 del sys, os, namedtuple

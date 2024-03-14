@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2012-2019 mutschler, jkrehm, cervinko, janeczku, OzzieIsaacs, csitko
 #                            ok11, issmirnov, idalin
@@ -29,11 +28,13 @@ from flask_login import AnonymousUserMixin, current_user, user_logged_in
 
 try:
     from flask_dance.consumer.backend.sqla import OAuthConsumerMixin
+
     oauth_support = True
 except ImportError:
     # fails on flask-dance >1.3, due to renaming
     try:
         from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
+
         oauth_support = True
     except ImportError:
         OAuthConsumerMixin = BaseException
@@ -105,8 +106,9 @@ def store_user_session() -> None:
 def delete_user_session(user_id, session_key) -> None:
     try:
         log.debug("Deleted session_key: " + session_key)
-        session.query(User_Sessions).filter(User_Sessions.user_id == user_id,
-                                            User_Sessions.session_key == session_key).delete()
+        session.query(User_Sessions).filter(
+            User_Sessions.user_id == user_id, User_Sessions.session_key == session_key
+        ).delete()
         session.commit()
     except (exc.OperationalError, exc.InvalidRequestError) as ex:
         session.rollback()
@@ -115,8 +117,11 @@ def delete_user_session(user_id, session_key) -> None:
 
 def check_user_session(user_id, session_key):
     try:
-        return bool(session.query(User_Sessions).filter(User_Sessions.user_id==user_id,
-                                                       User_Sessions.session_key==session_key).one_or_none())
+        return bool(
+            session.query(User_Sessions)
+            .filter(User_Sessions.user_id == user_id, User_Sessions.session_key == session_key)
+            .one_or_none()
+        )
     except (exc.OperationalError, exc.InvalidRequestError) as e:
         session.rollback()
         log.exception(e)
@@ -124,11 +129,13 @@ def check_user_session(user_id, session_key):
 
 user_logged_in.connect(signal_store_user_session)
 
+
 def store_ids(result) -> None:
     ids = []
     for element in result:
         ids.append(element.id)
     searched_ids[current_user.id] = ids
+
 
 def store_combo_ids(result) -> None:
     ids = []
@@ -138,7 +145,6 @@ def store_combo_ids(result) -> None:
 
 
 class UserBase:
-
     @property
     def is_authenticated(self):
         return self.is_active
@@ -259,6 +265,7 @@ class User(UserBase, Base):
 
 
 if oauth_support:
+
     class OAuth(OAuthConsumerMixin, Base):
         provider_user_id = Column(String(256))
         user_id = Column(Integer, ForeignKey(User.id))
@@ -290,11 +297,12 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.loadSettings()
 
     def loadSettings(self) -> None:
-        data = session.query(User).filter(User.role.op("&")(constants.ROLE_ANONYMOUS) == constants.ROLE_ANONYMOUS)\
-            .first()  # type: User
+        data = (
+            session.query(User).filter(User.role.op("&")(constants.ROLE_ANONYMOUS) == constants.ROLE_ANONYMOUS).first()
+        )  # type: User
         self.name = data.name
         self.role = data.role
-        self.id=data.id
+        self.id = data.id
         self.sidebar_view = data.sidebar_view
         self.default_language = data.default_language
         self.locale = data.locale
@@ -305,7 +313,6 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.allowed_column_value = data.allowed_column_value
         self.view_settings = data.view_settings
         self.kobo_only_shelves_sync = data.kobo_only_shelves_sync
-
 
     def role_admin(self) -> bool:
         return False
@@ -335,6 +342,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         if not flask_session["view"].get(page):
             flask_session["view"][page] = {}
         flask_session["view"][page][prop] = value
+
 
 class User_Sessions(Base):
     __tablename__ = "user_session"
@@ -401,12 +409,14 @@ class ReadBook(Base):
     book_id = Column(Integer, unique=False)
     user_id = Column(Integer, ForeignKey("user.id"), unique=False)
     read_status = Column(Integer, unique=False, default=STATUS_UNREAD, nullable=False)
-    kobo_reading_state = relationship("KoboReadingState", uselist=False,
-                                      primaryjoin="and_(ReadBook.user_id == foreign(KoboReadingState.user_id), "
-                                                  "ReadBook.book_id == foreign(KoboReadingState.book_id))",
-                                      cascade="all",
-                                      backref=backref("book_read_link",
-                                                      uselist=False))
+    kobo_reading_state = relationship(
+        "KoboReadingState",
+        uselist=False,
+        primaryjoin="and_(ReadBook.user_id == foreign(KoboReadingState.user_id), "
+        "ReadBook.book_id == foreign(KoboReadingState.book_id))",
+        cascade="all",
+        backref=backref("book_read_link", uselist=False),
+    )
     last_modified = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
     last_time_started_reading = Column(DateTime, nullable=True)
     times_started_reading = Column(Integer, default=0, nullable=False)
@@ -438,6 +448,7 @@ class KoboSyncedBooks(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.id"))
     book_id = Column(Integer)
+
 
 # The Kobo ReadingState API keeps track of 4 timestamped entities:
 #   ReadingState, StatusInfo, Statistics, CurrentBookmark
@@ -685,6 +696,7 @@ def migrate_remoteAuthToken(engine, _session) -> None:
             conn.execute(text("update remote_auth_token set 'token_type' = 0"))
             trans.commit()
 
+
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # everywhere to current should work. Migration is done by checking if relevant columns are existing, and than adding
 # rows with SQL commands
@@ -713,13 +725,22 @@ def migrate_Database(_session) -> None:
     except exc.OperationalError:
         with engine.connect() as conn:
             trans = conn.begin()
-            conn.execute(text("UPDATE user SET 'sidebar_view' = (random_books* :side_random + language_books * :side_lang "
-                     "+ series_books * :side_series + category_books * :side_category + hot_books * "
-                     ":side_hot + :side_autor + :detail_random)"),
-                     {"side_random": constants.SIDEBAR_RANDOM, "side_lang": constants.SIDEBAR_LANGUAGE,
-                      "side_series": constants.SIDEBAR_SERIES, "side_category": constants.SIDEBAR_CATEGORY,
-                      "side_hot": constants.SIDEBAR_HOT, "side_autor": constants.SIDEBAR_AUTHOR,
-                      "detail_random": constants.DETAIL_RANDOM})
+            conn.execute(
+                text(
+                    "UPDATE user SET 'sidebar_view' = (random_books* :side_random + language_books * :side_lang "
+                    "+ series_books * :side_series + category_books * :side_category + hot_books * "
+                    ":side_hot + :side_autor + :detail_random)"
+                ),
+                {
+                    "side_random": constants.SIDEBAR_RANDOM,
+                    "side_lang": constants.SIDEBAR_LANGUAGE,
+                    "side_series": constants.SIDEBAR_SERIES,
+                    "side_category": constants.SIDEBAR_CATEGORY,
+                    "side_hot": constants.SIDEBAR_HOT,
+                    "side_autor": constants.SIDEBAR_AUTHOR,
+                    "detail_random": constants.DETAIL_RANDOM,
+                },
+            )
             trans.commit()
     try:
         _session.query(exists().where(User.denied_tags)).scalar()
@@ -752,35 +773,45 @@ def migrate_Database(_session) -> None:
         # Create new table user_id and copy contents of table user into it
         with engine.connect() as conn:
             trans = conn.begin()
-            conn.execute(text("CREATE TABLE user_id (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
-                     "name VARCHAR(64),"
-                     "email VARCHAR(120),"
-                     "role SMALLINT,"
-                     "password VARCHAR,"
-                     "kindle_mail VARCHAR(120),"
-                     "locale VARCHAR(2),"
-                     "sidebar_view INTEGER,"
-                     "default_language VARCHAR(3),"
-                     "denied_tags VARCHAR,"
-                     "allowed_tags VARCHAR,"
-                     "denied_column_value VARCHAR,"
-                     "allowed_column_value VARCHAR,"
-                     "view_settings JSON,"
-                     "kobo_only_shelves_sync SMALLINT,"
-                     "UNIQUE (name),"
-                     "UNIQUE (email))"))
-            conn.execute(text("INSERT INTO user_id(id, name, email, role, password, kindle_mail,locale,"
-                     "sidebar_view, default_language, denied_tags, allowed_tags, denied_column_value, "
-                     "allowed_column_value, view_settings, kobo_only_shelves_sync)"
-                     "SELECT id, nickname, email, role, password, kindle_mail, locale,"
-                     "sidebar_view, default_language, denied_tags, allowed_tags, denied_column_value, "
-                     "allowed_column_value, view_settings, kobo_only_shelves_sync FROM user"))
+            conn.execute(
+                text(
+                    "CREATE TABLE user_id (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+                    "name VARCHAR(64),"
+                    "email VARCHAR(120),"
+                    "role SMALLINT,"
+                    "password VARCHAR,"
+                    "kindle_mail VARCHAR(120),"
+                    "locale VARCHAR(2),"
+                    "sidebar_view INTEGER,"
+                    "default_language VARCHAR(3),"
+                    "denied_tags VARCHAR,"
+                    "allowed_tags VARCHAR,"
+                    "denied_column_value VARCHAR,"
+                    "allowed_column_value VARCHAR,"
+                    "view_settings JSON,"
+                    "kobo_only_shelves_sync SMALLINT,"
+                    "UNIQUE (name),"
+                    "UNIQUE (email))"
+                )
+            )
+            conn.execute(
+                text(
+                    "INSERT INTO user_id(id, name, email, role, password, kindle_mail,locale,"
+                    "sidebar_view, default_language, denied_tags, allowed_tags, denied_column_value, "
+                    "allowed_column_value, view_settings, kobo_only_shelves_sync)"
+                    "SELECT id, nickname, email, role, password, kindle_mail, locale,"
+                    "sidebar_view, default_language, denied_tags, allowed_tags, denied_column_value, "
+                    "allowed_column_value, view_settings, kobo_only_shelves_sync FROM user"
+                )
+            )
             # delete old user table and rename new user_id table to user:
             conn.execute(text("DROP TABLE user"))
             conn.execute(text("ALTER TABLE user_id RENAME TO user"))
             trans.commit()
-    if _session.query(User).filter(User.role.op("&")(constants.ROLE_ANONYMOUS) == constants.ROLE_ANONYMOUS).first() \
-       is None:
+    if (
+        _session.query(User).filter(User.role.op("&")(constants.ROLE_ANONYMOUS) == constants.ROLE_ANONYMOUS).first()
+        is None
+    ):
         create_anonymous_user(_session)
 
     migrate_guest_password(engine)
@@ -789,8 +820,9 @@ def migrate_Database(_session) -> None:
 def clean_database(_session) -> None:
     # Remove expired remote login tokens
     now = datetime.datetime.now()
-    _session.query(RemoteAuthToken).filter(now > RemoteAuthToken.expiration).\
-        filter(RemoteAuthToken.token_type != 1).delete()
+    _session.query(RemoteAuthToken).filter(now > RemoteAuthToken.expiration).filter(
+        RemoteAuthToken.token_type != 1
+    ).delete()
     _session.commit()
 
 
@@ -814,6 +846,7 @@ def delete_download(book_id) -> None:
         session.commit()
     except exc.OperationalError:
         session.rollback()
+
 
 # Generate user Guest (translated text), as anonymous user, no rights
 def create_anonymous_user(_session) -> None:
@@ -846,6 +879,7 @@ def create_admin_user(_session) -> None:
     except Exception:
         _session.rollback()
 
+
 def init_db_thread():
     global app_DB_path
     engine = create_engine(f"sqlite:///{app_DB_path}", echo=False)
@@ -876,6 +910,7 @@ def init_db(app_db_path) -> None:
         create_admin_user(session)
         create_anonymous_user(session)
 
+
 def password_change(user_credentials=None) -> None:
     if user_credentials:
         username, password = user_credentials.split(":", 1)
@@ -886,6 +921,7 @@ def password_change(user_credentials=None) -> None:
                 sys.exit(4)
             try:
                 from .helper import valid_password
+
                 user.password = generate_password_hash(valid_password(password))
             except Exception:
                 print("Password doesn't comply with password validation rules")
@@ -922,6 +958,7 @@ def dispose() -> None:
         if old_session.bind:
             with contextlib.suppress(Exception):
                 old_session.bind.dispose()
+
 
 def session_commit(success=None, _session=None) -> str:
     s = _session if _session else session

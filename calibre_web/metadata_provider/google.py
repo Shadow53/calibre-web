@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2021 OzzieIsaacs
 #
@@ -37,12 +36,9 @@ class Google(Metadata):
     SEARCH_URL = "https://www.googleapis.com/books/v1/volumes?q="
     ISBN_TYPE = "ISBN_13"
 
-    def search(
-        self, query: str, generic_cover: str = "", locale: str = "en"
-    ) -> Optional[List[MetaRecord]]:
+    def search(self, query: str, generic_cover: str = "", locale: str = "en") -> Optional[List[MetaRecord]]:
         val = []
         if self.active:
-
             title_tokens = list(self.get_title_tokens(query, strip_joiners=False))
             if title_tokens:
                 tokens = [quote(t.encode("utf-8")) for t in title_tokens]
@@ -54,16 +50,10 @@ class Google(Metadata):
                 log.warning(e)
                 return None
             for result in results.json().get("items", []):
-                val.append(
-                    self._parse_search_result(
-                        result=result, generic_cover=generic_cover, locale=locale
-                    )
-                )
+                val.append(self._parse_search_result(result=result, generic_cover=generic_cover, locale=locale))
         return val
 
-    def _parse_search_result(
-        self, result: Dict, generic_cover: str, locale: str
-    ) -> MetaRecord:
+    def _parse_search_result(self, result: Dict, generic_cover: str, locale: str) -> MetaRecord:
         match = MetaRecord(
             id=result["id"],
             title=result["volumeInfo"]["title"],
@@ -118,8 +108,4 @@ class Google(Metadata):
     @staticmethod
     def _parse_languages(result: Dict, locale: str) -> List[str]:
         language_iso2 = result["volumeInfo"].get("language", "")
-        return (
-            [get_language_name(locale, get_lang3(language_iso2))]
-            if language_iso2
-            else []
-        )
+        return [get_language_name(locale, get_lang3(language_iso2))] if language_iso2 else []

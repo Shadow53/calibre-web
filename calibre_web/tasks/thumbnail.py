@@ -1,4 +1,3 @@
-
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2020 monkey
 #
@@ -30,6 +29,7 @@ from ..config_sql import CONFIG
 
 try:
     from wand.image import Image
+
     use_IM = True
 except (ImportError, RuntimeError):
     use_IM = False
@@ -41,7 +41,7 @@ def get_resize_height(resolution):
 
 def get_resize_width(resolution, original_width, original_height):
     height = get_resize_height(resolution)
-    percent = (height / float(original_height))
+    percent = height / float(original_height)
     width = int(float(original_width) * float(percent))
     return width if width % 2 == 0 else width + 1
 
@@ -72,10 +72,7 @@ class TaskGenerateCoverThumbnails(CalibreTask):
         self.app_db_session = ub.get_new_session_instance()
         # self.calibre_db = db.CalibreDB(expire_on_commit=False, init=True)
         self.cache = fs.FileSystem()
-        self.resolutions = [
-            constants.COVER_THUMBNAIL_SMALL,
-            constants.COVER_THUMBNAIL_MEDIUM
-        ]
+        self.resolutions = [constants.COVER_THUMBNAIL_SMALL, constants.COVER_THUMBNAIL_MEDIUM]
 
     def run(self, worker_thread) -> None:
         if use_IM and self.stat != STAT_CANCELLED and self.stat != STAT_ENDED:
@@ -85,7 +82,6 @@ class TaskGenerateCoverThumbnails(CalibreTask):
 
             total_generated = 0
             for i, book in enumerate(books_with_covers):
-
                 # Generate new thumbnails for missing covers
                 generated = self.create_book_cover_thumbnails(book)
 
@@ -119,12 +115,13 @@ class TaskGenerateCoverThumbnails(CalibreTask):
         return books_cover
 
     def get_book_cover_thumbnails(self, book_id):
-        return self.app_db_session \
-            .query(ub.Thumbnail) \
-            .filter(ub.Thumbnail.type == constants.THUMBNAIL_TYPE_COVER) \
-            .filter(ub.Thumbnail.entity_id == book_id) \
-            .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.utcnow())) \
+        return (
+            self.app_db_session.query(ub.Thumbnail)
+            .filter(ub.Thumbnail.type == constants.THUMBNAIL_TYPE_COVER)
+            .filter(ub.Thumbnail.entity_id == book_id)
+            .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.utcnow()))
             .all()
+        )
 
     def create_book_cover_thumbnails(self, book):
         generated = 0
@@ -139,7 +136,9 @@ class TaskGenerateCoverThumbnails(CalibreTask):
 
         # Replace outdated or missing thumbnails
         for thumbnail in book_cover_thumbnails:
-            if book.last_modified.replace(tzinfo=None) > thumbnail.generated_at or not self.cache.get_cache_file_exists(thumbnail.filename, constants.CACHE_TYPE_THUMBNAILS):
+            if book.last_modified.replace(tzinfo=None) > thumbnail.generated_at or not self.cache.get_cache_file_exists(
+                thumbnail.filename, constants.CACHE_TYPE_THUMBNAILS
+            ):
                 generated += 1
                 self.update_book_cover_thumbnail(book, thumbnail)
         return generated
@@ -239,7 +238,9 @@ class TaskGenerateSeriesThumbnails(CalibreTask):
 
                 # Replace outdated or missing thumbnails
                 for thumbnail in series_thumbnails:
-                    if any(book.last_modified > thumbnail.generated_at for book in series_books) or not self.cache.get_cache_file_exists(thumbnail.filename, constants.CACHE_TYPE_THUMBNAILS):
+                    if any(
+                        book.last_modified > thumbnail.generated_at for book in series_books
+                    ) or not self.cache.get_cache_file_exists(thumbnail.filename, constants.CACHE_TYPE_THUMBNAILS):
                         generated += 1
                         self.update_series_thumbnail(series_books, thumbnail)
 
@@ -266,31 +267,34 @@ class TaskGenerateSeriesThumbnails(CalibreTask):
         self.app_db_session.remove()
 
     def get_series_with_four_plus_books(self):
-        return self.calibre_db.session \
-            .query(db.Series) \
-            .join(db.books_series_link) \
-            .join(db.Books) \
-            .filter(db.Books.has_cover == 1) \
-            .group_by(text("books_series_link.series")) \
-            .having(func.count("book_series_link") > 3) \
+        return (
+            self.calibre_db.session.query(db.Series)
+            .join(db.books_series_link)
+            .join(db.Books)
+            .filter(db.Books.has_cover == 1)
+            .group_by(text("books_series_link.series"))
+            .having(func.count("book_series_link") > 3)
             .all()
+        )
 
     def get_series_books(self, series_id):
-        return self.calibre_db.session \
-            .query(db.Books) \
-            .join(db.books_series_link) \
-            .join(db.Series) \
-            .filter(db.Books.has_cover == 1) \
-            .filter(db.Series.id == series_id) \
+        return (
+            self.calibre_db.session.query(db.Books)
+            .join(db.books_series_link)
+            .join(db.Series)
+            .filter(db.Books.has_cover == 1)
+            .filter(db.Series.id == series_id)
             .all()
+        )
 
     def get_series_thumbnails(self, series_id):
-        return self.app_db_session \
-            .query(ub.Thumbnail) \
-            .filter(ub.Thumbnail.type == constants.THUMBNAIL_TYPE_SERIES) \
-            .filter(ub.Thumbnail.entity_id == series_id) \
-            .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.utcnow())) \
+        return (
+            self.app_db_session.query(ub.Thumbnail)
+            .filter(ub.Thumbnail.type == constants.THUMBNAIL_TYPE_SERIES)
+            .filter(ub.Thumbnail.entity_id == series_id)
+            .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.utcnow()))
             .all()
+        )
 
     def create_series_thumbnail(self, series, series_books, resolution) -> None:
         thumbnail = ub.Thumbnail()
@@ -389,10 +393,12 @@ class TaskClearCoverThumbnailCache(CalibreTask):
         if self.app_db_session:
             if self.book_id == 0:  # delete superfluous thumbnails
                 calibre_db = db.CalibreDB(expire_on_commit=False, init=True)
-                thumbnails = (calibre_db.session.query(ub.Thumbnail)
-                              .join(db.Books, ub.Thumbnail.entity_id == db.Books.id, isouter=True)
-                              .filter(db.Books.id is None)
-                              .all())
+                thumbnails = (
+                    calibre_db.session.query(ub.Thumbnail)
+                    .join(db.Books, ub.Thumbnail.entity_id == db.Books.id, isouter=True)
+                    .filter(db.Books.id is None)
+                    .all()
+                )
                 calibre_db.session.close()
             elif self.book_id > 0:  # make sure single book is selected
                 thumbnails = self.get_thumbnails_for_book(self.book_id)
@@ -405,20 +411,19 @@ class TaskClearCoverThumbnailCache(CalibreTask):
         self.app_db_session.remove()
 
     def get_thumbnails_for_book(self, book_id):
-        return self.app_db_session \
-            .query(ub.Thumbnail) \
-            .filter(ub.Thumbnail.type == constants.THUMBNAIL_TYPE_COVER) \
-            .filter(ub.Thumbnail.entity_id == book_id) \
+        return (
+            self.app_db_session.query(ub.Thumbnail)
+            .filter(ub.Thumbnail.type == constants.THUMBNAIL_TYPE_COVER)
+            .filter(ub.Thumbnail.entity_id == book_id)
             .all()
+        )
 
     def delete_thumbnail(self, thumbnail) -> None:
         try:
             self.cache.delete_cache_file(thumbnail.filename, constants.CACHE_TYPE_THUMBNAILS)
-            self.app_db_session \
-                .query(ub.Thumbnail) \
-                .filter(ub.Thumbnail.type == constants.THUMBNAIL_TYPE_COVER) \
-                .filter(ub.Thumbnail.entity_id == thumbnail.entity_id) \
-                .delete()
+            self.app_db_session.query(ub.Thumbnail).filter(ub.Thumbnail.type == constants.THUMBNAIL_TYPE_COVER).filter(
+                ub.Thumbnail.entity_id == thumbnail.entity_id
+            ).delete()
             self.app_db_session.commit()
         except Exception as ex:
             self.log.debug("Error deleting book thumbnail: " + str(ex))

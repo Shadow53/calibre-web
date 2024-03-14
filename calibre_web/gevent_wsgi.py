@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2022 OzzieIsaacs
 #
@@ -25,5 +24,3 @@ class MyWSGIHandler(WSGIHandler):
         path, __ = self.path.split("?", 1) if "?" in self.path else (self.path, "")
         env["RAW_URI"] = path
         return env
-
-

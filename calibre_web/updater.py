@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs
 #
@@ -53,7 +52,6 @@ def is_sha1(sha1) -> bool:
 
 
 class Updater(threading.Thread):
-
     def __init__(self) -> None:
         threading.Thread.__init__(self)
         self.paused = False
@@ -134,7 +132,7 @@ class Updater(threading.Thread):
             self.can_run.wait()
             if self.status > -1:
                 if self.do_work():
-                    break   # stop loop and end thread for restart
+                    break  # stop loop and end thread for restart
             else:
                 break
 
@@ -230,9 +228,15 @@ class Updater(threading.Thread):
                         os.chown(dst_dir, new_permissions.st_uid, new_permissions.st_gid)
                     except OSError as e:
                         old_permissions = os.stat(dst_dir)
-                        log.exception("Failed changing permissions of %s. Before: %s:%s After %s:%s error: %s",
-                                  dst_dir, old_permissions.st_uid, old_permissions.st_gid,
-                                  new_permissions.st_uid, new_permissions.st_gid, e)
+                        log.exception(
+                            "Failed changing permissions of %s. Before: %s:%s After %s:%s error: %s",
+                            dst_dir,
+                            old_permissions.st_uid,
+                            old_permissions.st_gid,
+                            new_permissions.st_uid,
+                            new_permissions.st_gid,
+                            e,
+                        )
             for file_ in files:
                 src_file = os.path.join(src_dir, file_)
                 dst_file = os.path.join(dst_dir, file_)
@@ -256,9 +260,15 @@ class Updater(threading.Thread):
                         os.chown(dst_file, permission.st_uid, permission.st_gid)
                     except OSError as e:
                         old_permissions = os.stat(dst_file)
-                        log.exception("Failed changing permissions of %s. Before: %s:%s After %s:%s error: %s",
-                                  dst_file, old_permissions.st_uid, old_permissions.st_gid,
-                                  permission.st_uid, permission.st_gid, e)
+                        log.exception(
+                            "Failed changing permissions of %s. Before: %s:%s After %s:%s error: %s",
+                            dst_file,
+                            old_permissions.st_uid,
+                            old_permissions.st_gid,
+                            permission.st_uid,
+                            permission.st_gid,
+                            e,
+                        )
 
     def update_source(self, source, destination) -> bool:
         # destination files
@@ -360,13 +370,14 @@ class Updater(threading.Thread):
                         r.raise_for_status()
                         parent_data = r.json()
 
-                        parent_commit_date = datetime.datetime.strptime(
-                            parent_data["committer"]["date"], "%Y-%m-%dT%H:%M:%SZ") - tz
-                        parent_commit_date = format_datetime(
-                            parent_commit_date, format="short")
+                        parent_commit_date = (
+                            datetime.datetime.strptime(parent_data["committer"]["date"], "%Y-%m-%dT%H:%M:%SZ") - tz
+                        )
+                        parent_commit_date = format_datetime(parent_commit_date, format="short")
 
-                        parents.append([parent_commit_date,
-                                        parent_data["message"].replace("\r\n", "<p>").replace("\n", "<p>")])
+                        parents.append(
+                            [parent_commit_date, parent_data["message"].replace("\r\n", "<p>").replace("\n", "<p>")]
+                        )
                         parent_commit = parent_data["parents"][0]
                         remaining_parents_cnt -= 1
                     except Exception:
@@ -382,9 +393,7 @@ class Updater(threading.Thread):
         update_data = {}
         try:
             headers = {"Accept": "application/vnd.github.v3+json"}
-            r = requests.get(repository_url + "/git/commits/" + commit["object"]["sha"],
-                             headers=headers,
-                             timeout=10)
+            r = requests.get(repository_url + "/git/commits/" + commit["object"]["sha"], headers=headers, timeout=10)
             r.raise_for_status()
             update_data = r.json()
         except requests.exceptions.HTTPError as e:
@@ -400,19 +409,33 @@ class Updater(threading.Thread):
     @staticmethod
     def _add_excluded_files(log_function):
         excluded_files = [
-            os.sep + "app.db", os.sep + "calibre-web.log1", os.sep + "calibre-web.log2",
-            os.sep + "vendor", os.sep + "calibre-web.log", os.sep + ".git", os.sep + "client_secrets.json",
-            os.sep + "settings.yaml", os.sep + "venv", os.sep + "virtualenv",
-            os.sep + "access.log", os.sep + "access.log1", os.sep + "access.log2", os.sep + ".key",
-            os.sep + ".calibre-web.log.swp", os.sep + "_sqlite3.so", os.sep + "calibre-web" + os.sep + ".HOMEDIR",
-            os.sep + "exclude.txt", os.sep + "calibre-web" + os.sep + "cache"
+            os.sep + "app.db",
+            os.sep + "calibre-web.log1",
+            os.sep + "calibre-web.log2",
+            os.sep + "vendor",
+            os.sep + "calibre-web.log",
+            os.sep + ".git",
+            os.sep + "client_secrets.json",
+            os.sep + "settings.yaml",
+            os.sep + "venv",
+            os.sep + "virtualenv",
+            os.sep + "access.log",
+            os.sep + "access.log1",
+            os.sep + "access.log2",
+            os.sep + ".key",
+            os.sep + ".calibre-web.log.swp",
+            os.sep + "_sqlite3.so",
+            os.sep + "calibre-web" + os.sep + ".HOMEDIR",
+            os.sep + "exclude.txt",
+            os.sep + "calibre-web" + os.sep + "cache",
         ]
         try:
             with open(os.path.join(constants.BASE_DIR, "exclude.txt")) as f:
                 lines = f.readlines()
             for line in lines:
-                processed_line = line.strip("\n\r ").strip("\"'").lstrip("\\/ ").\
-                    replace("\\", os.sep).replace("/", os.sep)
+                processed_line = (
+                    line.strip("\n\r ").strip("\"'").lstrip("\\/ ").replace("\\", os.sep).replace("/", os.sep)
+                )
                 if os.path.exists(os.path.join(constants.BASE_DIR, processed_line)):
                     excluded_files.append(os.sep + processed_line)
                 else:
@@ -434,11 +457,13 @@ class Updater(threading.Thread):
                 return json.dumps(status)
             try:
                 if commit["object"]["sha"] == status["current_commit_hash"]:
-                    status.update({
-                        "update": False,
-                        "success": True,
-                        "message": _("No update available. You already have the latest version installed")
-                    })
+                    status.update(
+                        {
+                            "update": False,
+                            "success": True,
+                            "message": _("No update available. You already have the latest version installed"),
+                        }
+                    )
                     return json.dumps(status)
             except (TypeError, KeyError):
                 status["message"] = _("Unexpected data while reading update information")
@@ -456,16 +481,14 @@ class Updater(threading.Thread):
                 log.debug("A new update is available.")
                 status["success"] = True
                 status["message"] = _(
-                    "A new update is available. Click on the button below to update to the latest version.")
+                    "A new update is available. Click on the button below to update to the latest version."
+                )
 
-                new_commit_date = datetime.datetime.strptime(
-                    update_data["committer"]["date"], "%Y-%m-%dT%H:%M:%SZ") - tz
+                new_commit_date = (
+                    datetime.datetime.strptime(update_data["committer"]["date"], "%Y-%m-%dT%H:%M:%SZ") - tz
+                )
                 parents.append(
-                    [
-                        format_datetime(new_commit_date, format="short"),
-                        update_data["message"],
-                        update_data["sha"]
-                    ]
+                    [format_datetime(new_commit_date, format="short"), update_data["message"], update_data["sha"]]
                 )
                 # it only makes sense to analyze the parents if we know the current commit hash
                 if status["current_commit_hash"] != "":
@@ -480,47 +503,60 @@ class Updater(threading.Thread):
 
     def _stable_updater_set_status(self, i, newer, status, parents, commit):
         if i == -1 and newer is False:
-            status.update({
-                "update": True,
-                "success": True,
-                "message": _(
-                    "Click on the button below to update to the latest stable version."),
-                "history": parents
-            })
+            status.update(
+                {
+                    "update": True,
+                    "success": True,
+                    "message": _("Click on the button below to update to the latest stable version."),
+                    "history": parents,
+                }
+            )
             self.updateFile = commit[0]["zipball_url"]
         elif i == -1 and newer is True:
-            status.update({
-                "update": True,
-                "success": True,
-                "message": _("A new update is available. Click on the button below to "
-                             "update to version: %(version)s", version=commit[0]["tag_name"]),
-                "history": parents
-            })
+            status.update(
+                {
+                    "update": True,
+                    "success": True,
+                    "message": _(
+                        "A new update is available. Click on the button below to " "update to version: %(version)s",
+                        version=commit[0]["tag_name"],
+                    ),
+                    "history": parents,
+                }
+            )
             self.updateFile = commit[0]["zipball_url"]
         return status
 
     def _stable_updater_parse_major_version(self, commit, i, parents, current_version, status):
         if int(commit[i + 1]["tag_name"].split(".")[1]) == current_version[1]:
-            parents.append([commit[i]["tag_name"],
-                            commit[i]["body"].replace("\r\n", "<p>").replace("\n", "<p>")])
-            status.update({
-                "update": True,
-                "success": True,
-                "message": _("A new update is available. Click on the button below to "
-                             "update to version: %(version)s", version=commit[i]["tag_name"]),
-                "history": parents
-            })
+            parents.append([commit[i]["tag_name"], commit[i]["body"].replace("\r\n", "<p>").replace("\n", "<p>")])
+            status.update(
+                {
+                    "update": True,
+                    "success": True,
+                    "message": _(
+                        "A new update is available. Click on the button below to " "update to version: %(version)s",
+                        version=commit[i]["tag_name"],
+                    ),
+                    "history": parents,
+                }
+            )
             self.updateFile = commit[i]["zipball_url"]
         else:
-            parents.append([commit[i + 1]["tag_name"],
-                            commit[i + 1]["body"].replace("\r\n", "<p>").replace("\n", "<p>")])
-            status.update({
-                "update": True,
-                "success": True,
-                "message": _("A new update is available. Click on the button below to "
-                             "update to version: %(version)s", version=commit[i + 1]["tag_name"]),
-                "history": parents
-            })
+            parents.append(
+                [commit[i + 1]["tag_name"], commit[i + 1]["body"].replace("\r\n", "<p>").replace("\n", "<p>")]
+            )
+            status.update(
+                {
+                    "update": True,
+                    "success": True,
+                    "message": _(
+                        "A new update is available. Click on the button below to " "update to version: %(version)s",
+                        version=commit[i + 1]["tag_name"],
+                    ),
+                    "history": parents,
+                }
+            )
             self.updateFile = commit[i + 1]["zipball_url"]
         return status, parents
 
@@ -546,11 +582,13 @@ class Updater(threading.Thread):
                 log.error("Unexpected data while reading update information")
                 return json.dumps(status)
             if commit[0]["tag_name"] == version:
-                status.update({
-                    "update": False,
-                    "success": True,
-                    "message": _("No update available. You already have the latest version installed")
-                })
+                status.update(
+                    {
+                        "update": False,
+                        "success": True,
+                        "message": _("No update available. You already have the latest version installed"),
+                    }
+                )
                 return json.dumps(status)
 
             i = len(commit) - 1
@@ -568,13 +606,13 @@ class Updater(threading.Thread):
                 try:
                     current_version[2] = int(current_version[2])
                 except ValueError:
-                    current_version[2] = int(current_version[2].replace("b", "").split(" ")[0])-1
+                    current_version[2] = int(current_version[2].replace("b", "").split(" ")[0]) - 1
 
                 # Check if major versions are identical search for newest non-equal commit and update to this one
                 if major_version_update == current_version[0]:
-                    if (minor_version_update == current_version[1] and
-                            patch_version_update > current_version[2]) or \
-                            minor_version_update > current_version[1]:
+                    if (
+                        minor_version_update == current_version[1] and patch_version_update > current_version[2]
+                    ) or minor_version_update > current_version[1]:
                         parents.append([commit[i]["tag_name"], commit[i]["body"].replace("\r\n", "<p>")])
                         newer = True
                     i -= 1
@@ -587,11 +625,9 @@ class Updater(threading.Thread):
                     # before major update
                     if i == (len(commit) - 1):
                         i -= 1
-                    status, parents = self._stable_updater_parse_major_version(commit,
-                                                                               i,
-                                                                               parents,
-                                                                               current_version,
-                                                                               status)
+                    status, parents = self._stable_updater_parse_major_version(
+                        commit, i, parents, current_version, status
+                    )
                     break
 
             status = self._stable_updater_set_status(i, newer, status, parents, commit)
@@ -603,12 +639,7 @@ class Updater(threading.Thread):
         return _REPOSITORY_API_URL + "/zipball/master"
 
     def _load_remote_data(self, repository_url):
-        status = {
-            "update": False,
-            "success": False,
-            "message": "",
-            "current_commit_hash": ""
-        }
+        status = {"update": False, "success": False, "message": "", "current_commit_hash": ""}
         commit = None
         version = self.get_current_version_info()
         if version is False:

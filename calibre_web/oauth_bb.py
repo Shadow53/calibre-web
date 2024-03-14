@@ -1,4 +1,3 @@
-
 #  This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #    Copyright (C) 2018-2019 OzzieIsaacs, cervinko, jkrehm, bodybybuddha, ok11,
 #                            andy29485, idalin, Kyosfonica, wuqi, Kennyl, lemmsh,
@@ -140,8 +139,9 @@ def bind_oauth_or_register(provider_id, provider_user_id, redirect_url, provider
         if oauth_entry.user:
             login_user(oauth_entry.user)
             log.debug("You are now logged in as: '%s'", oauth_entry.user.name)
-            flash(_("Success! You are now logged in as: %(nickname)s", nickname= oauth_entry.user.name),
-                  category="success")
+            flash(
+                _("Success! You are now logged in as: %(nickname)s", nickname=oauth_entry.user.name), category="success"
+            )
             return redirect(url_for("web.index"))
         else:
             # bind to current user
@@ -210,6 +210,7 @@ def unlink_oauth(provider):
         flash(_("Not Linked to %(oauth)s", oauth=provider), category="error")
     return redirect(url_for("web.profile"))
 
+
 def generate_oauth_blueprints():
     global generic
 
@@ -222,26 +223,30 @@ def generate_oauth_blueprints():
             ub.session_commit(f"{provider} Blueprint Created")
 
     oauth_ids = ub.session.query(ub.OAuthProvider).all()
-    ele1 = {"provider_name": "github",
-                "id": oauth_ids[0].id,
-                "active": oauth_ids[0].active,
-                "oauth_client_id": oauth_ids[0].oauth_client_id,
-                "scope": None,
-                "oauth_client_secret": oauth_ids[0].oauth_client_secret,
-                "obtain_link": "https://github.com/settings/developers"}
-    ele2 = {"provider_name": "generic",
-                "id": oauth_ids[1].id,
-                "active": oauth_ids[1].active,
-                "scope": oauth_ids[1].scope,
-                "oauth_client_id": oauth_ids[1].oauth_client_id,
-                "oauth_client_secret": oauth_ids[1].oauth_client_secret,
-                "oauth_base_url": oauth_ids[1].oauth_base_url,
-                "oauth_auth_url": oauth_ids[1].oauth_auth_url,
-                "oauth_token_url": oauth_ids[1].oauth_token_url,
-                "oauth_userinfo_url": oauth_ids[1].oauth_userinfo_url,
-                "username_mapper": oauth_ids[1].username_mapper,
-                "email_mapper": oauth_ids[1].email_mapper,
-                "login_button": oauth_ids[1].login_button}
+    ele1 = {
+        "provider_name": "github",
+        "id": oauth_ids[0].id,
+        "active": oauth_ids[0].active,
+        "oauth_client_id": oauth_ids[0].oauth_client_id,
+        "scope": None,
+        "oauth_client_secret": oauth_ids[0].oauth_client_secret,
+        "obtain_link": "https://github.com/settings/developers",
+    }
+    ele2 = {
+        "provider_name": "generic",
+        "id": oauth_ids[1].id,
+        "active": oauth_ids[1].active,
+        "scope": oauth_ids[1].scope,
+        "oauth_client_id": oauth_ids[1].oauth_client_id,
+        "oauth_client_secret": oauth_ids[1].oauth_client_secret,
+        "oauth_base_url": oauth_ids[1].oauth_base_url,
+        "oauth_auth_url": oauth_ids[1].oauth_auth_url,
+        "oauth_token_url": oauth_ids[1].oauth_token_url,
+        "oauth_userinfo_url": oauth_ids[1].oauth_userinfo_url,
+        "username_mapper": oauth_ids[1].username_mapper,
+        "email_mapper": oauth_ids[1].email_mapper,
+        "login_button": oauth_ids[1].login_button,
+    }
     oauthblueprints.append(ele1)
     oauthblueprints.append(ele2)
 
@@ -255,8 +260,8 @@ def generate_oauth_blueprints():
             blueprint = blueprint_func(
                 client_id=element["oauth_client_id"],
                 client_secret=element["oauth_client_secret"],
-                redirect_url="oauth."+element["provider_name"]+"_login",
-                scope=element["scope"]
+                redirect_url="oauth." + element["provider_name"] + "_login",
+                scope=element["scope"],
             )
         else:
             base_url = element.get("oauth_base_url") or ""
@@ -270,12 +275,13 @@ def generate_oauth_blueprints():
                 base_url=base_url,
                 authorization_url=base_url + auth_url,
                 token_url=base_url + token_url,
-                redirect_to="oauth."+element["provider_name"]+"_login",
+                redirect_to="oauth." + element["provider_name"] + "_login",
             )
             generic = blueprint
         element["blueprint"] = blueprint
-        element["blueprint"].backend = OAuthBackend(ub.OAuth, ub.session, str(element["id"]),
-                                                    user=current_user, user_required=True)
+        element["blueprint"].backend = OAuthBackend(
+            ub.OAuth, ub.session, str(element["id"]), user=current_user, user_required=True
+        )
         app.register_blueprint(blueprint, url_prefix="/login")
         if element["active"]:
             register_oauth_blueprint(element["id"], element["provider_name"])
@@ -302,7 +308,6 @@ if ub.oauth_support:
         github_user_id = str(github_info["id"])
         return oauth_update_token(str(oauthblueprints[0]["id"]), token, github_user_id)
 
-
     @oauth_authorized.connect_via(oauthblueprints[1]["blueprint"])
     def generic_logged_in(blueprint, token):
         global generic
@@ -326,9 +331,9 @@ if ub.oauth_support:
         generic_user_username = str(generic_info[username_mapper]).lower()
 
         user = (
-            ub.session.query(ub.User)
-            .filter(and_(func.lower(ub.User.name) == generic_user_username,
-                    func.lower(ub.User.email) == generic_user_email))
+            ub.session.query(ub.User).filter(
+                and_(func.lower(ub.User.name) == generic_user_username, func.lower(ub.User.email) == generic_user_email)
+            )
         ).first()
 
         if user is None:
@@ -351,22 +356,18 @@ if ub.oauth_support:
 
         return result
 
-
     # notify on OAuth provider error
     @oauth_error.connect_via(oauthblueprints[0]["blueprint"])
     def github_error(blueprint, error, error_description=None, error_uri=None) -> None:
         msg = (
-            f"OAuth error from {blueprint.name}! "
-            f"error={error} description={error_description} uri={error_uri}"
+            f"OAuth error from {blueprint.name}! " f"error={error} description={error_description} uri={error_uri}"
         )  # TODO: Translate
         flash(msg, category="error")
-
 
     @oauth_error.connect_via(oauthblueprints[1]["blueprint"])
     def generic_error(blueprint, error, error_description=None, error_uri=None) -> None:
         msg = (
-            f"OAuth error from {blueprint.name}! "
-            f"error={error} description={error_description} uri={error_uri}"
+            f"OAuth error from {blueprint.name}! " f"error={error} description={error_description} uri={error_uri}"
         )  # TODO: Translate
         flash(msg, category="error")
 
@@ -414,9 +415,9 @@ def generic_login():
             username = str(account_info_json[username_mapper]).lower()
 
             user = (
-                ub.session.query(ub.User)
-                .filter(and_(func.lower(ub.User.name) == username,
-                        func.lower(ub.User.email) == email))
+                ub.session.query(ub.User).filter(
+                    and_(func.lower(ub.User.name) == username, func.lower(ub.User.email) == email)
+                )
             ).first()
 
             return bind_oauth_or_register(oauthblueprints[1].get("id"), user.id, "generic.login", "generic")

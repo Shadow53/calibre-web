@@ -1,4 +1,3 @@
-
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2019 pwr
 #
@@ -24,22 +23,21 @@ from logging.handlers import RotatingFileHandler
 
 from .constants import CONFIG_DIR as _CONFIG_DIR
 
-ACCESS_FORMATTER_GEVENT  = Formatter("%(message)s")
+ACCESS_FORMATTER_GEVENT = Formatter("%(message)s")
 ACCESS_FORMATTER_TORNADO = Formatter("[%(asctime)s] %(message)s")
 
-FORMATTER           = Formatter("[%(asctime)s] %(levelname)5s {%(name)s:%(lineno)d} %(message)s")
-DEFAULT_LOG_LEVEL   = logging.INFO
-DEFAULT_LOG_FILE    = os.path.join(_CONFIG_DIR, "calibre-web.log")
-DEFAULT_ACCESS_LOG  = os.path.join(_CONFIG_DIR, "access.log")
-LOG_TO_STDERR       = "/dev/stderr"
-LOG_TO_STDOUT       = "/dev/stdout"
+FORMATTER = Formatter("[%(asctime)s] %(levelname)5s {%(name)s:%(lineno)d} %(message)s")
+DEFAULT_LOG_LEVEL = logging.INFO
+DEFAULT_LOG_FILE = os.path.join(_CONFIG_DIR, "calibre-web.log")
+DEFAULT_ACCESS_LOG = os.path.join(_CONFIG_DIR, "access.log")
+LOG_TO_STDERR = "/dev/stderr"
+LOG_TO_STDOUT = "/dev/stdout"
 
 logging.addLevelName(logging.WARNING, "WARN")
 logging.addLevelName(logging.CRITICAL, "CRIT")
 
 
 class _Logger(logging.Logger):
-
     def error_or_exception(self, message, stacklevel=2, *args, **kwargs) -> None:
         if is_debug_enabled():
             self.exception(message, stacklevel=stacklevel, *args, **kwargs)

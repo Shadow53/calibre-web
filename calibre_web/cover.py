@@ -1,4 +1,3 @@
-
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2022 OzzieIsaacs
 #
@@ -19,6 +18,7 @@ import os
 
 try:
     from wand.image import Image
+
     use_IM = True
 except (ImportError, RuntimeError):
     use_IM = False

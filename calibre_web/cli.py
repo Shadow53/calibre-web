@@ -1,4 +1,3 @@
-
 #   This file is part of the Calibre-Web (https://github.com/janeczku/calibre-web)
 #     Copyright (C) 2018 OzzieIsaacs
 #
@@ -36,29 +35,45 @@ def version_info() -> str:
 
 
 class CliParameter:
-
     def init(self) -> None:
         self.arg_parser()
 
     def arg_parser(self) -> None:
-        parser = argparse.ArgumentParser(description="Calibre Web is a web app providing "
-                                                     "a interface for browsing, reading and downloading eBooks\n",
-                                         prog="calibre-web.py")
+        parser = argparse.ArgumentParser(
+            description="Calibre Web is a web app providing "
+            "a interface for browsing, reading and downloading eBooks\n",
+            prog="calibre-web.py",
+        )
         parser.add_argument("-p", metavar="path", help="path and name to settings db, e.g. /opt/cw.db")
-        parser.add_argument("-c", metavar="path", help="path and name to SSL certfile, e.g. /opt/test.cert, "
-                                                       "works only in combination with keyfile")
-        parser.add_argument("-k", metavar="path", help="path and name to SSL keyfile, e.g. /opt/test.key, "
-                                                       "works only in combination with certfile")
+        parser.add_argument(
+            "-c",
+            metavar="path",
+            help="path and name to SSL certfile, e.g. /opt/test.cert, " "works only in combination with keyfile",
+        )
+        parser.add_argument(
+            "-k",
+            metavar="path",
+            help="path and name to SSL keyfile, e.g. /opt/test.key, " "works only in combination with certfile",
+        )
         parser.add_argument("-o", metavar="path", help="path and name Calibre-Web logfile")
-        parser.add_argument("-v", "--version", action="version", help="Shows version number and exits Calibre-Web",
-                            version=version_info())
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            help="Shows version number and exits Calibre-Web",
+            version=version_info(),
+        )
         parser.add_argument("-i", metavar="ip-address", help="Server IP-Address to listen")
-        parser.add_argument("-s", metavar="user:pass",
-                            help="Sets specific username to new password and exits Calibre-Web")
+        parser.add_argument(
+            "-s", metavar="user:pass", help="Sets specific username to new password and exits Calibre-Web"
+        )
         parser.add_argument("-f", action="store_true", help="Flag is depreciated and will be removed in next version")
         parser.add_argument("-l", action="store_true", help="Allow loading covers from localhost")
-        parser.add_argument("-d", action="store_true", help="Dry run of updater to check file permissions in advance "
-                                                            "and exits Calibre-Web")
+        parser.add_argument(
+            "-d",
+            action="store_true",
+            help="Dry run of updater to check file permissions in advance " "and exits Calibre-Web",
+        )
         parser.add_argument("-r", action="store_true", help="Enable public database reconnect route under /reconnect")
         args = parser.parse_args()
 
