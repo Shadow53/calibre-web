@@ -21,9 +21,9 @@ from flask_babel import lazy_gettext as N_
 from lxml import etree
 
 from calibre_web import db, logger
-from calibre_web.config_sql import CONFIG
 from calibre_web.services.worker import CalibreTask
 
+from ..config_sql import CONFIG
 from ..epub_helper import create_new_metadata_backup
 
 
@@ -93,7 +93,7 @@ class TaskBackupMetadata(CalibreTask):
         # package = self.create_new_metadata_backup(book, custom_columns)
         package = create_new_metadata_backup(book, custom_columns, self.export_language, self.translated_title)
         # TODO: Handle book folder not found or not readable
-        book_metadata_filepath = os.path.join(config.get_book_path(), book.path, "metadata.opf")
+        book_metadata_filepath = os.path.join(CONFIG.get_book_path(), book.path, "metadata.opf")
         # prepare finalize everything and output
         doc = etree.ElementTree(package)
         try:

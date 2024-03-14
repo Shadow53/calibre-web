@@ -127,7 +127,7 @@ def edit_book(book_id):
     edit_error = False
 
     # create the function for sorting...
-    calibre_db.update_title_sort(config)
+    calibre_db.update_title_sort(CONFIG)
 
     book = calibre_db.get_filtered_book(book_id, allow_show_archived=True)
     # Book not found
@@ -265,7 +265,7 @@ def upload():
             try:
                 modify_date = False
                 # create the function for sorting...
-                calibre_db.update_title_sort(config)
+                calibre_db.update_title_sort(CONFIG)
                 calibre_db.session.connection().connection.connection.create_function("uuid4", 0, lambda: str(uuid4()))
 
                 meta, error = file_handling_on_upload(requested_file)
@@ -521,10 +521,10 @@ def merge_list_book():
                     for element in from_book.data:
                         if element.format not in to_file:
                             # create new data entry with: book_id, book_format, uncompressed_size, name
-                            filepath_new = os.path.normpath(os.path.join(config.get_book_path(),
+                            filepath_new = os.path.normpath(os.path.join(CONFIG.get_book_path(),
                                                                          to_book.path,
                                                                          to_name + "." + element.format.lower()))
-                            filepath_old = os.path.normpath(os.path.join(config.get_book_path(),
+                            filepath_old = os.path.normpath(os.path.join(CONFIG.get_book_path(),
                                                                          from_book.path,
                                                                          element.name + "." + element.format.lower()))
                             copyfile(filepath_old, filepath_new)
@@ -752,7 +752,7 @@ def file_handling_on_upload(requested_file):
 def move_coverfile(meta, db_book) -> None:
     # move cover to final directory, including book id
     cover_file = meta.cover if meta.cover else os.path.join(constants.STATIC_DIR, "generic_cover.jpg")
-    new_cover_path = os.path.join(config.get_book_path(), db_book.path)
+    new_cover_path = os.path.join(CONFIG.get_book_path(), db_book.path)
     try:
         os.makedirs(new_cover_path, exist_ok=True)
         copyfile(cover_file, os.path.join(new_cover_path, "cover.jpg"))
@@ -931,7 +931,7 @@ def render_edit_book(book_id):
     return render_title_template("book_edit.html", book=book, authors=author_names, cc=cc,
                                  title=_("edit metadata"), page="editbook",
                                  conversion_formats=allowed_conversion_formats,
-                                 config=config,
+                                 config=CONFIG,
                                  source_formats=valid_source_formats)
 
 
@@ -1168,7 +1168,7 @@ def upload_single_file(file_request, book, book_id):
                 return False
 
             file_name = book.path.rsplit("/", 1)[-1]
-            filepath = os.path.normpath(os.path.join(config.get_book_path(), book.path))
+            filepath = os.path.normpath(os.path.join(CONFIG.get_book_path(), book.path))
             saved_filename = os.path.join(filepath, file_name + "." + file_ext)
 
             # check if file path exists, otherwise create it, copy file to calibre path and delete temp file
@@ -1195,7 +1195,7 @@ def upload_single_file(file_request, book, book_id):
                     db_format = db.Data(book_id, file_ext.upper(), file_size, file_name)
                     calibre_db.session.add(db_format)
                     calibre_db.session.commit()
-                    calibre_db.update_title_sort(config)
+                    calibre_db.update_title_sort(CONFIG)
                 except (OperationalError, IntegrityError, StaleDataError) as e:
                     calibre_db.session.rollback()
                     log.error_or_exception(f"Database error: {e}")
@@ -1210,7 +1210,7 @@ def upload_single_file(file_request, book, book_id):
 
             return uploader.process(
                 saved_filename, *os.path.splitext(requested_file.filename),
-                rar_executable=config.config_rarfile_location)
+                rar_executable=CONFIG.config_rarfile_location)
     return None
 
 

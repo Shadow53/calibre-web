@@ -22,7 +22,6 @@ from sqlalchemy.sql.expression import or_
 from werkzeug.local import LocalProxy
 
 from . import constants, logger, ub
-from .config_sql import CONFIG
 from .ub import User
 
 log = logger.create()
@@ -108,6 +107,7 @@ def get_sidebar_config(kwargs=None):
 # Returns the template for rendering and includes the instance name
 def render_title_template(*args, **kwargs):
     sidebar, simple = get_sidebar_config(kwargs)
+    config = kwargs["config"]
     try:
         return render_template(instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
                                accept=constants.EXTENSIONS_UPLOAD,

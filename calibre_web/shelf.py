@@ -359,7 +359,7 @@ def create_edit_shelf(shelf, page_title, page, shelf_id=False):
                                  shelf=shelf,
                                  title=page_title,
                                  page=page,
-                                 kobo_sync_enabled=config.config_kobo_sync,
+                                 kobo_sync_enabled=CONFIG.config_kobo_sync,
                                  sync_only_selected_shelves=sync_only_selected_shelves)
 
 

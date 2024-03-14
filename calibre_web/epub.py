@@ -46,7 +46,7 @@ def _extract_cover(zip_file, cover_file, cover_path, tmp_file_name):
     return cover.cover_processing(tmp_file_name, cf, extension)
 
 def get_epub_layout(book, book_data):
-    file_path = os.path.normpath(os.path.join(config.get_book_path(),
+    file_path = os.path.normpath(os.path.join(CONFIG.get_book_path(),
                                               book.path, book_data.name + "." + book_data.format.lower()))
 
     try:

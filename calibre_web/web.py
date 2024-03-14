@@ -21,6 +21,7 @@
 import copy
 import json
 import os
+from typing import Optional, Dict, Any, List
 
 import chardet  # dependency of requests
 from flask import (
@@ -46,6 +47,8 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.expression import and_, false, func, not_, or_, text
 from sqlalchemy.sql.functions import coalesce
 from werkzeug.security import check_password_hash, generate_password_hash
+import contextlib
+from functools import wraps
 
 from . import app, constants, db, isoLanguages, kobo_sync_status, limiter, logger, services, ub
 from .db import calibre_db
@@ -70,7 +73,7 @@ from .helper import (
     valid_password,
 )
 from .kobo_sync_status import change_archived_books, remove_synced_book
-from .oauth_bb import OAUTH_GENERIC, OAUTH_GITHUB
+from .oauth_bb import OAUTH_GENERIC
 from .pagination import Pagination
 from .redirect import redirect_back
 from .render_template import render_title_template
@@ -91,9 +94,6 @@ except ImportError:
     feature_support["oauth"] = False
     oauth_check = {}
     register_user_with_oauth = logout_oauth_user = get_oauth_status = None
-
-import contextlib
-from functools import wraps
 
 try:
     from natsort import natsorted as sort
@@ -415,11 +415,11 @@ def render_books_list(data, sort_param, book_id, page):
         return render_archived_books(page, order)
     elif data == "search":
         term = request.args.get("query", None)
-        offset = int(int(config.config_books_per_page) * (page - 1))
+        offset = int(int(CONFIG.config_books_per_page) * (page - 1))
         return render_search_results(term, offset, order, CONFIG.config_books_per_page)
     elif data == "advsearch":
         term = json.loads(flask_session.get("query", "{}"))
-        offset = int(int(config.config_books_per_page) * (page - 1))
+        offset = int(int(CONFIG.config_books_per_page) * (page - 1))
         return render_adv_search_results(term, offset, order, CONFIG.config_books_per_page)
     else:
         website = data or "newest"
@@ -454,7 +454,7 @@ def render_discover_books(book_id):
     if current_user.check_visibility(constants.SIDEBAR_RANDOM):
         entries, __, ___ = calibre_db.fill_indexpage(1, 0, db.Books, True, [func.randomblob(2)],
                                                             join_archive_read=True,
-                                                            config_read_column=config.config_read_column)
+                                                            config_read_column=CONFIG.config_read_column)
         pagination = Pagination(1, CONFIG.config_books_per_page, CONFIG.config_books_per_page)
         return render_title_template("index.html", random=false(), entries=entries, pagination=pagination, id=book_id,
                                      title=_("Discover (Random Books)"), page="discover")
@@ -471,20 +471,20 @@ def render_hot_books(page, order):
             #        order[0][0].compare(func.count(ub.Downloads.book_id).asc())):
             order = [func.count(ub.Downloads.book_id).desc()], "hotdesc"
         if current_user.show_detail_random():
-            random_query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
+            random_query = calibre_db.generate_linked_query(CONFIG.config_read_column, db.Books)
             random = (random_query.filter(calibre_db.common_filters())
                      .order_by(func.random())
-                     .limit(config.config_random_books).all())
+                     .limit(CONFIG.config_random_books).all())
         else:
             random = false()
 
-        off = int(int(config.config_books_per_page) * (page - 1))
+        off = int(int(CONFIG.config_books_per_page) * (page - 1))
         all_books = ub.session.query(ub.Downloads, func.count(ub.Downloads.book_id)) \
             .order_by(*order[0]).group_by(ub.Downloads.book_id)
-        hot_books = all_books.offset(off).limit(config.config_books_per_page)
+        hot_books = all_books.offset(off).limit(CONFIG.config_books_per_page)
         entries = []
         for book in hot_books:
-            query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
+            query = calibre_db.generate_linked_query(CONFIG.config_read_column, db.Books)
             download_book = query.filter(calibre_db.common_filters()).filter(
                 book.Downloads.book_id == db.Books.id).first()
             if download_book:
@@ -749,14 +749,14 @@ def render_read_books(page, are_read, as_xml=False, order=None):
     else:
         try:
             if are_read:
-                db_filter = db.cc_classes[config.config_read_column].value is True
+                db_filter = db.cc_classes[CONFIG.config_read_column].value is True
             else:
-                db_filter = coalesce(db.cc_classes[config.config_read_column].value, False) is not True
+                db_filter = coalesce(db.cc_classes[CONFIG.config_read_column].value, False) is not True
         except (KeyError, AttributeError, IndexError):
-            log.exception(f"Custom Column No.{config.config_read_column} does not exist in calibre database")
+            log.exception(f"Custom Column No.{CONFIG.config_read_column} does not exist in calibre database")
             if not as_xml:
                 flash(_("Custom Column No.%(column)d does not exist in calibre database",
-                        column=config.config_read_column),
+                        column=CONFIG.config_read_column),
                       category="error")
                 return redirect(url_for("web.index"))
             return []  # TODO: Handle error Case for opds
@@ -830,7 +830,7 @@ def books_list(data, sort_param, book_id, page):
 @login_required
 def books_table():
     visibility = current_user.view_settings.get("table", {})
-    cc = calibre_db.get_cc_columns(config, filter_config_custom_read=True)
+    cc = calibre_db.get_cc_columns(CONFIG, filter_config_custom_read=True)
     return render_title_template("book_table.html", title=_("Books List"), cc=cc, page="book_table",
                                  visiblility=visibility)
 
@@ -874,15 +874,15 @@ def list_books():
         calibre_db.common_filters(allow_show_archived=True)).count()
     if state is not None:
         if search_param:
-            books = calibre_db.search_query(search_param, config).all()
+            books = calibre_db.search_query(search_param, CONFIG).all()
             filtered_count = len(books)
         else:
-            query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
+            query = calibre_db.generate_linked_query(CONFIG.config_read_column, db.Books)
             books = query.filter(calibre_db.common_filters(allow_show_archived=True)).all()
         entries = calibre_db.get_checkbox_sorted(books, state, off, limit, order, True)
     elif search_param:
         entries, filtered_count, __ = calibre_db.get_search_results(search_param,
-                                                                    config,
+                                                                    CONFIG,
                                                                     off,
                                                                     [order, ""],
                                                                     limit,
@@ -1212,7 +1212,7 @@ def serve_book(book_id, book_format, anyname):
     if book_format.upper() == "TXT":
         log.info("Serving book: %s", data.name)
         try:
-            rawdata = open(os.path.join(config.get_book_path(), book.path, data.name + "." + book_format),
+            rawdata = open(os.path.join(CONFIG.get_book_path(), book.path, data.name + "." + book_format),
                            "rb").read()
             result = chardet.detect(rawdata)
             try:
@@ -1229,7 +1229,7 @@ def serve_book(book_id, book_format, anyname):
             return "File Not Found"
     # enable byte range read of pdf
     response = make_response(
-        send_from_directory(os.path.join(config.get_book_path(), book.path), data.name + "." + book_format))
+        send_from_directory(os.path.join(CONFIG.get_book_path(), book.path), data.name + "." + book_format))
     if not range_header:
         log.info("Serving book: %s", data.name)
         response.headers["Accept-Ranges"] = "bytes"
@@ -1280,7 +1280,7 @@ def register_post():
         limiter.check()
     except RateLimitExceeded:
         flash(_("Please wait one minute to register next user"), category="error")
-        return render_title_template("register.html", config=config, title=_("Register"), page="register")
+        return render_title_template("register.html", config=CONFIG, title=_("Register"), page="register")
     if current_user is not None and current_user.is_authenticated:
         return redirect(url_for("web.index"))
     if not CONFIG.get_mail_server_configured():
@@ -1301,7 +1301,7 @@ def register_post():
     if check_valid_domain(email):
         content.name = nickname
         content.email = email
-        password = generate_random_password(config.config_password_min_length)
+        password = generate_random_password(CONFIG.config_password_min_length)
         content.password = generate_password_hash(password)
         content.role = CONFIG.config_default_role
         content.locale = CONFIG.config_default_locale
@@ -1335,7 +1335,7 @@ def register():
         return render_title_template("register.html", title=_("Register"), page="register")
     if feature_support["oauth"]:
         register_user_with_oauth()
-    return render_title_template("register.html", config=config, title=_("Register"), page="register")
+    return render_title_template("register.html", config=CONFIG, title=_("Register"), page="register")
 
 
 def handle_login_user(user: str, remember: bool, message: str, category: str):
@@ -1357,12 +1357,12 @@ def render_login(username: str = "", password: str = ""):
     return render_title_template("login.html",
                                  title=_("Login"),
                                  next_url=next_url,
-                                 config=config,
+                                 config=CONFIG,
                                  username=username,
                                  password=password,
                                  oauth_check=oauth_check,
                                  login_button=login_button,
-                                 mail=config.get_mail_server_configured(), page="login")
+                                 mail=CONFIG.get_mail_server_configured(), page="login")
 
 
 @web.route("/login", methods=["GET"])
@@ -1419,7 +1419,7 @@ def logout():
     if current_user is not None and current_user.is_authenticated:
         ub.delete_user_session(current_user.id, flask_session.get("_id", ""))
         logout_user()
-        if feature_support["oauth"] and (config.config_login_type in (2, 3)):
+        if feature_support["oauth"] and (CONFIG.config_login_type in (2, 3)):
             logout_oauth_user()
     log.debug("User logged out")
     return redirect(url_for("web.login"))
@@ -1463,7 +1463,7 @@ def change_profile(
         flash(str(ex), category="error")
         return render_title_template("user_edit.html",
                                      content=current_user,
-                                     config=config,
+                                     config=CONFIG,
                                      translations=translations,
                                      profile=1,
                                      languages=languages,
@@ -1516,7 +1516,7 @@ def profile():
                                  profile=1,
                                  languages=languages,
                                  content=current_user,
-                                 config=config,
+                                 config=CONFIG,
                                  kobo_support=kobo_support,
                                  title=_("%(name)s's Profile", name=current_user.name),
                                  page="me",
@@ -1595,7 +1595,7 @@ def show_book(book_id: int):
         for lang_index in range(len(entry.languages)):
             entry.languages[lang_index].language_name = isoLanguages.get_language_name(get_locale(), entry.languages[
                 lang_index].lang_code)
-        cc = calibre_db.get_cc_columns(config, filter_config_custom_read=True)
+        cc = calibre_db.get_cc_columns(CONFIG, filter_config_custom_read=True)
         book_in_shelves = list(ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == book_id).all())
 
         entry.tags = sort(entry.tags, key=lambda tag: tag.name)

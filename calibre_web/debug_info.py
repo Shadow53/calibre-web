@@ -27,8 +27,8 @@ from flask import __version__, send_file
 from flask_babel.speaklater import LazyString
 
 from . import logger
-from .config_sql import CONFIG
 from .about import collect_stats
+from .config_sql import CONFIG
 
 log = logger.create()
 
@@ -57,14 +57,14 @@ def assemble_logfiles(file_name):
 
 
 def send_debug():
-    file_list = glob.glob(logger.get_logfile(config.config_logfile) + "*")
-    file_list.extend(glob.glob(logger.get_accesslogfile(config.config_access_logfile) + "*"))
+    file_list = glob.glob(logger.get_logfile(CONFIG.config_logfile) + "*")
+    file_list.extend(glob.glob(logger.get_accesslogfile(CONFIG.config_access_logfile) + "*"))
     for element in [logger.LOG_TO_STDOUT, logger.LOG_TO_STDERR]:
         if element in file_list:
             file_list.remove(element)
     memory_zip = BytesIO()
     with zipfile.ZipFile(memory_zip, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        zf.writestr("settings.txt", json.dumps(config.to_dict(), sort_keys=True, indent=2))
+        zf.writestr("settings.txt", json.dumps(CONFIG.to_dict(), sort_keys=True, indent=2))
         zf.writestr("libs.txt", json.dumps(collect_stats(), sort_keys=True, indent=2, cls=lazyEncoder))
         for fp in file_list:
             zf.write(fp, os.path.basename(fp))

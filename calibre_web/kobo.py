@@ -156,7 +156,7 @@ def HandleSyncRequest():
 
     # We reload the book database so that the user gets a fresh view of the library
     # in case of external changes (e.g: adding a book through Calibre).
-    calibre_db.reconnect_db(config, ub.app_DB_path)
+    calibre_db.reconnect_db(CONFIG, ub.app_DB_path)
 
     only_kobo_shelves = current_user.kobo_only_shelves_sync
 
@@ -346,7 +346,7 @@ def get_download_url_for_book(book_id, book_format):
         return "{url_scheme}://{url_base}:{url_port}/kobo/{auth_token}/download/{book_id}/{book_format}".format(
             url_scheme=request.scheme,
             url_base=host,
-            url_port=config.config_external_port,
+            url_port=CONFIG.config_external_port,
             auth_token=get_auth_token(),
             book_id=book_id,
             book_format=book_format.lower()
@@ -1049,7 +1049,7 @@ def HandleInitRequest():
             host = "".join(request.host.split(":")[:-1])
         else:
             host = request.host
-        calibre_web_url = f"{request.scheme}://{host}:{config.config_external_port}"
+        calibre_web_url = f"{request.scheme}://{host}:{CONFIG.config_external_port}"
         log.debug("Kobo: Received unproxied request, changed request url to %s", calibre_web_url)
         kobo_resources["image_host"] = calibre_web_url
         kobo_resources["image_url_quality_template"] = unquote(calibre_web_url +

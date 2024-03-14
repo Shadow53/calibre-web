@@ -8,13 +8,13 @@ from flask_principal import Principal
 
 from . import cache_buster, config_sql, db, logger, ub
 from .babel import babel, get_locale
-from .cli import CliParameter, cli_param
+from .cli import cli_param
 from .config_sql import CONFIG
 from .db import calibre_db
 from .MyLoginManager import MyLoginManager
 from .reverseproxy import ReverseProxied
-from .server import WebServer, web_server
-from .updater import Updater, updater_thread
+from .server import web_server
+from .updater import updater_thread
 from .about import about
 from .admin import admi
 from .editbooks import editbook
@@ -119,11 +119,11 @@ def create_app():
     lm.anonymous_user = ub.Anonymous
     lm.session_protection = "strong" if CONFIG.config_session == 1 else "basic"
 
-    db.CalibreDB.update_config(config)
-    db.CalibreDB.setup_db(config.config_calibre_dir, cli_param.settings_path)
+    db.CalibreDB.update_config(CONFIG)
+    db.CalibreDB.setup_db(CONFIG.config_calibre_dir, cli_param.settings_path)
     calibre_db.init_db()
 
-    updater_thread.init_updater(config, web_server)
+    updater_thread.init_updater(CONFIG, web_server)
     # Perform dry run of updater and exit afterwards
     if cli_param.dry_run:
         updater_thread.dry_run()
@@ -139,7 +139,7 @@ def create_app():
     lm.init_app(app)
     app.secret_key = os.getenv("SECRET_KEY", config_sql.get_flask_session_key(ub.session))
 
-    web_server.init_app(app, config)
+    web_server.init_app(app, CONFIG)
     if hasattr(babel, "localeselector"):
         babel.init_app(app)
         babel.localeselector(get_locale)
@@ -149,12 +149,12 @@ def create_app():
 
     CONFIG.store_calibre_uuid(calibre_db, db.Library_Id)
     # Configure rate limiter
-    app.config.update(RATELIMIT_ENABLED=config.config_ratelimiter)
+    app.config.update(RATELIMIT_ENABLED=CONFIG.config_ratelimiter)
     limiter.init_app(app)
 
     # Register scheduled tasks
     from .schedule import register_scheduled_tasks, register_startup_tasks
-    register_scheduled_tasks(config.schedule_reconnect)
+    register_scheduled_tasks(CONFIG.schedule_reconnect)
     register_startup_tasks()
 
     return app

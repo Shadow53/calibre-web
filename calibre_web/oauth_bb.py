@@ -32,7 +32,8 @@ from oauthlib.oauth2 import InvalidGrantError, TokenExpiredError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import and_, func
 
-from . import app, config, constants, logger, ub
+from . import app, constants, logger, ub
+from .config_sql import CONFIG
 
 with contextlib.suppress(NameError):
     from .oauth import OAuthBackend, backend_resultcode

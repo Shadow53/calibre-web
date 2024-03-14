@@ -44,6 +44,7 @@ except ImportError:
     _GEVENT = False
 
 from . import logger
+from .config_sql import CONFIG
 
 log = logger.create()
 web_server = None

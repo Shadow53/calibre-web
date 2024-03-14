@@ -23,10 +23,10 @@ from flask_babel import lazy_gettext as N_
 from sqlalchemy import func, or_, text
 
 from calibre_web import db, fs, logger, ub
-from calibre_web.config_sql import CONFIG
 from calibre_web.services.worker import STAT_CANCELLED, STAT_ENDED, CalibreTask
 
 from .. import constants
+from ..config_sql import CONFIG
 
 try:
     from wand.image import Image
@@ -174,7 +174,7 @@ class TaskGenerateCoverThumbnails(CalibreTask):
 
     def generate_book_thumbnail(self, book, thumbnail) -> None:
         if book and thumbnail:
-            book_cover_filepath = os.path.join(config.get_book_path(), book.path, "cover.jpg")
+            book_cover_filepath = os.path.join(CONFIG.get_book_path(), book.path, "cover.jpg")
             if not os.path.isfile(book_cover_filepath):
                 msg = "Book cover file not found"
                 raise Exception(msg)
@@ -330,7 +330,7 @@ class TaskGenerateSeriesThumbnails(CalibreTask):
         height = 0
         with Image() as canvas:
             for book in books:
-                book_cover_filepath = os.path.join(config.get_book_path(), book.path, "cover.jpg")
+                book_cover_filepath = os.path.join(CONFIG.get_book_path(), book.path, "cover.jpg")
                 if not os.path.isfile(book_cover_filepath):
                     msg = "Book cover file not found"
                     raise Exception(msg)

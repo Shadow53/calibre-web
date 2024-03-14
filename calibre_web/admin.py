@@ -54,10 +54,10 @@ from . import (
     ub,
 )
 from .app import updater_thread, web_server
+from .config_sql import CONFIG
 from .cli import cli_param
 from .db import calibre_db
 from .babel import get_available_locale, get_available_translations, get_user_locale_language
-from .config_sql import CONFIG
 from .helper import (
     check_email,
     check_username,
@@ -168,7 +168,7 @@ def shutdown():
 
     if task == 2:
         log.warning("reconnecting to calibre database")
-        calibre_db.reconnect_db(config, ub.app_DB_path)
+        calibre_db.reconnect_db(CONFIG, ub.app_DB_path)
         show_text["text"] = _("Success! Database Reconnected")
         return json.dumps(show_text)
 
@@ -192,7 +192,7 @@ def queue_metadata_backup():
 @admi.route("/reconnect", methods=["GET"])
 def reconnect():
     if cli_param.reconnect_enable:
-        calibre_db.reconnect_db(config, ub.app_DB_path)
+        calibre_db.reconnect_db(CONFIG, ub.app_DB_path)
         return json.dumps({})
     else:
         log.debug("'/reconnect' was accessed but is not enabled")
@@ -234,11 +234,11 @@ def admin():
 
     all_user = ub.session.query(ub.User).all()
     # email_settings = mail_config.get_mail_settings()
-    schedule_time = format_time(datetime_time(hour=config.schedule_start_time), format="short")
-    t = timedelta(hours=config.schedule_duration // 60, minutes=config.schedule_duration % 60)
+    schedule_time = format_time(datetime_time(hour=CONFIG.schedule_start_time), format="short")
+    t = timedelta(hours=CONFIG.schedule_duration // 60, minutes=CONFIG.schedule_duration % 60)
     schedule_duration = format_timedelta(t, threshold=.99)
 
-    return render_title_template("admin.html", allUser=all_user, config=config, commit=commit,
+    return render_title_template("admin.html", allUser=all_user, config=CONFIG, commit=commit,
                                  feature_support=feature_support, schedule_time=schedule_time,
                                  schedule_duration=schedule_duration,
                                  title=_("Admin page"), page="admin")
@@ -258,7 +258,7 @@ def db_configuration():
 @admin_required
 def configuration():
     return render_title_template("config_edit.html",
-                                 config=config,
+                                 config=CONFIG,
                                  provider=oauthblueprints,
                                  feature_support=feature_support,
                                  title=_("Basic Configuration"), page="config")
@@ -295,7 +295,7 @@ def view_configuration():
         .filter(and_(db.CustomColumns.datatype == "text", db.CustomColumns.mark_for_delete == 0)).all()
     languages = calibre_db.speaking_language()
     translations = get_available_locale()
-    return render_title_template("config_view_edit.html", conf=config, readColumns=read_column,
+    return render_title_template("config_view_edit.html", conf=CONFIG, readColumns=read_column,
                                  restrictColumns=restrict_columns,
                                  languages=languages,
                                  translations=translations,
@@ -317,7 +317,7 @@ def edit_user_table():
         .group_by(text("books_tags_link.tag")) \
         .order_by(db.Tags.name).all()
     if CONFIG.config_restricted_column:
-        custom_values = calibre_db.session.query(db.cc_classes[config.config_restricted_column]).all()
+        custom_values = calibre_db.session.query(db.cc_classes[CONFIG.config_restricted_column]).all()
     else:
         custom_values = []
     if not CONFIG.config_anonbrowse:
@@ -574,7 +574,7 @@ def update_view_configuration():
     _config_string(to_save, "config_calibre_web_title")
     _config_string(to_save, "config_columns_to_ignore")
     if _config_string(to_save, "config_title_regex"):
-        calibre_db.update_title_sort(config)
+        calibre_db.update_title_sort(CONFIG)
 
     if not check_valid_read_column(to_save.get("config_read_column", "0")):
         flash(_("Invalid Read Column"), category="error")
@@ -881,15 +881,15 @@ def delete_restriction(res_type, user_id) -> str:
 def list_restriction(res_type, user_id):
     if res_type == 0:  # Tags as template
         restrict = [{"Element": x, "type": _("Deny"), "id": "d" + str(i)}
-                    for i, x in enumerate(config.list_denied_tags()) if x != ""]
+                    for i, x in enumerate(CONFIG.list_denied_tags()) if x != ""]
         allow = [{"Element": x, "type": _("Allow"), "id": "a" + str(i)}
-                 for i, x in enumerate(config.list_allowed_tags()) if x != ""]
+                 for i, x in enumerate(CONFIG.list_allowed_tags()) if x != ""]
         json_dumps = restrict + allow
     elif res_type == 1:  # CustomC as template
         restrict = [{"Element": x, "type": _("Deny"), "id": "d" + str(i)}
-                    for i, x in enumerate(config.list_denied_column_values()) if x != ""]
+                    for i, x in enumerate(CONFIG.list_denied_column_values()) if x != ""]
         allow = [{"Element": x, "type": _("Allow"), "id": "a" + str(i)}
-                 for i, x in enumerate(config.list_allowed_column_values()) if x != ""]
+                 for i, x in enumerate(CONFIG.list_allowed_column_values()) if x != ""]
         json_dumps = restrict + allow
     elif res_type == 2:  # Tags per user
         if isinstance(user_id, int):
@@ -983,8 +983,8 @@ def prepare_tags(user, action, tags_name, id_list):
             raise Exception(_("Tag not found"))
         new_tags_list = [x.name for x in tags]
     else:
-        tags = calibre_db.session.query(db.cc_classes[config.config_restricted_column]) \
-            .filter(db.cc_classes[config.config_restricted_column].id.in_(id_list)).all()
+        tags = calibre_db.session.query(db.cc_classes[CONFIG.config_restricted_column]) \
+            .filter(db.cc_classes[CONFIG.config_restricted_column].id.in_(id_list)).all()
         new_tags_list = [x.value for x in tags]
     saved_tags_list = user.__dict__[tags_name].split(",") if len(user.__dict__[tags_name]) else []
     if action == "remove":
@@ -1146,13 +1146,13 @@ def _configuration_logfile_helper(to_save):
     reboot_required = False
     reboot_required |= _config_int(to_save, "config_log_level")
     reboot_required |= _config_string(to_save, "config_logfile")
-    if not logger.is_valid_logfile(config.config_logfile):
+    if not logger.is_valid_logfile(CONFIG.config_logfile):
         return reboot_required, \
                _configuration_result(_("Logfile Location is not Valid, Please Enter Correct Path"))
 
     reboot_required |= _config_checkbox_int(to_save, "config_access_log")
     reboot_required |= _config_string(to_save, "config_access_logfile")
-    if not logger.is_valid_logfile(config.config_access_logfile):
+    if not logger.is_valid_logfile(CONFIG.config_access_logfile):
         return reboot_required, \
                _configuration_result(_("Access Logfile Location is not Valid, Please Enter Correct Path"))
     return reboot_required, None
@@ -1183,7 +1183,7 @@ def new_user():
         content.locale = CONFIG.config_default_locale
         content.default_language = CONFIG.config_default_language
     return render_title_template("user_edit.html", new_user=1, content=content,
-                                 config=config, translations=translations,
+                                 config=CONFIG, translations=translations,
                                  languages=languages, title=_("Add New User"), page="newuser",
                                  kobo_support=kobo_support, registered_oauth=oauth_check)
 
@@ -1289,7 +1289,7 @@ def update_scheduledtasks():
             schedule.end_scheduled_tasks()
 
             # Re-register tasks with new settings
-            schedule.register_scheduled_tasks(config.schedule_reconnect)
+            schedule.register_scheduled_tasks(CONFIG.schedule_reconnect)
         except IntegrityError:
             ub.session.rollback()
             log.exception("An unknown error occurred while saving scheduled tasks settings")
@@ -1323,9 +1323,9 @@ def edit_user(user_id):
                                  languages=languages,
                                  new_user=0,
                                  content=content,
-                                 config=config,
+                                 config=CONFIG,
                                  registered_oauth=oauth_check,
-                                 mail_configured=config.get_mail_server_configured(),
+                                 mail_configured=CONFIG.get_mail_server_configured(),
                                  kobo_support=kobo_support,
                                  title=_("Edit User %(nick)s", nick=content.name),
                                  page="edituser")
@@ -1353,12 +1353,12 @@ def reset_user_password(user_id):
 @login_required
 @admin_required
 def view_logfile():
-    logfiles = {0: logger.get_logfile(config.config_logfile),
-                1: logger.get_accesslogfile(config.config_access_logfile)}
+    logfiles = {0: logger.get_logfile(CONFIG.config_logfile),
+                1: logger.get_accesslogfile(CONFIG.config_access_logfile)}
     return render_title_template("logviewer.html",
                                  title=_("Logfile viewer"),
-                                 accesslog_enable=config.config_access_log,
-                                 log_enable=bool(config.config_logfile != logger.LOG_TO_STDOUT),
+                                 accesslog_enable=CONFIG.config_access_log,
+                                 log_enable=bool(CONFIG.config_logfile != logger.LOG_TO_STDOUT),
                                  logfiles=logfiles,
                                  page="logfile")
 
@@ -1368,11 +1368,11 @@ def view_logfile():
 @admin_required
 def send_logfile(logtype):
     if logtype == 1:
-        logfile = logger.get_accesslogfile(config.config_access_logfile)
+        logfile = logger.get_accesslogfile(CONFIG.config_access_logfile)
         return send_from_directory(os.path.dirname(logfile),
                                    os.path.basename(logfile))
     if logtype == 0:
-        logfile = logger.get_logfile(config.config_logfile)
+        logfile = logger.get_logfile(CONFIG.config_logfile)
         return send_from_directory(os.path.dirname(logfile),
                                    os.path.basename(logfile))
     else:
@@ -1384,9 +1384,9 @@ def send_logfile(logtype):
 @admin_required
 def download_log(logtype):
     if logtype == 0:
-        file_name = logger.get_logfile(config.config_logfile)
+        file_name = logger.get_logfile(CONFIG.config_logfile)
     elif logtype == 1:
-        file_name = logger.get_accesslogfile(config.config_access_logfile)
+        file_name = logger.get_accesslogfile(CONFIG.config_access_logfile)
     else:
         abort(404)
     if logger.is_valid_logfile(file_name):
@@ -1517,12 +1517,12 @@ def _db_configuration_update_helper():
             helper.delete_thumbnail_cache()
             ub.session_commit()
         _config_string(to_save, "config_calibre_dir")
-        calibre_db.update_config(config)
-        if not os.access(os.path.join(config.config_calibre_dir, "metadata.db"), os.W_OK):
+        calibre_db.update_config(CONFIG)
+        if not os.access(os.path.join(CONFIG.config_calibre_dir, "metadata.db"), os.W_OK):
             flash(_("DB is not Writeable"), category="warning")
     _config_string(to_save, "config_calibre_split_dir")
     CONFIG.config_calibre_split = to_save.get("config_calibre_split", 0) == "on"
-    calibre_db.update_config(config)
+    calibre_db.update_config(CONFIG)
     CONFIG.save()
     return _db_configuration_result(None)
 
@@ -1534,11 +1534,11 @@ def _configuration_update_helper():
         reboot_required |= _config_int(to_save, "config_port")
         reboot_required |= _config_string(to_save, "config_trustedhosts")
         reboot_required |= _config_string(to_save, "config_keyfile")
-        if CONFIG.config_keyfile and not os.path.isfile(config.config_keyfile):
+        if CONFIG.config_keyfile and not os.path.isfile(CONFIG.config_keyfile):
             return _configuration_result(_("Keyfile Location is not Valid, Please Enter Correct Path"))
 
         reboot_required |= _config_string(to_save, "config_certfile")
-        if CONFIG.config_certfile and not os.path.isfile(config.config_certfile):
+        if CONFIG.config_certfile and not os.path.isfile(CONFIG.config_certfile):
             return _configuration_result(_("Certfile Location is not Valid, Please Enter Correct Path"))
 
         _config_checkbox_int(to_save, "config_uploading")
@@ -1560,7 +1560,7 @@ def _configuration_update_helper():
         _config_string(to_save, "config_binariesdir")
         _config_string(to_save, "config_kepubifypath")
         if "config_binariesdir" in to_save:
-            calibre_status = helper.check_calibre(config.config_binariesdir)
+            calibre_status = helper.check_calibre(CONFIG.config_binariesdir)
             if calibre_status:
                 return _configuration_result(calibre_status)
             to_save["config_converterpath"] = get_calibre_binarypath("ebook-convert")
@@ -1605,7 +1605,7 @@ def _configuration_update_helper():
         # Rarfile Content configuration
         _config_string(to_save, "config_rarfile_location")
         if "config_rarfile_location" in to_save:
-            unrar_status = helper.check_unrar(config.config_rarfile_location)
+            unrar_status = helper.check_unrar(CONFIG.config_rarfile_location)
             if unrar_status:
                 return _configuration_result(unrar_status)
     except (OperationalError, InvalidRequestError) as e:
@@ -1642,7 +1642,7 @@ def _db_configuration_result(error_flash=None):
         flash(_("Database Settings updated"), category="success")
 
     return render_title_template("config_db.html",
-                                 config=config,
+                                 config=CONFIG,
                                  feature_support=feature_support,
                                  title=_("Database Configuration"), page="dbconfig")
 
@@ -1672,7 +1672,7 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
     except Exception as ex:
         flash(str(ex), category="error")
         return render_title_template("user_edit.html", new_user=1, content=content,
-                                     config=config,
+                                     config=CONFIG,
                                      translations=translations,
                                      languages=languages, title=_("Add new user"), page="newuser",
                                      kobo_support=kobo_support, registered_oauth=oauth_check)
@@ -1798,11 +1798,11 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             return render_title_template("user_edit.html",
                                          translations=translations,
                                          languages=languages,
-                                         mail_configured=config.get_mail_server_configured(),
+                                         mail_configured=CONFIG.get_mail_server_configured(),
                                          kobo_support=kobo_support,
                                          new_user=0,
                                          content=content,
-                                         config=config,
+                                         config=CONFIG,
                                          registered_oauth=oauth_check,
                                          title=_("Edit User %(nick)s", nick=content.name),
                                          page="edituser")

@@ -67,7 +67,7 @@ def advanced_search():
 @login_required_if_no_ano
 def advanced_search_form():
     # Build custom columns names
-    cc = calibre_db.get_cc_columns(config, filter_config_custom_read=True)
+    cc = calibre_db.get_cc_columns(CONFIG, filter_config_custom_read=True)
     return render_prepare_search_form(cc)
 
 
@@ -131,13 +131,13 @@ def adv_search_read_status(read_status):
     else:
         try:
             if read_status == "True":
-                db_filter = db.cc_classes[config.config_read_column].value is True
+                db_filter = db.cc_classes[CONFIG.config_read_column].value is True
             else:
-                db_filter = coalesce(db.cc_classes[config.config_read_column].value, False) is not True
+                db_filter = coalesce(db.cc_classes[CONFIG.config_read_column].value, False) is not True
         except (KeyError, AttributeError, IndexError):
-            log.exception(f"Custom Column No.{config.config_read_column} does not exist in calibre database")
+            log.exception(f"Custom Column No.{CONFIG.config_read_column} does not exist in calibre database")
             flash(_("Custom Column No.%(column)d does not exist in calibre database",
-                    column=config.config_read_column),
+                    column=CONFIG.config_read_column),
                   category="error")
             return true()
     return db_filter
@@ -232,9 +232,9 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
     sort = order[0] if order else [db.Books.sort]
     pagination = None
 
-    cc = calibre_db.get_cc_columns(config, filter_config_custom_read=True)
+    cc = calibre_db.get_cc_columns(CONFIG, filter_config_custom_read=True)
     calibre_db.session.connection().connection.connection.create_function("lower", 1, db.lcase)
-    query = calibre_db.generate_linked_query(config.config_read_column, db.Books)
+    query = calibre_db.generate_linked_query(CONFIG.config_read_column, db.Books)
     q = query.outerjoin(db.books_series_link, db.Books.id == db.books_series_link.c.book)\
         .outerjoin(db.Series)\
         .filter(calibre_db.common_filters(True))
@@ -378,7 +378,7 @@ def render_search_results(term, offset=None, order=None, limit=None):
     if term:
         join = db.books_series_link, db.Books.id == db.books_series_link.c.book, db.Series
         entries, result_count, pagination = calibre_db.get_search_results(term,
-                                                                          config,
+                                                                          CONFIG,
                                                                           offset,
                                                                           order,
                                                                           limit,

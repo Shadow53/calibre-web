@@ -123,8 +123,8 @@ class TaskConvert(CalibreTask):
                                                           format_new_ext)
         else:
             # check if calibre converter-executable is existing
-            if not os.path.exists(config.config_converterpath):
-                self._handleError(N_("Calibre ebook-convert %(tool)s not found", tool=config.config_converterpath))
+            if not os.path.exists(CONFIG.config_converterpath):
+                self._handleError(N_("Calibre ebook-convert %(tool)s not found", tool=CONFIG.config_converterpath))
                 return None
             has_cover = local_db.get_book(book_id).has_cover
             check, error_message = self._convert_calibre(file_path, format_old_ext, format_new_ext, has_cover)
@@ -176,7 +176,7 @@ class TaskConvert(CalibreTask):
             filename = file_path + format_old_ext
             temp_file_path = os.path.dirname(file_path)
         quotes = [1, 3]
-        command = [config.config_kepubifypath, filename, "-o", temp_file_path, "-i"]
+        command = [CONFIG.config_kepubifypath, filename, "-o", temp_file_path, "-i"]
         try:
             p = process_open(command, quotes)
         except OSError as e:
@@ -210,10 +210,10 @@ class TaskConvert(CalibreTask):
             if CONFIG.config_embed_metadata:
                 quotes = [3, 5]
                 tmp_dir = get_temp_dir()
-                calibredb_binarypath = os.path.join(config.config_binariesdir, SUPPORTED_CALIBRE_BINARIES["calibredb"])
+                calibredb_binarypath = os.path.join(CONFIG.config_binariesdir, SUPPORTED_CALIBRE_BINARIES["calibredb"])
                 my_env = os.environ.copy()
                 if CONFIG.config_calibre_split:
-                    my_env["CALIBRE_OVERRIDE_DATABASE_PATH"] = os.path.join(config.config_calibre_dir, "metadata.db")
+                    my_env["CALIBRE_OVERRIDE_DATABASE_PATH"] = os.path.join(CONFIG.config_calibre_dir, "metadata.db")
                     library_path = CONFIG.config_calibre_split_dir
                 else:
                     library_path = CONFIG.config_calibre_dir
@@ -227,7 +227,7 @@ class TaskConvert(CalibreTask):
                     copyfileobj(p.stdout, fd)
 
             quotes = [1, 2, 4, 6]
-            command = [config.config_converterpath, (file_path + format_old_ext),
+            command = [CONFIG.config_converterpath, (file_path + format_old_ext),
                        (file_path + format_new_ext)]
             if CONFIG.config_embed_metadata:
                 command.extend(["--from-opf", path_tmp_opf])

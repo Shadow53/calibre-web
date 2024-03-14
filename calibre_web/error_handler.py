@@ -25,7 +25,8 @@ try:
 except ImportError:
     pass
 
-from . import app, config, logger
+from . import app, logger
+from .config_sql import CONFIG
 
 log = logger.create()
 
@@ -36,7 +37,7 @@ def error_http(error):
                            error_name=error.name,
                            issue=False,
                            unconfigured=not CONFIG.db_configured,
-                           instance=config.config_calibre_web_title
+                           instance=CONFIG.config_calibre_web_title
                            ), error.code
 
 
@@ -48,7 +49,7 @@ def internal_error(error):
                            issue=True,
                            unconfigured=False,
                            error_stack=traceback.format_exc().split("\n"),
-                           instance=config.config_calibre_web_title
+                           instance=CONFIG.config_calibre_web_title
                            ), 500
 
 def init_errorhandler() -> None:

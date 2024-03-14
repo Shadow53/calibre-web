@@ -941,11 +941,11 @@ class CalibreDB:
         tmp_cc = self.session.query(CustomColumns).filter(CustomColumns.datatype.notin_(cc_exceptions)).all()
         cc = []
         r = None
-        if CONFIG.config_columns_to_ignore:
+        if config.config_columns_to_ignore:
             r = re.compile(config.config_columns_to_ignore)
 
         for col in tmp_cc:
-            if filter_config_custom_read and CONFIG.config_read_column and CONFIG.config_read_column == col.id:
+            if filter_config_custom_read and config.config_read_column and config.config_read_column == col.id:
                 continue
             if r and r.match(col.name):
                 continue

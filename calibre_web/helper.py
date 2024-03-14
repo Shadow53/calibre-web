@@ -115,7 +115,7 @@ def send_registration_mail(e_mail, user_name, default_password, resend=False) ->
         subject=_("Get Started with Calibre-Web"),
         filepath=None,
         attachment=None,
-        settings=config.get_mail_settings(),
+        settings=CONFIG.get_mail_settings(),
         recipient=e_mail,
         task_message=N_("Registration Email for user: %(name)s", name=user_name),
         text=txt
@@ -291,9 +291,9 @@ def edit_book_read_status(book_id, read_status=None):
         ub.session_commit(f"Book {book_id} readbit toggled")
     else:
         try:
-            calibre_db.update_title_sort(config)
+            calibre_db.update_title_sort(CONFIG)
             book = calibre_db.get_filtered_book(book_id)
-            book_read_status = getattr(book, "custom_column_" + str(config.config_read_column))
+            book_read_status = getattr(book, "custom_column_" + str(CONFIG.config_read_column))
             if len(book_read_status):
                 if read_status is None:
                     book_read_status[0].value = not book_read_status[0].value
@@ -301,14 +301,14 @@ def edit_book_read_status(book_id, read_status=None):
                     book_read_status[0].value = read_status is True
                 calibre_db.session.commit()
             else:
-                cc_class = db.cc_classes[config.config_read_column]
+                cc_class = db.cc_classes[CONFIG.config_read_column]
                 new_cc = cc_class(value=read_status or 1, book=book_id)
                 calibre_db.session.add(new_cc)
                 calibre_db.session.commit()
         except (KeyError, AttributeError, IndexError):
             log.exception(
-                f"Custom Column No.{config.config_read_column} does not exist in calibre database")
-            return f"Custom Column No.{config.config_read_column} does not exist in calibre database"
+                f"Custom Column No.{CONFIG.config_read_column} does not exist in calibre database")
+            return f"Custom Column No.{CONFIG.config_read_column} does not exist in calibre database"
         except (OperationalError, InvalidRequestError) as ex:
             calibre_db.session.rollback()
             log.exception(f"Read status could not set: {ex}")
@@ -495,7 +495,7 @@ def reset_password(user_id):
     if not CONFIG.get_mail_server_configured():
         return 2, None
     try:
-        password = generate_random_password(config.config_password_min_length)
+        password = generate_random_password(CONFIG.config_password_min_length)
         existing_user.password = generate_password_hash(password)
         ub.session.commit()
         send_registration_mail(existing_user.email, existing_user.name, password, True)
@@ -575,7 +575,7 @@ def valid_password(check_password):
     if CONFIG.config_password_policy:
         verify = ""
         if CONFIG.config_password_min_length > 0:
-            verify += "^(?=.{" + str(config.config_password_min_length) + ",}$)"
+            verify += "^(?=.{" + str(CONFIG.config_password_min_length) + ",}$)"
         if CONFIG.config_password_number:
             verify += r"(?=.*?\d)"
         if CONFIG.config_password_lower:
@@ -645,7 +645,7 @@ def get_book_cover_internal(book, resolution=None):
                                                thumbnail.filename)
 
         # Send the book cover from the Calibre directory
-        cover_file_path = os.path.join(config.get_book_path(), book.path)
+        cover_file_path = os.path.join(CONFIG.get_book_path(), book.path)
         if os.path.isfile(os.path.join(cover_file_path, "cover.jpg")):
             return send_from_directory(cover_file_path, "cover.jpg")
         else:
@@ -723,9 +723,6 @@ def save_cover_from_url(url, book_path):
     except MissingDelegateError as ex:
         log.info("File Format Error %s", ex)
         return False, _("Cover Format Error")
-    except UnacceptableAddressException:
-        log.exception("Localhost or local network was accessed for cover upload")
-        return False, _("You are not allowed to access localhost or the local network for cover uploads")
 
 
 def save_cover_from_filestorage(filepath, saved_filename, img):
@@ -774,12 +771,12 @@ def save_cover(img, book_path):
         log.error("Only jpg/jpeg files are supported as coverfile")
         return False, _("Only jpg/jpeg files are supported as coverfile")
 
-    return save_cover_from_filestorage(os.path.join(config.get_book_path(), book_path), "cover.jpg", img)
+    return save_cover_from_filestorage(os.path.join(CONFIG.get_book_path(), book_path), "cover.jpg", img)
 
 
 def do_download_file(book, book_format, client, data, headers):
     book_name = data.name
-    filename = os.path.join(config.get_book_path(), book.path)
+    filename = os.path.join(CONFIG.get_book_path(), book.path)
     if not os.path.isfile(os.path.join(filename, book_name + "." + book_format)):
         # TODO: improve error handling
         log.error("File not found: %s", os.path.join(filename, book_name + "." + book_format))
@@ -827,7 +824,7 @@ def do_calibre_export(book_id, book_format, ):
         temp_file_name = str(uuid4())
         my_env = os.environ.copy()
         if CONFIG.config_calibre_split:
-            my_env["CALIBRE_OVERRIDE_DATABASE_PATH"] = os.path.join(config.config_calibre_dir, "metadata.db")
+            my_env["CALIBRE_OVERRIDE_DATABASE_PATH"] = os.path.join(CONFIG.config_calibre_dir, "metadata.db")
             library_path = CONFIG.config_calibre_split_dir
         else:
             library_path = CONFIG.config_calibre_dir
