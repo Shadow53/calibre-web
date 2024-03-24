@@ -272,7 +272,7 @@ def get_sidebar_config(kwargs=None):
 
 
 # Returns the template for rendering and includes the instance name
-def render_title_template(*args, **kwargs):
+def render_title_template(*args, **kwargs) -> str:
     sidebar, simple = get_sidebar_config(kwargs)
     config = kwargs["config"]
     try:

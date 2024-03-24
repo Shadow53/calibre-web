@@ -23,6 +23,7 @@ import sqlite3
 import sys
 from collections import OrderedDict
 from importlib import metadata
+from __future__ import annotations
 
 import flask
 import flask_login
@@ -43,7 +44,7 @@ modules["pySqlite"] = sqlite3.version
 modules["SQLite"] = sqlite3.sqlite_version
 
 
-def collect_stats():
+def collect_stats() -> dict[str, str]:
     calibre_web_version = constants.VERSION_STRING
 
     if getattr(sys, "frozen", False):
@@ -51,24 +52,24 @@ def collect_stats():
     elif constants.HOME_CONFIG:
         calibre_web_version += " - pyPi"
 
-    _VERSIONS = {"Calibre Web": calibre_web_version}
-    _VERSIONS.update(
+    versions = {"Calibre Web": calibre_web_version}
+    versions.update(
         OrderedDict(
             Python=sys.version,
             Platform="{0[0]} {0[2]} {0[3]} {0[4]} {0[5]}".format(platform.uname()),
         )
     )
-    _VERSIONS.update(uploader.get_magick_version())
-    _VERSIONS["Unrar"] = converter.get_unrar_version()
-    _VERSIONS["Ebook converter"] = converter.get_calibre_version()
-    _VERSIONS["Kepubify"] = converter.get_kepubify_version()
-    _VERSIONS.update(modules)
-    return _VERSIONS
+    versions.update(uploader.get_magick_version())
+    versions["Unrar"] = converter.get_unrar_version()
+    versions["Ebook converter"] = converter.get_calibre_version()
+    versions["Kepubify"] = converter.get_kepubify_version()
+    versions.update(modules)
+    return versions
 
 
 @about.route("/stats")
 @flask_login.login_required
-def stats():
+def stats() -> str:
     counter = calibre_db.session.query(db.Books).count()
     authors = calibre_db.session.query(db.Authors).count()
     categories = calibre_db.session.query(db.Tags).count()

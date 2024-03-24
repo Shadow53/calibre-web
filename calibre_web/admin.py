@@ -30,6 +30,8 @@ from datetime import datetime, timedelta
 from datetime import time as datetime_time
 from functools import wraps
 from importlib.util import find_spec
+from typing import Callable, TypeVar, ParamSpec
+from __future__ import annotations
 
 from flask import Blueprint, Response, abort, flash, g, make_response, redirect, request, send_from_directory, url_for
 from flask import session as flask_session
@@ -99,11 +101,14 @@ except ImportError as err:
 admi = Blueprint("admin", __name__)
 
 
-def admin_required(f):
+T = TypeVar('T')
+P = ParamSpec('P')
+
+def admin_required(f: Callable[P, T]) -> Callable[P, T]:
     """Checks if current_user.role == 1."""
 
     @wraps(f)
-    def inner(*args, **kwargs):
+    def inner(*args, **kwargs) -> Optional[T]:
         if current_user.role_admin():
             return f(*args, **kwargs)
         abort(403)
