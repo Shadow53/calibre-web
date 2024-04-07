@@ -118,8 +118,8 @@ class Douban(Metadata):
             self.ID_PATTERN.search(item).group("id") for item in results["items"][:10] if self.ID_PATTERN.search(item)
         ]
 
-    def _parse_single_book(self, id: str, generic_cover: str = "") -> Optional[MetaRecord]:
-        url = f"https://book.douban.com/subject/{id}/"
+    def _parse_single_book(self, book_id: str, generic_cover: str = "") -> Optional[MetaRecord]:
+        url = f"https://book.douban.com/subject/{book_id}/"
         log.debug(f"start parsing {url}")
 
         try:
@@ -130,7 +130,7 @@ class Douban(Metadata):
             return None
 
         match = MetaRecord(
-            id=id,
+            id=book_id,
             title="",
             authors=[],
             url=url,

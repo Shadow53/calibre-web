@@ -161,7 +161,7 @@ class TaskConvert(CalibreTask):
                         local_db.session.commit()
                         if self.settings["new_book_format"].upper() in ["KEPUB", "EPUB", "EPUB3"]:
                             ub_session = init_db_thread()
-                            remove_synced_book(book_id, True, ub_session)
+                            remove_synced_book(book_id, include_all=True, session=ub_session)
                             ub_session.close()
                     except SQLAlchemyError as e:
                         local_db.session.rollback()

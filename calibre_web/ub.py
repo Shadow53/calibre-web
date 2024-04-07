@@ -80,7 +80,7 @@ searched_ids = {}
 logged_in = {}
 
 
-def signal_store_user_session(object, user) -> None:
+def signal_store_user_session(_object, _user) -> None:
     store_user_session()
 
 

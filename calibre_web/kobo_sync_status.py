@@ -41,8 +41,8 @@ def add_synced_books(book_id) -> None:
 
 
 # Select all entries of current book in kobo_synced_books table, which are from current user and delete them
-def remove_synced_book(book_id, all=False, session=None) -> None:
-    user = ub.KoboSyncedBooks.user_id == current_user.id if not all else true()
+def remove_synced_book(book_id, include_all=False, session=None) -> None:
+    user = ub.KoboSyncedBooks.user_id == current_user.id if not include_all else true()
     if not session:
         ub.session.query(ub.KoboSyncedBooks).filter(ub.KoboSyncedBooks.book_id == book_id).filter(user).delete()
         ub.session_commit()

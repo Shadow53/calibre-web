@@ -223,7 +223,7 @@ def edit_book(book_id):
 
         if modify_date:
             book.last_modified = datetime.utcnow()
-            kobo_sync_status.remove_synced_book(edited_books_id, all=True)
+            kobo_sync_status.remove_synced_book(edited_books_id, include_all=True)
             calibre_db.set_metadata_dirty(book.id)
 
         calibre_db.session.merge(book)
@@ -913,7 +913,7 @@ def delete_book_from_table(book_id, book_format, json_response):
                         db.Data.format == book_format
                     ).delete()
                     if book_format.upper() in ["KEPUB", "EPUB", "EPUB3"]:
-                        kobo_sync_status.remove_synced_book(book.id, True)
+                        kobo_sync_status.remove_synced_book(book.id, include_all=True)
                 calibre_db.session.commit()
             except Exception as ex:
                 log.error_or_exception(ex)
