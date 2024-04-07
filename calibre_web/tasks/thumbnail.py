@@ -15,7 +15,7 @@
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from datetime import datetime
+from datetime import datetime, UTC
 from shutil import copyfile
 
 from flask_babel import lazy_gettext as N_
@@ -74,7 +74,7 @@ class TaskGenerateCoverThumbnails(CalibreTask):
         self.cache = fs.FileSystem()
         self.resolutions = [constants.COVER_THUMBNAIL_SMALL, constants.COVER_THUMBNAIL_MEDIUM]
 
-    def run(self, worker_thread) -> None:
+    def run(self, _worker_thread) -> None:
         if use_IM and self.stat != STAT_CANCELLED and self.stat != STAT_ENDED:
             self.message = "Scanning Books"
             books_with_covers = self.get_books_with_covers(self.book_id)
@@ -86,7 +86,7 @@ class TaskGenerateCoverThumbnails(CalibreTask):
                 generated = self.create_book_cover_thumbnails(book)
 
                 # Increment the progress
-                self.progress = (1.0 / count) * i
+                super().progress = (1.0 / count) * i
 
                 if generated > 0:
                     total_generated += generated
@@ -110,6 +110,7 @@ class TaskGenerateCoverThumbnails(CalibreTask):
     def get_books_with_covers(self, book_id=-1):
         filter_exp = (db.Books.id == book_id) if book_id != -1 else True
         calibre_db = db.CalibreDB(expire_on_commit=False, init=True)
+        assert calibre_db.session is not None
         books_cover = calibre_db.session.query(db.Books).filter(db.Books.has_cover == 1).filter(filter_exp).all()
         calibre_db.session.close()
         return books_cover
@@ -119,7 +120,7 @@ class TaskGenerateCoverThumbnails(CalibreTask):
             self.app_db_session.query(ub.Thumbnail)
             .filter(ub.Thumbnail.type == constants.THUMBNAIL_TYPE_COVER)
             .filter(ub.Thumbnail.entity_id == book_id)
-            .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.utcnow()))
+            .filter(or_(ub.Thumbnail.expiration.is_(None), ub.Thumbnail.expiration > datetime.now(UTC)))
             .all()
         )
 
@@ -438,8 +439,7 @@ class TaskClearCoverThumbnailCache(CalibreTask):
             self.log.debug("Error deleting thumbnail directory: " + str(ex))
             self._handleError("Error deleting thumbnail directory: " + str(ex))
 
-    @property
-    def name(self):
+    def name(self) -> LazyString:
         return N_("Cover Thumbnails")
 
     # needed for logging
@@ -449,6 +449,5 @@ class TaskClearCoverThumbnailCache(CalibreTask):
         else:
             return "Delete Thumbnail cache directory"
 
-    @property
     def is_cancellable(self) -> bool:
         return False

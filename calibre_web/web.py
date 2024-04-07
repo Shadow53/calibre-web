@@ -947,22 +947,21 @@ def render_read_books(page, are_read, as_xml=False, order=None):
 
     if as_xml:
         return entries, pagination
+    if are_read:
+        name = _("Read Books") + " (" + str(pagination.total_count) + ")"
+        page_name = "read"
     else:
-        if are_read:
-            name = _("Read Books") + " (" + str(pagination.total_count) + ")"
-            page_name = "read"
-        else:
-            name = _("Unread Books") + " (" + str(pagination.total_count) + ")"
-            page_name = "unread"
-        return render_title_template(
-            "index.html",
-            random=random,
-            entries=entries,
-            pagination=pagination,
-            title=name,
-            page=page_name,
-            order=order[1],
-        )
+        name = _("Unread Books") + " (" + str(pagination.total_count) + ")"
+        page_name = "unread"
+    return render_title_template(
+        "index.html",
+        random=random,
+        entries=entries,
+        pagination=pagination,
+        title=name,
+        page=page_name,
+        order=order[1],
+    )
 
 
 def render_archived_books(page, sort_param):
@@ -1127,79 +1126,79 @@ def update_table_settings():
 @web.route("/author")
 @login_required_if_no_ano
 def author_list():
-    if current_user.check_visibility(constants.SIDEBAR_AUTHOR):
-        if current_user.get_view_property("author", "dir") == "desc":
-            order = db.Authors.sort.desc()
-            order_no = 0
-        else:
-            order = db.Authors.sort.asc()
-            order_no = 1
-        entries = (
-            calibre_db.session.query(db.Authors, func.count("books_authors_link.book").label("count"))
-            .join(db.books_authors_link)
-            .join(db.Books)
-            .filter(calibre_db.common_filters())
-            .group_by(text("books_authors_link.author"))
-            .order_by(order)
-            .all()
-        )
-        char_list = query_char_list(db.Authors.sort, db.books_authors_link)
-        # If not creating a copy, readonly databases can not display authornames with "|" in it as changing the name
-        # starts a change session
-        author_copy = copy.deepcopy(entries)
-        for entry in author_copy:
-            entry.Authors.name = entry.Authors.name.replace("|", ",")
-        return render_title_template(
-            "list.html",
-            entries=author_copy,
-            folder="web.books_list",
-            charlist=char_list,
-            title="Authors",
-            page="authorlist",
-            data="author",
-            order=order_no,
-        )
-    else:
+    if not current_user.check_visibility(constants.SIDEBAR_AUTHOR):
         abort(404)
         return None
+    if current_user.get_view_property("author", "dir") == "desc":
+        order = db.Authors.sort.desc()
+        order_no = 0
+    else:
+        order = db.Authors.sort.asc()
+        order_no = 1
+    entries = (
+        calibre_db.session.query(db.Authors, func.count("books_authors_link.book").label("count"))
+        .join(db.books_authors_link)
+        .join(db.Books)
+        .filter(calibre_db.common_filters())
+        .group_by(text("books_authors_link.author"))
+        .order_by(order)
+        .all()
+    )
+    char_list = query_char_list(db.Authors.sort, db.books_authors_link)
+    # If not creating a copy, readonly databases can not display authornames with "|" in it as changing the name
+    # starts a change session
+    author_copy = copy.deepcopy(entries)
+    for entry in author_copy:
+        entry.Authors.name = entry.Authors.name.replace("|", ",")
+    return render_title_template(
+        "list.html",
+        entries=author_copy,
+        folder="web.books_list",
+        charlist=char_list,
+        title="Authors",
+        page="authorlist",
+        data="author",
+        order=order_no,
+    )
 
 
 @web.route("/downloadlist")
 @login_required_if_no_ano
 def download_list():
+    if not current_user.check_visibility(constants.SIDEBAR_DOWNLOAD) or not current_user.role_admin():
+        abort(404)
+        return None
+
     if current_user.get_view_property("download", "dir") == "desc":
         order = ub.User.name.desc()
         order_no = 0
     else:
         order = ub.User.name.asc()
         order_no = 1
-    if current_user.check_visibility(constants.SIDEBAR_DOWNLOAD) and current_user.role_admin():
-        entries = (
-            ub.session.query(ub.User, func.count(ub.Downloads.book_id).label("count"))
-            .join(ub.Downloads)
-            .group_by(ub.Downloads.user_id)
-            .order_by(order)
-            .all()
-        )
-        char_list = (
-            ub.session.query(func.upper(func.substr(ub.User.name, 1, 1)).label("char"))
-            .filter(ub.User.role.op("&")(constants.ROLE_ANONYMOUS) != constants.ROLE_ANONYMOUS)
-            .group_by(func.upper(func.substr(ub.User.name, 1, 1)))
-            .all()
-        )
-        return render_title_template(
-            "list.html",
-            entries=entries,
-            folder="web.books_list",
-            charlist=char_list,
-            title=_("Downloads"),
-            page="downloadlist",
-            data="download",
-            order=order_no,
-        )
-    else:
-        abort(404)
-        return None
+
+    entries = (
+        ub.session.query(ub.User, func.count(ub.Downloads.book_id).label("count"))
+        .join(ub.Downloads)
+        .group_by(ub.Downloads.user_id)
+        .order_by(order)
+        .all()
+    )
+    char_list = (
+        ub.session.query(func.upper(func.substr(ub.User.name, 1, 1)).label("char"))
+        .filter(ub.User.role.op("&")(constants.ROLE_ANONYMOUS) != constants.ROLE_ANONYMOUS)
+        .group_by(func.upper(func.substr(ub.User.name, 1, 1)))
+        .all()
+    )
+    return render_title_template(
+        "list.html",
+        entries=entries,
+        folder="web.books_list",
+        charlist=char_list,
+        title=_("Downloads"),
+        page="downloadlist",
+        data="download",
+        order=order_no,
+    )
 
 
 @web.route("/publisher")
@@ -1251,165 +1250,162 @@ def publisher_list():
 @web.route("/series")
 @login_required_if_no_ano
 def series_list():
-    if current_user.check_visibility(constants.SIDEBAR_SERIES):
-        if current_user.get_view_property("series", "dir") == "desc":
-            order = db.Series.sort.desc()
-            order_no = 0
-        else:
-            order = db.Series.sort.asc()
-            order_no = 1
-        char_list = query_char_list(db.Series.sort, db.books_series_link)
-        if current_user.get_view_property("series", "series_view") == "list":
-            entries = (
-                calibre_db.session.query(db.Series, func.count("books_series_link.book").label("count"))
-                .join(db.books_series_link)
-                .join(db.Books)
-                .filter(calibre_db.common_filters())
-                .group_by(text("books_series_link.series"))
-                .order_by(order)
-                .all()
-            )
-            no_series_count = (
-                calibre_db.session.query(db.Books)
-                .outerjoin(db.books_series_link)
-                .outerjoin(db.Series)
-                .filter(db.Series.name is None)
-                .filter(calibre_db.common_filters())
-                .count()
-            )
-            if no_series_count:
-                entries.append([db.Category(_("None"), "-1"), no_series_count])
-            entries = sorted(entries, key=lambda x: x[0].name.lower(), reverse=not order_no)
-            return render_title_template(
-                "list.html",
-                entries=entries,
-                folder="web.books_list",
-                charlist=char_list,
-                title=_("Series"),
-                page="serieslist",
-                data="series",
-                order=order_no,
-            )
-        else:
-            entries = (
-                calibre_db.session.query(
-                    db.Books,
-                    func.count("books_series_link").label("count"),
-                    func.max(db.Books.series_index),
-                    db.Books.id,
-                )
-                .join(db.books_series_link)
-                .join(db.Series)
-                .filter(calibre_db.common_filters())
-                .group_by(text("books_series_link.series"))
-                .having(or_(func.max(db.Books.series_index), db.Books.series_index == ""))
-                .order_by(order)
-                .all()
-            )
-            return render_title_template(
-                "grid.html",
-                entries=entries,
-                folder="web.books_list",
-                charlist=char_list,
-                title=_("Series"),
-                page="serieslist",
-                data="series",
-                bodyClass="grid-view",
-                order=order_no,
-            )
-    else:
+    if not current_user.check_visibility(constants.SIDEBAR_SERIES):
         abort(404)
         return None
+    if current_user.get_view_property("series", "dir") == "desc":
+        order = db.Series.sort.desc()
+        order_no = 0
+    else:
+        order = db.Series.sort.asc()
+        order_no = 1
+    char_list = query_char_list(db.Series.sort, db.books_series_link)
+    if current_user.get_view_property("series", "series_view") == "list":
+        entries = (
+            calibre_db.session.query(db.Series, func.count("books_series_link.book").label("count"))
+            .join(db.books_series_link)
+            .join(db.Books)
+            .filter(calibre_db.common_filters())
+            .group_by(text("books_series_link.series"))
+            .order_by(order)
+            .all()
+        )
+        no_series_count = (
+            calibre_db.session.query(db.Books)
+            .outerjoin(db.books_series_link)
+            .outerjoin(db.Series)
+            .filter(db.Series.name is None)
+            .filter(calibre_db.common_filters())
+            .count()
+        )
+        if no_series_count:
+            entries.append([db.Category(_("None"), "-1"), no_series_count])
+        entries = sorted(entries, key=lambda x: x[0].name.lower(), reverse=not order_no)
+        return render_title_template(
+            "list.html",
+            entries=entries,
+            folder="web.books_list",
+            charlist=char_list,
+            title=_("Series"),
+            page="serieslist",
+            data="series",
+            order=order_no,
+        )
+    else:  # noqa: RET505
+        entries = (
+            calibre_db.session.query(
+                db.Books,
+                func.count("books_series_link").label("count"),
+                func.max(db.Books.series_index),
+                db.Books.id,
+            )
+            .join(db.books_series_link)
+            .join(db.Series)
+            .filter(calibre_db.common_filters())
+            .group_by(text("books_series_link.series"))
+            .having(or_(func.max(db.Books.series_index), db.Books.series_index == ""))
+            .order_by(order)
+            .all()
+        )
+        return render_title_template(
+            "grid.html",
+            entries=entries,
+            folder="web.books_list",
+            charlist=char_list,
+            title=_("Series"),
+            page="serieslist",
+            data="series",
+            bodyClass="grid-view",
+            order=order_no,
+        )
 
 
 @web.route("/ratings")
 @login_required_if_no_ano
 def ratings_list():
-    if current_user.check_visibility(constants.SIDEBAR_RATING):
-        if current_user.get_view_property("ratings", "dir") == "desc":
-            order = db.Ratings.rating.desc()
-            order_no = 0
-        else:
-            order = db.Ratings.rating.asc()
-            order_no = 1
-        entries = (
-            calibre_db.session.query(
-                db.Ratings, func.count("books_ratings_link.book").label("count"), (db.Ratings.rating / 2).label("name")
-            )
-            .join(db.books_ratings_link)
-            .join(db.Books)
-            .filter(calibre_db.common_filters())
-            .filter(db.Ratings.rating > 0)
-            .group_by(text("books_ratings_link.rating"))
-            .order_by(order)
-            .all()
-        )
-        no_rating_count = (
-            calibre_db.session.query(db.Books)
-            .outerjoin(db.books_ratings_link)
-            .outerjoin(db.Ratings)
-            .filter(or_(db.Ratings.rating is None, db.Ratings.rating == 0))
-            .filter(calibre_db.common_filters())
-            .count()
-        )
-        if no_rating_count:
-            entries.append([db.Category(_("None"), "-1", -1), no_rating_count])
-        entries = sorted(entries, key=lambda x: x[0].rating, reverse=not order_no)
-        return render_title_template(
-            "list.html",
-            entries=entries,
-            folder="web.books_list",
-            charlist=[],
-            title=_("Ratings list"),
-            page="ratingslist",
-            data="ratings",
-            order=order_no,
-        )
-    else:
+    if not current_user.check_visibility(constants.SIDEBAR_RATING):
         abort(404)
         return None
+    if current_user.get_view_property("ratings", "dir") == "desc":
+        order = db.Ratings.rating.desc()
+        order_no = 0
+    else:
+        order = db.Ratings.rating.asc()
+        order_no = 1
+    entries = (
+        calibre_db.session.query(
+            db.Ratings, func.count("books_ratings_link.book").label("count"), (db.Ratings.rating / 2).label("name")
+        )
+        .join(db.books_ratings_link)
+        .join(db.Books)
+        .filter(calibre_db.common_filters())
+        .filter(db.Ratings.rating > 0)
+        .group_by(text("books_ratings_link.rating"))
+        .order_by(order)
+        .all()
+    )
+    no_rating_count = (
+        calibre_db.session.query(db.Books)
+        .outerjoin(db.books_ratings_link)
+        .outerjoin(db.Ratings)
+        .filter(or_(db.Ratings.rating is None, db.Ratings.rating == 0))
+        .filter(calibre_db.common_filters())
+        .count()
+    )
+    if no_rating_count:
+        entries.append([db.Category(_("None"), "-1", -1), no_rating_count])
+    entries = sorted(entries, key=lambda x: x[0].rating, reverse=not order_no)
+    return render_title_template(
+        "list.html",
+        entries=entries,
+        folder="web.books_list",
+        charlist=[],
+        title=_("Ratings list"),
+        page="ratingslist",
+        data="ratings",
+        order=order_no,
+    )
 
 
 @web.route("/formats")
 @login_required_if_no_ano
 def formats_list():
-    if current_user.check_visibility(constants.SIDEBAR_FORMAT):
-        if current_user.get_view_property("formats", "dir") == "desc":
-            order = db.Data.format.desc()
-            order_no = 0
-        else:
-            order = db.Data.format.asc()
-            order_no = 1
-        entries = (
-            calibre_db.session.query(db.Data, func.count("data.book").label("count"), db.Data.format.label("format"))
-            .join(db.Books)
-            .filter(calibre_db.common_filters())
-            .group_by(db.Data.format)
-            .order_by(order)
-            .all()
-        )
-        no_format_count = (
-            calibre_db.session.query(db.Books)
-            .outerjoin(db.Data)
-            .filter(db.Data.format is None)
-            .filter(calibre_db.common_filters())
-            .count()
-        )
-        if no_format_count:
-            entries.append([db.Category(_("None"), "-1"), no_format_count])
-        return render_title_template(
-            "list.html",
-            entries=entries,
-            folder="web.books_list",
-            charlist=[],
-            title=_("File formats list"),
-            page="formatslist",
-            data="formats",
-            order=order_no,
-        )
-    else:
+    if not current_user.check_visibility(constants.SIDEBAR_FORMAT):
         abort(404)
         return None
+    if current_user.get_view_property("formats", "dir") == "desc":
+        order = db.Data.format.desc()
+        order_no = 0
+    else:
+        order = db.Data.format.asc()
+        order_no = 1
+    entries = (
+        calibre_db.session.query(db.Data, func.count("data.book").label("count"), db.Data.format.label("format"))
+        .join(db.Books)
+        .filter(calibre_db.common_filters())
+        .group_by(db.Data.format)
+        .order_by(order)
+        .all()
+    )
+    no_format_count = (
+        calibre_db.session.query(db.Books)
+        .outerjoin(db.Data)
+        .filter(db.Data.format is None)
+        .filter(calibre_db.common_filters())
+        .count()
+    )
+    if no_format_count:
+        entries.append([db.Category(_("None"), "-1"), no_format_count])
+    return render_title_template(
+        "list.html",
+        entries=entries,
+        folder="web.books_list",
+        charlist=[],
+        title=_("File formats list"),
+        page="formatslist",
+        data="formats",
+        order=order_no,
+    )
 
 
 @web.route("/language")
@@ -1429,55 +1425,53 @@ def language_overview():
             data="language",
             order=order_no,
         )
-    else:
-        abort(404)
-        return None
+    abort(404)
+    return None
 
 
 @web.route("/category")
 @login_required_if_no_ano
 def category_list():
-    if current_user.check_visibility(constants.SIDEBAR_CATEGORY):
-        if current_user.get_view_property("category", "dir") == "desc":
-            order = db.Tags.name.desc()
-            order_no = 0
-        else:
-            order = db.Tags.name.asc()
-            order_no = 1
-        entries = (
-            calibre_db.session.query(db.Tags, func.count("books_tags_link.book").label("count"))
-            .join(db.books_tags_link)
-            .join(db.Books)
-            .order_by(order)
-            .filter(calibre_db.common_filters())
-            .group_by(db.Tags.id)
-            .all()
-        )
-        no_tag_count = (
-            calibre_db.session.query(db.Books)
-            .outerjoin(db.books_tags_link)
-            .outerjoin(db.Tags)
-            .filter(db.Tags.name is None)
-            .filter(calibre_db.common_filters())
-            .count()
-        )
-        if no_tag_count:
-            entries.append([db.Category(_("None"), "-1"), no_tag_count])
-        entries = sorted(entries, key=lambda x: x[0].name.lower(), reverse=not order_no)
-        char_list = generate_char_list(entries)
-        return render_title_template(
-            "list.html",
-            entries=entries,
-            folder="web.books_list",
-            charlist=char_list,
-            title=_("Categories"),
-            page="catlist",
-            data="category",
-            order=order_no,
-        )
-    else:
+    if not current_user.check_visibility(constants.SIDEBAR_CATEGORY):
         abort(404)
         return None
+    if current_user.get_view_property("category", "dir") == "desc":
+        order = db.Tags.name.desc()
+        order_no = 0
+    else:
+        order = db.Tags.name.asc()
+        order_no = 1
+    entries = (
+        calibre_db.session.query(db.Tags, func.count("books_tags_link.book").label("count"))
+        .join(db.books_tags_link)
+        .join(db.Books)
+        .order_by(order)
+        .filter(calibre_db.common_filters())
+        .group_by(db.Tags.id)
+        .all()
+    )
+    no_tag_count = (
+        calibre_db.session.query(db.Books)
+        .outerjoin(db.books_tags_link)
+        .outerjoin(db.Tags)
+        .filter(db.Tags.name is None)
+        .filter(calibre_db.common_filters())
+        .count()
+    )
+    if no_tag_count:
+        entries.append([db.Category(_("None"), "-1"), no_tag_count])
+    entries = sorted(entries, key=lambda x: x[0].name.lower(), reverse=not order_no)
+    char_list = generate_char_list(entries)
+    return render_title_template(
+        "list.html",
+        entries=entries,
+        folder="web.books_list",
+        charlist=char_list,
+        title=_("Categories"),
+        page="catlist",
+        data="category",
+        order=order_no,
+    )
 
 
 # ################################### Download/Send ##################################################################

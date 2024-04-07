@@ -25,20 +25,18 @@ class TaskUpload(CalibreTask):
     def __init__(self, task_message, book_title) -> None:
         super().__init__(task_message)
         self.start_time = self.end_time = datetime.now()
-        self.stat = STAT_FINISH_SUCCESS
-        self.progress = 1
+        super().stat = STAT_FINISH_SUCCESS
+        super().progress = 1
         self.book_title = book_title
 
     def run(self, worker_thread) -> None:
         """Upload task doesn't have anything to do, it's simply a way to add information to the task list."""
 
-    @property
     def name(self):
         return N_("Upload")
 
     def __str__(self) -> str:
         return f"Upload {self.book_title}"
 
-    @property
     def is_cancellable(self) -> bool:
         return False

@@ -174,7 +174,7 @@ select = [
     #"PTH",      # flake8-use-pathlib
     "PYI",      # flake8-pyi
     "Q",        # flake8-quotes
-    #"RET",      # flake8-return
+    "RET",      # flake8-return
     "RSE",      # flake8-raise
     #"RUF",      # ruff
     #"S",        # flake8-bandit

@@ -167,17 +167,17 @@ class CalibreTask:
         self._scheduled = False
 
     @abc.abstractmethod
-    def run(self, worker_thread) -> NoReturn:
+    def run(self, worker_thread) -> None:
         """The main entry-point for this task."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def name(self) -> NoReturn:
+    def name(self) -> LazyString:
         """Provides the caller some human-readable name for this class."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def is_cancellable(self) -> NoReturn:
+    def is_cancellable(self) -> bool:
         """Does this task gracefully handle being cancelled (STAT_ENDED, STAT_CANCELLED)?."""
         raise NotImplementedError
 
@@ -203,11 +203,11 @@ class CalibreTask:
         self._stat = x
 
     @property
-    def progress(self):
+    def progress(self) -> float:
         return self._progress
 
     @progress.setter
-    def progress(self, x) -> None:
+    def progress(self, x: float) -> None:
         if not 0 <= x <= 1:
             msg = "Task progress should within [0, 1] range"
             raise ValueError(msg)
