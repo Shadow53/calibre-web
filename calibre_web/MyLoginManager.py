@@ -27,7 +27,7 @@ from flask_login.utils import decode_cookie
 
 class MyLoginManager(LoginManager):
     def _session_protection_failed(self) -> bool:
-        sess = session._get_current_object()
+        sess = session._get_current_object()  # noqa: SLF001
         ident = self._session_identifier_generator()
         if (sess and not (len(sess) == 1 and sess.get("csrf_token", None))) and ident != sess.get("_id", None):
             return super()._session_protection_failed()
@@ -42,7 +42,7 @@ class MyLoginManager(LoginManager):
             if self._user_callback:
                 user = self._user_callback(user_id)
             if user is not None:
-                app = current_app._get_current_object()
+                app = current_app._get_current_object()  # noqa: SLF001
                 user_loaded_from_cookie.send(app, user=user)
                 # if session was restored from remember me cookie make login valid
                 confirm_login()
