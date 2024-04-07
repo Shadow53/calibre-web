@@ -56,7 +56,8 @@ from . import (
     services,
     ub,
 )
-from .app import updater_thread, web_server
+from .updater import updater_thread
+from .server import web_server
 from .babel import get_available_locale, get_available_translations, get_user_locale_language
 from .cli import cli_param
 from .config_sql import CONFIG
