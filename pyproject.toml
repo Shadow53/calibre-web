@@ -140,9 +140,54 @@ src = ["calibre-web"]
 
 [tool.ruff.lint]
 # TODO: T20 disallows print statements
-select = ["E", "F", "UP", "W", "C90", "B", "I", "SIM", "N", "D", "YTT", "ANN", "ASYNC", "S", "BLE", "FBT", "A", "C4",
-"DTZ", "EM", "EXE", "FA", "ISC", "ICN", "G", "PIE", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SLOT", "TCH", "ARG",
-"PTH", "TD", "FIX", "ERA", "PL", "TRY", "FLY", "PERF", "FURB", "LOG", "RUF"]
+select = [
+    "A",        # flake8-builtins
+    #"ANN",      # flake8-annotations
+    #"ARG",      # flake8-unused-arguments
+    "ASYNC",    # flake8-async
+    #"B",        # flake8-bugbear
+    #"BLE",      # flake8-blind-except
+    "C4",       # flake8-comprehensions
+    #"C90",      # mccabe
+    #"D",        # pydocstyle
+    #"DTZ",      # flake8-datetimez
+    #"E",        # pycodestyle
+    "EM",       # flake8-errmsg
+    #"ERA",      # eradicate
+    "EXE",      # flake8-executable
+    #"F",        # Pyflakes
+    #"FA",       # flake8-future-annotations
+    #"FBT",      # flake8-boolean-trap
+    #"FIX",      # flake8-fixme
+    "FLY",      # flynt
+    #"FURB",     # refurb
+    #"G",        # flake8-logging-format
+    "I",        # isort
+    "ICN",      # flake8-import-conventions
+    "ISC",      # flake8-implicit-str-concat
+    "LOG",      # flake8-logging
+    #"N",        # pep8-naming
+    #"PERF",     # perflint
+    "PIE",      # flake8-pie
+    #"PL",       # pylint
+    "PT",       # flake8-pytest-style
+    #"PTH",      # flake8-use-pathlib
+    "PYI",      # flake8-pyi
+    "Q",        # flake8-quotes
+    #"RET",      # flake8-return
+    "RSE",      # flake8-raise
+    #"RUF",      # ruff
+    #"S",        # flake8-bandit
+    #"SIM",      # flake8-simplify
+    "SLF",      # flake8-self
+    "SLOT",     # flake8-slots
+    "TCH",      # flake8-type-checking
+    #"TD",       # flake8-todos
+    #"TRY",      # tryceratops
+    #"UP",       # pyupgrade
+    "W",        # pycodestyle
+    "YTT",      # flake8-2020
+]
 ignore = [
     "ANN101", # Missing type annotation for self in method
     "D211",
