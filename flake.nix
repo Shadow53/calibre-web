@@ -7,6 +7,14 @@
       supportedSystems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
       pkgs = forAllSystems (system: nixpkgs.legacyPackages.${system});
+      mkPoetry = system: pkgs.${system}.poetry.overridePythonAttrs (super: {
+        src = pkgs.${system}.fetchFromGitHub {
+          owner = "python-poetry";
+          repo = "poetry";
+          rev = "a562bd19717bb0883695d7b19db36a366b2cb8d9";
+          hash = "sha256-MBWVeS/UHpzeeNUeiHMoXnLA3enRO/6yGIbg4Vf2GxU=";
+        };
+      });
       mkOverrides = system: let
         fetchFromGitHub = pkgs.${system}.fetchFromGitHub;
         inherit (poetry2nix.lib.mkPoetry2Nix { pkgs = pkgs.${system}; }) mkPoetryApplication defaultPoetryOverrides;
@@ -99,20 +107,26 @@
       in {
         default = final: prev: {
           calibre-web = self.packages.${prev.system}.default;
+          poetry = mkPoetry prev.system;
         };
       };
 
       devShells = forAllSystems (system: let
         inherit (poetry2nix.lib.mkPoetry2Nix { pkgs = pkgs.${system}; }) mkPoetryEnv defaultPoetryOverrides;
+        poetry-git = mkPoetry system;
       in {
         default = pkgs.${system}.mkShellNoCC {
           packages = with pkgs.${system}; [
             (mkPoetryEnv {
               overrides = mkOverrides system;
               projectDir = self;
+              #extraPackages = ps: [ poetry-git ];
             })
-            poetry
+            poetry-git
             just
+            #pyre
+            pyright
+            #pytype
           ];
         };
       });
