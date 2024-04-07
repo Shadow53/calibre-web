@@ -17,7 +17,7 @@
 import importlib
 import os
 import sys
-from collections import namedtuple
+from typing import NamedTuple
 
 from sqlalchemy import __version__ as sql_version
 
@@ -222,7 +222,7 @@ def selected_roles(dictionary):
 
 
 # :rtype: BookMeta
-BookMeta = namedtuple(
+BookMeta = NamedTuple(
     "BookMeta",
     "file_path, extension, title, author, cover, description, tags, series, "
     "series_id, languages, publisher, pubdate, identifiers",
@@ -251,4 +251,4 @@ COVER_THUMBNAIL_MEDIUM = 2
 COVER_THUMBNAIL_LARGE = 3
 
 # clean-up the module namespace
-del sys, os, namedtuple
+del sys, os, NamedTuple
