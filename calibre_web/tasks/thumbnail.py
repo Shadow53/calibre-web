@@ -18,7 +18,7 @@ import os
 from datetime import datetime, UTC
 from shutil import copyfile
 
-from flask_babel import lazy_gettext as N_
+from flask_babel import lazy_gettext as N_, LazyString
 from sqlalchemy import func, or_, text
 
 from calibre_web import db, fs, logger, ub

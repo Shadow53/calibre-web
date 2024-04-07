@@ -28,6 +28,7 @@ from datetime import datetime
 from typing import NoReturn
 
 from calibre_web import logger
+from flask_babel.speaklater import LazyString
 
 log = logger.create()
 
