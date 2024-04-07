@@ -18,6 +18,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import annotations
+
 import contextlib
 import json
 import operator
@@ -30,8 +32,7 @@ from datetime import datetime, timedelta
 from datetime import time as datetime_time
 from functools import wraps
 from importlib.util import find_spec
-from typing import Callable, TypeVar, ParamSpec
-from __future__ import annotations
+from typing import Callable, ParamSpec, TypeVar
 
 from flask import Blueprint, Response, abort, flash, g, make_response, redirect, request, send_from_directory, url_for
 from flask import session as flask_session
@@ -101,8 +102,8 @@ except ImportError as err:
 admi = Blueprint("admin", __name__)
 
 
-T = TypeVar('T')
-P = ParamSpec('P')
+T = TypeVar("T")
+P = ParamSpec("P")
 
 def admin_required(f: Callable[P, T]) -> Callable[P, T]:
     """Checks if current_user.role == 1."""
