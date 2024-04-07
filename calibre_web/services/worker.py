@@ -23,8 +23,9 @@ try:
     import queue
 except ImportError:
     import Queue as queue
+from collections import namedtuple
 from datetime import datetime
-from typing import NamedTuple, NoReturn
+from typing import NoReturn
 
 from calibre_web import logger
 
@@ -41,7 +42,7 @@ STAT_CANCELLED = 5
 # Only retain this many tasks in dequeued list
 TASK_CLEANUP_TRIGGER = 20
 
-QueuedTask = NamedTuple("QueuedTask", "num, user, added, task, hidden")
+QueuedTask = namedtuple("QueuedTask", "num, user, added, task, hidden")
 
 
 def _get_main_thread():
