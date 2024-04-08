@@ -975,3 +975,6 @@ def session_commit(success=None, _session=None) -> str:
         s.rollback()
         log.error_or_exception(e)
     return ""
+
+
+init()

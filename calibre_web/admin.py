@@ -106,6 +106,7 @@ admi = Blueprint("admin", __name__)
 T = TypeVar("T")
 P = ParamSpec("P")
 
+
 def admin_required(f: Callable[P, T]) -> Callable[P, T]:
     """Checks if current_user.role == 1."""
 
