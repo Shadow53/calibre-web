@@ -28,7 +28,7 @@ from flask_dance.consumer import OAuth2ConsumerBlueprint, oauth_authorized, oaut
 from flask_dance.contrib.github import github, make_github_blueprint
 from flask_login import current_user, login_required, login_user
 from oauthlib.oauth2 import InvalidGrantError, TokenExpiredError
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.sql.expression import and_, func
 
 from . import app, constants, logger, ub

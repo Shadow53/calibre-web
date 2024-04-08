@@ -32,7 +32,7 @@ from datetime import datetime, timedelta
 from datetime import time as datetime_time
 from functools import wraps
 from importlib.util import find_spec
-from typing import Callable, ParamSpec, TypeVar
+from typing import Callable, Optional, ParamSpec, TypeVar
 
 from flask import Blueprint, Response, abort, flash, g, make_response, redirect, request, send_from_directory, url_for
 from flask import session as flask_session
