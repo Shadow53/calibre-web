@@ -19,6 +19,7 @@ import os
 import socket
 import sys
 
+from . import ub
 from .constants import CONFIG_DIR as _CONFIG_DIR
 from .constants import DEFAULT_SETTINGS_FILE, VERSION_STRING
 
@@ -28,6 +29,8 @@ cli_param = None
 def init():
     global cli_param
     cli_param = CliParameter()
+    cli_param.init()
+    ub.init_db(cli_param.settings_path)
 
 
 def version_info() -> str:
