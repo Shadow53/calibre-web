@@ -15,10 +15,11 @@
 #   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from shutil import copyfile
 
-from flask_babel import lazy_gettext as N_, LazyString
+from flask_babel import LazyString
+from flask_babel import lazy_gettext as N_
 from sqlalchemy import func, or_, text
 
 from calibre_web import db, fs, logger, ub

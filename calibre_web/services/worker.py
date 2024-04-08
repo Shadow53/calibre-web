@@ -27,8 +27,9 @@ from collections import namedtuple
 from datetime import datetime
 from typing import NoReturn
 
-from calibre_web import logger
 from flask_babel.speaklater import LazyString
+
+from calibre_web import logger
 
 log = logger.create()
 

@@ -56,8 +56,6 @@ from . import (
     services,
     ub,
 )
-from .updater import updater_thread
-from .server import web_server
 from .babel import get_available_locale, get_available_translations, get_user_locale_language
 from .cli import cli_param
 from .config_sql import CONFIG
@@ -73,8 +71,10 @@ from .helper import (
     valid_email,
 )
 from .render_template import get_sidebar_config, render_title_template
+from .server import web_server
 from .services.background_scheduler import use_APScheduler
 from .services.worker import WorkerThread
+from .updater import updater_thread
 
 log = logger.create()
 
