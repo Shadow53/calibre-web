@@ -88,9 +88,6 @@ def create_app():
     if csrf:
         csrf.init_app(app)
 
-    cli_param.init()
-
-    ub.init_db(cli_param.settings_path)
     settings_dir = Path(cli_param.settings_path).parent
     encrypt_key, error = config_sql.get_encryption_key(settings_dir)
 

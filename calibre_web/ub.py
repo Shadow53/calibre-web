@@ -69,6 +69,7 @@ from sqlalchemy.orm import Session, backref, relationship, scoped_session, sessi
 from werkzeug.security import generate_password_hash
 
 from . import constants, logger
+from .cli import cli_param
 
 log = logger.create()
 
@@ -78,6 +79,10 @@ Base = declarative_base()
 searched_ids = {}
 
 logged_in = {}
+
+
+def init():
+    init_db(cli_param.settings_path)
 
 
 def signal_store_user_session(_object, _user) -> None:
