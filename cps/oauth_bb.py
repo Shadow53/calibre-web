@@ -338,10 +338,11 @@ if ub.oauth_support:
             log.error("Failed to log in with generic OAuth2 provider")
             return False
         
-        resp = blueprint.session.get(blueprint.base_url + oauthblueprints[2].get('oauth_userinfo_url'))
+        userinfo_url = blueprint.base_url + oauthblueprints[2].get('oauth_userinfo_url')
+        resp = blueprint.session.get(userinfo_url)
         if not resp.ok:
             flash(_(u"Failed to fetch user info from generic OAuth2 provider."), category="error")
-            log.error("Failed to fetch user info from generic OAuth2 provider")
+            log.error(f"Failed to fetch user info from generic OAuth2 provider ({userinfo_url})")
             return False
 
         username_mapper = oauthblueprints[2].get('username_mapper') or 'username'
